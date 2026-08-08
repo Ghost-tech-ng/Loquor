@@ -1,0 +1,19 @@
+# Credentials. BYOK means every key is device-local and none of them belong in
+# history — once a key is committed it is compromised even after it is deleted,
+# because the object stays reachable.
+.env
+.env.*
+!.env.example
+
+node_modules/
+.expo/
+dist/
+*.log
+
+# Phase 0 gate inputs: recordings of a real human voice and the transcripts
+# produced from them.
+phase0/stt-spike/audio/
+phase0/stt-spike/out/
+
+.DS_Store
+Thumbs.db

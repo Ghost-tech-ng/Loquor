@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "Loquor",
+    "slug": "loquor",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "loquor",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "backgroundColor": "#150F1C",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.eghosa.loquor",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Loquor records your practice answers so it can measure pace, pauses and filler words. Audio is deleted after transcription."
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-audio",
+      "expo-sqlite",
+      "expo-font"
+    ],
+    "updates": {
+      "url": "https://u.expo.dev/PROJECT_ID_GOES_HERE",
+      "fallbackToCacheTimeout": 0
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
