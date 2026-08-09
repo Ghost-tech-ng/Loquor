@@ -14,7 +14,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
 import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen, Tap } from "../../components/ui";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
+import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE } from "../../theme";
 import { contributionRaw, createRoom, pendingDebriefs, recentRooms, type RoomRow } from "../../lib/db";
 import { funnel, ratio } from "../../lib/coach";
 import { prepFor } from "../../lib/skillStore";
@@ -243,26 +243,28 @@ const s = StyleSheet.create({
   stageRatio: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
 
   input: {
-    backgroundColor: CHROME.strata,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
+    borderColor: SURFACE.edge,
     color: CHROME.chalk,
     fontSize: 15,
     fontFamily: TYPE.ui,
-    padding: 12,
-    borderRadius: 2,
+    paddingHorizontal: 15,
+    paddingVertical: 13,
+    borderRadius: RADIUS.soft,
   },
   inputTall: { minHeight: 72, textAlignVertical: "top" },
 
   whenRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   chip: {
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 2,
+    borderColor: SURFACE.edgeLive,
+    paddingHorizontal: 13,
+    paddingVertical: 7,
+    borderRadius: RADIUS.pill,
   },
-  chipOn: { borderColor: SEMANTIC.ember },
+  chipOn: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(224, 85, 63, 0.1)" },
   chipText: { color: CHROME.dust, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
   chipTextOn: { color: SEMANTIC.ember },
 
@@ -272,7 +274,7 @@ const s = StyleSheet.create({
     gap: SPACE.md,
     paddingVertical: 13,
     borderBottomWidth: 1,
-    borderBottomColor: CHROME.carve,
+    borderBottomColor: SURFACE.edge,
   },
   rowTitle: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.ui },
   rowMeta: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },

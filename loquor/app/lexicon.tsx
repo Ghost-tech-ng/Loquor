@@ -24,7 +24,7 @@ import {
 
 import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen } from "../components/ui";
 import { Ignition } from "../components/boot";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE, heat } from "../theme";
+import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../theme";
 import type { Gloss } from "../content/glossary";
 import { describeInterval, type Grade } from "../lib/fsrs";
 import {
@@ -427,9 +427,10 @@ const s = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingVertical: 15,
+    borderRadius: RADIUS.pill,
     borderWidth: 1,
-    borderColor: CHROME.carve,
-    backgroundColor: CHROME.strata,
+    borderColor: SURFACE.edgeLive,
+    backgroundColor: SURFACE.sunk,
   },
   gradeLabel: { color: CHROME.chalk, fontSize: 11, letterSpacing: 1.4, fontFamily: TYPE.uiSemi },
 
@@ -439,11 +440,12 @@ const s = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     paddingVertical: 12,
+    borderRadius: RADIUS.soft,
     borderWidth: 1,
-    backgroundColor: CHROME.strata,
+    backgroundColor: SURFACE.sunk,
   },
   gatePass: { borderColor: SEMANTIC.ember },
-  gateFail: { borderColor: CHROME.carve },
+  gateFail: { borderColor: SURFACE.edge },
   gateMark: { fontSize: 16, fontFamily: TYPE.uiSemi },
   gateMarkPass: { color: SEMANTIC.ember },
   gateMarkFail: { color: SEMANTIC.flaw },
@@ -454,10 +456,12 @@ const s = StyleSheet.create({
     fontSize: 15,
     fontFamily: TYPE.ui,
     minHeight: 64,
-    padding: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 13,
+    borderRadius: RADIUS.soft,
     borderWidth: 1,
-    borderColor: CHROME.carve,
-    backgroundColor: CHROME.strata,
+    borderColor: SURFACE.edge,
+    backgroundColor: SURFACE.sunk,
     textAlignVertical: "top",
   },
 
@@ -468,6 +472,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 17,
+    borderRadius: RADIUS.pill,
     borderWidth: 1,
     borderColor: SEMANTIC.ember,
     overflow: "hidden",

@@ -121,7 +121,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  stopCore: { width: 30, height: 30, borderRadius: 3, backgroundColor: SEMANTIC.flaw },
+  stopCore: { width: 30, height: 30, borderRadius: 10, backgroundColor: SEMANTIC.flaw },
   clock: { color: CHROME.chalk, fontSize: 34, fontFamily: TYPE.display, ...TABULAR },
 
   barRow: { gap: 5 },

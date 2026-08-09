@@ -28,7 +28,7 @@ import {
 } from "../components/ui";
 import { Aperture, Failed, Working } from "../components/recorder";
 import { useTake } from "../components/useTake";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../theme";
+import { CHROME, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE } from "../theme";
 import { getRoom, saveDebrief, type RoomRow } from "../lib/db";
 import { judgeRoom, type RoomDebrief } from "../lib/roomJudge";
 import { getKey, loadSettings, resolve } from "../lib/settings";
@@ -337,5 +337,5 @@ const s = StyleSheet.create({
   tallyLabel: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
 
   bullet: { flexDirection: "row", gap: 12 },
-  bulletTick: { width: 1, alignSelf: "stretch", backgroundColor: CHROME.carve },
+  bulletTick: { width: 1, alignSelf: "stretch", borderRadius: 1, backgroundColor: SURFACE.edgeLive },
 });

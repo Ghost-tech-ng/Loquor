@@ -233,7 +233,7 @@ export default function SmokeTest() {
             <View
               style={[
                 styles.core,
-                state.isRecording && { width: 26, height: 26, borderRadius: 5, backgroundColor: SEMANTIC.flaw },
+                state.isRecording && { width: 26, height: 26, borderRadius: 9, backgroundColor: SEMANTIC.flaw },
               ]}
             />
           </Pressable>

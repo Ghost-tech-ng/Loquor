@@ -29,7 +29,7 @@ import {
   GlyphSettings,
   GlyphToday,
 } from "../../components/glyphs";
-import { CHROME, MOTION, SEMANTIC, TYPE } from "../../theme";
+import { CHROME, MOTION, RADIUS, SURFACE, TYPE } from "../../theme";
 
 type Glyph = (p: { tint: string }) => React.ReactElement;
 
@@ -127,7 +127,7 @@ function Bar({ state, navigation }: BottomTabBarProps) {
             },
           ]}
         >
-          <View style={s.markerTick} />
+          <View style={s.markerPill} />
         </Animated.View>
 
         {state.routes.map((route, i) => {
@@ -188,10 +188,10 @@ const s = StyleSheet.create({
   bar: {
     flexDirection: "row",
     height: 62,
-    borderRadius: 16,
+    borderRadius: RADIUS.bar,
     backgroundColor: CHROME.raised,
     borderWidth: 1,
-    borderColor: CHROME.carve,
+    borderColor: SURFACE.edge,
     overflow: "hidden",
     // The one shadow in the app, and it is here to say "this floats", not to
     // decorate. Everything else on screen is flat by rule.
@@ -206,11 +206,17 @@ const s = StyleSheet.create({
     }),
   },
 
-  marker: { position: "absolute", top: 0, bottom: 0, alignItems: "center" },
-  // A 2px ember tick along the top edge of the active cell. Colour is data
-  // everywhere else, so navigation gets the smallest possible mark that still
-  // answers "where am I".
-  markerTick: { width: 26, height: 2, borderRadius: 1, backgroundColor: SEMANTIC.ember },
+  marker: { position: "absolute", top: 0, bottom: 0 },
+  // The active cell is a capsule of very dilute ember rather than a drawn tick.
+  // Colour is data everywhere else in the app, so navigation gets the weakest
+  // statement of it that still answers "where am I" — a warmth, not a mark.
+  markerPill: {
+    flex: 1,
+    marginVertical: 7,
+    marginHorizontal: 8,
+    borderRadius: RADIUS.pill,
+    backgroundColor: "rgba(224, 85, 63, 0.14)",
+  },
 
   item: { flex: 1, alignItems: "center", justifyContent: "center", gap: 4, paddingTop: 4 },
   label: { color: CHROME.dustDim, fontSize: 8, letterSpacing: 0.2, fontFamily: TYPE.monoMedium },

@@ -20,7 +20,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 
 import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen, Tap } from "../../components/ui";
 import { Rail, StrataWall, fillerStrain, strain } from "../../components/viz";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
+import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE } from "../../theme";
 import { bandPosition, FILLER_TARGET_PER_MIN, PACE_BAND_WPM } from "../../lib/metrics";
 import {
   PACE_LABELS,
@@ -412,11 +412,12 @@ const s = StyleSheet.create({
   weekLabel: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.6, fontFamily: TYPE.mono, ...TABULAR },
 
   callout: {
-    backgroundColor: CHROME.strata,
+    backgroundColor: "rgba(224, 85, 63, 0.07)",
     borderWidth: 1,
-    borderColor: SEMANTIC.ember,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
+    borderColor: "rgba(224, 85, 63, 0.4)",
+    borderRadius: RADIUS.panel,
+    paddingHorizontal: 16,
+    paddingVertical: 15,
     gap: 5,
   },
   calloutTitle: { color: CHROME.chalk, fontSize: 18, fontFamily: TYPE.display },
@@ -428,12 +429,14 @@ const s = StyleSheet.create({
   streak: { color: CHROME.dust, fontSize: 12, fontFamily: TYPE.mono, ...TABULAR },
 
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 4 },
+  // A fortnight of squares is a grid; a fortnight of soft dots is a rhythm.
   cell: {
     width: 14,
     height: 14,
-    backgroundColor: CHROME.strata,
+    borderRadius: 5,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
+    borderColor: SURFACE.edge,
   },
   cellOn: { backgroundColor: CHROME.chalk, borderColor: CHROME.chalk },
 
@@ -452,14 +455,15 @@ const s = StyleSheet.create({
   next: { color: CHROME.chalk, fontSize: 15, lineHeight: 22, fontFamily: TYPE.displayItalic },
   failed: { color: SEMANTIC.flaw, fontSize: 12, fontFamily: TYPE.ui },
 
-  ratingRow: { flexDirection: "row", gap: 4 },
+  ratingRow: { flexDirection: "row", gap: 6 },
   ratingCell: {
     flex: 1,
     paddingVertical: 12,
     alignItems: "center",
-    backgroundColor: CHROME.strata,
+    borderRadius: RADIUS.pill,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
+    borderColor: SURFACE.edgeLive,
   },
   ratingOn: { backgroundColor: CHROME.chalk, borderColor: CHROME.chalk },
   ratingNum: { color: CHROME.dust, fontSize: 14, fontFamily: TYPE.monoMedium, ...TABULAR },

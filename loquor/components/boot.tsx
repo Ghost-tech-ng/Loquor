@@ -168,7 +168,7 @@ const s = StyleSheet.create({
   center: { alignItems: "center", gap: 15 },
 
   ramp: { flexDirection: "row", alignItems: "center", gap: 5, height: 40 },
-  bar: { width: 3, height: 34, borderRadius: 1 },
+  bar: { width: 3, height: 34, borderRadius: 1.5 },
 
   // No custom family: the boot screen paints before useFonts resolves, so
   // anything set in a loaded face would render in the system font and then jump.

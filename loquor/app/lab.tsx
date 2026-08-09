@@ -36,7 +36,7 @@ import {
 } from "../components/ui";
 import { Aperture, Failed, ScoreBar, Working } from "../components/recorder";
 import { useTake } from "../components/useTake";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../theme";
+import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE } from "../theme";
 import { COUNTERPARTS, MOVES, type Counterpart, type Scaffold } from "../content/scaffolds";
 import { pickTopic, type Topic } from "../content/topics";
 import { nextScaffold, record } from "../lib/skillStore";
@@ -655,13 +655,14 @@ const s = StyleSheet.create({
 
   sideRow: { flexDirection: "row", gap: 8 },
   chip: {
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 2,
+    borderColor: SURFACE.edgeLive,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: RADIUS.pill,
   },
-  chipOn: { borderColor: SEMANTIC.ember },
+  chipOn: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(224, 85, 63, 0.1)" },
   chipText: { color: CHROME.dust, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
   chipTextOn: { color: SEMANTIC.ember },
 
@@ -671,7 +672,7 @@ const s = StyleSheet.create({
   stepShare: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
   stepAsk: { color: CHROME.dust, fontSize: 13, lineHeight: 20, fontFamily: TYPE.ui },
 
-  line: { paddingLeft: 12, borderLeftWidth: 1, borderLeftColor: CHROME.carve, gap: 3 },
+  line: { paddingLeft: 12, borderLeftWidth: 1, borderLeftColor: SURFACE.edgeLive, gap: 3 },
   lineThem: { borderLeftColor: CHROME.dustDim },
   lineWho: { color: CHROME.dustDim, fontSize: 9, letterSpacing: 1.6, fontFamily: TYPE.uiSemi },
   lineText: { color: CHROME.dust, fontSize: 14, lineHeight: 21, fontFamily: TYPE.ui },

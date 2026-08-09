@@ -158,7 +158,7 @@ export function Score({ label, score }: { label: string; score: number }) {
 }
 
 const v = StyleSheet.create({
-  timeline: { justifyContent: "center", overflow: "hidden" },
+  timeline: { justifyContent: "center", overflow: "hidden", borderRadius: 5 },
   band: {
     position: "absolute",
     left: 0,
@@ -180,7 +180,7 @@ const v = StyleSheet.create({
 
   wall: { justifyContent: "flex-end" },
   wallRow: { flexDirection: "row", alignItems: "flex-end", gap: 2 },
-  stratum: { flex: 1, minWidth: 2 },
+  stratum: { flex: 1, minWidth: 2, borderTopLeftRadius: 2, borderTopRightRadius: 2 },
   target: {
     position: "absolute",
     left: 0,
@@ -197,7 +197,7 @@ const v = StyleSheet.create({
   approx: { color: CHROME.dustDim, fontSize: 15, fontFamily: TYPE.ui },
   railNumber: { color: CHROME.chalk, fontSize: 19, fontFamily: TYPE.display, ...TABULAR },
   railUnit: { color: CHROME.dustDim, fontSize: 10, fontFamily: TYPE.ui },
-  track: { height: 3, backgroundColor: CHROME.strata, justifyContent: "center" },
+  track: { height: 3, borderRadius: 1.5, backgroundColor: CHROME.strata, justifyContent: "center" },
   trackBand: {
     position: "absolute",
     left: "30%",
@@ -205,13 +205,13 @@ const v = StyleSheet.create({
     height: 3,
     backgroundColor: CHROME.carve,
   },
-  marker: { position: "absolute", width: 2, height: 11, marginLeft: -1, backgroundColor: CHROME.chalk },
+  marker: { position: "absolute", width: 2, height: 11, borderRadius: 1, marginLeft: -1, backgroundColor: CHROME.chalk },
   railBand: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui },
 
   scoreRow: { flexDirection: "row", alignItems: "center", gap: 12 },
   scoreLabel: { color: CHROME.dust, fontSize: 13, fontFamily: TYPE.ui, width: 92 },
   pips: { flexDirection: "row", gap: 4, flex: 1 },
-  pip: { flex: 1, height: 3, backgroundColor: CHROME.carve },
+  pip: { flex: 1, height: 3, borderRadius: 1.5, backgroundColor: CHROME.carve },
   pipOn: { backgroundColor: CHROME.chalk },
   scoreNum: { color: CHROME.dustDim, fontSize: 12, fontFamily: TYPE.ui, ...TABULAR },
 });

@@ -86,9 +86,9 @@ const s = StyleSheet.create({
   ring: { position: "absolute", width: 18, height: 18, borderRadius: 9, borderWidth: 1.5 },
   core: { width: 7, height: 7, borderRadius: 3.5 },
 
-  bar: { width: 2.5 },
+  bar: { width: 2.5, borderRadius: 1.25 },
 
-  table: { width: 20, height: 13, borderWidth: 1.5, borderRadius: 1 },
+  table: { width: 20, height: 13, borderWidth: 1.5, borderRadius: 4 },
   seat: { position: "absolute", width: 5, height: 2.5, top: 1.5, borderRadius: 1 },
 
   rail: { width: 20, height: 8, alignItems: "center", justifyContent: "center" },

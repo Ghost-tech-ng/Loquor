@@ -21,7 +21,7 @@ import {
   Reveal,
   Screen,
 } from "../../components/ui";
-import { CHROME, SEMANTIC, SPACE, TYPE } from "../../theme";
+import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TYPE } from "../../theme";
 import { KEY_GUIDES, type KeyGuide } from "../../content/keyGuides";
 import {
   DEFAULT_SETTINGS,
@@ -424,9 +424,18 @@ function Segment({
 }
 
 const s = StyleSheet.create({
-  modes: { gap: 2 },
-  mode: { flexDirection: "row", gap: 12, paddingVertical: 12, alignItems: "flex-start" },
-  modeOn: {},
+  modes: { gap: 4 },
+  // The chosen mode is a lit surface rather than a ticked row. Selection is
+  // state, and state reads faster as ground than as a mark.
+  mode: {
+    flexDirection: "row",
+    gap: 12,
+    paddingVertical: 13,
+    paddingHorizontal: 14,
+    borderRadius: RADIUS.soft,
+    alignItems: "flex-start",
+  },
+  modeOn: { backgroundColor: SURFACE.sunk },
   radio: {
     width: 9,
     height: 9,
@@ -440,9 +449,9 @@ const s = StyleSheet.create({
   modeTitle: { color: CHROME.dust, fontSize: 15, fontFamily: TYPE.uiMedium },
   modeSub: { color: CHROME.dustDim, fontSize: 12, lineHeight: 17, fontFamily: TYPE.ui },
 
-  segment: { gap: 2 },
-  segOpt: { paddingVertical: 9, paddingHorizontal: 10, borderLeftWidth: 2, borderLeftColor: "transparent" },
-  segOptOn: { borderLeftColor: SEMANTIC.ember, backgroundColor: CHROME.floor },
+  segment: { gap: 3 },
+  segOpt: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: RADIUS.pill },
+  segOptOn: { backgroundColor: "rgba(224, 85, 63, 0.13)" },
   segLabel: { color: CHROME.dust, fontSize: 13, fontFamily: TYPE.ui },
 
   keys: { gap: SPACE.md, marginTop: SPACE.xs },
@@ -454,9 +463,10 @@ const s = StyleSheet.create({
   info: {
     width: 20,
     height: 20,
-    borderRadius: 10,
+    borderRadius: RADIUS.pill,
     borderWidth: 1,
-    borderColor: CHROME.carve,
+    borderColor: SURFACE.edgeLive,
+    backgroundColor: SURFACE.sunk,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -467,19 +477,21 @@ const s = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: CHROME.strata,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
-    paddingHorizontal: 12,
+    borderColor: SURFACE.edge,
+    borderRadius: RADIUS.soft,
+    paddingHorizontal: 15,
     paddingVertical: 13,
   },
   keyValue: { color: CHROME.chalk, fontSize: 13, fontFamily: TYPE.ui },
   input: {
-    backgroundColor: CHROME.strata,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
     borderColor: SEMANTIC.ember,
+    borderRadius: RADIUS.soft,
     color: CHROME.chalk,
-    paddingHorizontal: 12,
+    paddingHorizontal: 15,
     paddingVertical: 13,
     fontSize: 13,
     fontFamily: TYPE.ui,
@@ -488,13 +500,14 @@ const s = StyleSheet.create({
   remHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   remTitle: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.uiMedium },
   remSub: { color: CHROME.dustDim, fontSize: 12, lineHeight: 17, fontFamily: TYPE.ui },
-  slots: { flexDirection: "row", gap: 4, marginTop: 4 },
+  slots: { flexDirection: "row", gap: 6, marginTop: 4 },
   slot: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 8,
-    backgroundColor: CHROME.strata,
+    borderRadius: RADIUS.pill,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
+    borderColor: SURFACE.edgeLive,
   },
   slotOn: { backgroundColor: CHROME.chalk, borderColor: CHROME.chalk },
   slotLabel: { color: CHROME.dust, fontSize: 12, fontFamily: TYPE.ui },

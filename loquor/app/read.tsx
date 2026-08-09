@@ -31,7 +31,7 @@ import {
 import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen } from "../components/ui";
 import { Ignition } from "../components/boot";
 import { Rail, strain } from "../components/viz";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE, heat } from "../theme";
+import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../theme";
 import {
   READINGS_BY_ID,
   READ_WPM,
@@ -498,14 +498,15 @@ const s = StyleSheet.create({
 
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   chip: {
-    backgroundColor: CHROME.strata,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    borderColor: SURFACE.edgeLive,
+    borderRadius: RADIUS.soft,
+    paddingHorizontal: 13,
+    paddingVertical: 7,
     gap: 1,
   },
-  chipOpen: { borderColor: SEMANTIC.ember },
+  chipOpen: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(224, 85, 63, 0.1)" },
   chipWord: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.displayItalic },
   chipSay: { color: CHROME.dustDim, fontSize: 10, fontFamily: TYPE.ui, letterSpacing: 0.4 },
 
@@ -527,7 +528,7 @@ const s = StyleSheet.create({
     gap: SPACE.sm,
     paddingVertical: 11,
     borderBottomWidth: 1,
-    borderBottomColor: CHROME.carve,
+    borderBottomColor: SURFACE.edge,
   },
   tocRowHere: { borderBottomColor: SEMANTIC.ember },
   tocN: { color: CHROME.dustDim, fontSize: 13, fontFamily: TYPE.monoMedium, ...TABULAR },
@@ -549,6 +550,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 17,
+    borderRadius: RADIUS.pill,
     borderWidth: 1,
     borderColor: SEMANTIC.ember,
     overflow: "hidden",

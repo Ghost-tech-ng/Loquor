@@ -101,6 +101,35 @@ export const TABULAR = { fontVariant: ["tabular-nums" as const] };
 
 export const SPACE = { xs: 4, sm: 8, md: 16, lg: 24, xl: 40 } as const;
 
+// One radius vocabulary. Nothing in the app rounds to a number that is not here.
+//
+// The first cut of this design drew every container as a 1px rectangle with a
+// 3px radius, on the theory that hard edges read as instrument rather than toy.
+// On a phone they read as neither — they read as boxes, and a screen of boxes
+// is a form. The edge is what got softened, not the discipline: containers are
+// still flat, still unshadowed, still colourless. They just stopped being drawn
+// as outlines and started being drawn as surfaces.
+export const RADIUS = {
+  /** Rows, slots, inline fields — anything the width of the column. */
+  soft: 12,
+  /** Containers. */
+  panel: 18,
+  /** The floating tab bar. */
+  bar: 22,
+  /** Anything whose height is set by its own label: buttons, chips, gates. */
+  pill: 999,
+} as const;
+
+/** Container fill and edge, both translucent so they sit on any ground. */
+export const SURFACE = {
+  /** Panels, inputs, recessed rows. */
+  sunk: "rgba(237, 243, 242, 0.035)",
+  /** The edge of a container — present, but not a drawn line. */
+  edge: "rgba(237, 243, 242, 0.065)",
+  /** The edge of something you can press. */
+  edgeLive: "rgba(237, 243, 242, 0.13)",
+} as const;
+
 /** Clearance under every scrolling screen so the floating bar never covers the
  *  last line of content. The bar is 62 tall and sits 22 off the safe area. */
 export const TAB_CLEARANCE = 118;

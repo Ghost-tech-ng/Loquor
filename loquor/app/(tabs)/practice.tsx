@@ -14,7 +14,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
 import { Eyebrow, Hair, Masthead, Meta, Reveal, Screen, Tap } from "../../components/ui";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
+import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE } from "../../theme";
 import { READINGS_BY_ID, pickReading, readingMinutes, type Reading } from "../../content/readings";
 import { TOPICS_BY_ID, pickTopic, type Topic } from "../../content/topics";
 import { coverage } from "../../lib/skillStore";
@@ -203,11 +203,12 @@ const s = StyleSheet.create({
 
   list: { gap: 10 },
   card: {
-    backgroundColor: CHROME.strata,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
+    borderColor: SURFACE.edgeLive,
+    borderRadius: RADIUS.panel,
+    paddingHorizontal: 16,
+    paddingVertical: 15,
     gap: 7,
   },
   cardHead: { flexDirection: "row", alignItems: "baseline", gap: 10 },

@@ -36,7 +36,7 @@ import {
   Screen,
 } from "../components/ui";
 import { Ignition } from "../components/boot";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE, heat } from "../theme";
+import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../theme";
 import { useTake, type Take } from "../components/useTake";
 import { getBaseline, saveBaseline, type BaselineRow } from "../lib/db";
 import { fillerCountIsApproximate } from "../lib/settings";
@@ -349,7 +349,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  stopCore: { width: 30, height: 30, borderRadius: 3, backgroundColor: SEMANTIC.flaw },
+  stopCore: { width: 30, height: 30, borderRadius: 10, backgroundColor: SEMANTIC.flaw },
   clock: { color: CHROME.chalk, fontSize: 30, fontFamily: TYPE.monoMedium, letterSpacing: -1, ...TABULAR },
 
   shape: { gap: 11, marginTop: SPACE.sm },
@@ -357,14 +357,15 @@ const s = StyleSheet.create({
   beatN: { color: SEMANTIC.ember, fontSize: 9.5, fontFamily: TYPE.monoMedium, paddingTop: 3, ...TABULAR },
   beatText: { flex: 1, color: CHROME.chalk, fontSize: 13.5, lineHeight: 21, fontFamily: TYPE.ui },
 
-  ratingRow: { flexDirection: "row", gap: 4 },
+  ratingRow: { flexDirection: "row", gap: 6 },
   ratingCell: {
     flex: 1,
     paddingVertical: 14,
     alignItems: "center",
-    backgroundColor: CHROME.strata,
+    borderRadius: RADIUS.pill,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
+    borderColor: SURFACE.edgeLive,
   },
   ratingOn: { backgroundColor: CHROME.chalk, borderColor: CHROME.chalk },
   ratingNum: { color: CHROME.dust, fontSize: 14, fontFamily: TYPE.monoMedium, ...TABULAR },

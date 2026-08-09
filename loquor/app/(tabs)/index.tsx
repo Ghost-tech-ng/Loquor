@@ -27,7 +27,7 @@ import {
   Tap,
 } from "../../components/ui";
 import { StrataWall, fillerStrain, strain } from "../../components/viz";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
+import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE } from "../../theme";
 import { TOPICS_BY_ID, pickTopic, type Topic } from "../../content/topics";
 import { READINGS_BY_ID } from "../../content/readings";
 import { activeDays } from "../../lib/progressStore";
@@ -273,9 +273,11 @@ export default function Today() {
 const s = StyleSheet.create({
   hero: {
     flexDirection: "row",
-    backgroundColor: CHROME.strata,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
+    borderColor: SURFACE.edge,
+    borderRadius: RADIUS.panel,
+    overflow: "hidden",
   },
   heroUrgent: { borderColor: SEMANTIC.ember },
   // The one bar of colour on the screen that is not data. It earns its place by
@@ -283,7 +285,7 @@ const s = StyleSheet.create({
   // breathes only when the thing it marks is blocking or expiring.
   heroBar: { width: 3 },
   heroBarFill: { flex: 1, backgroundColor: SEMANTIC.ember },
-  heroBody: { flex: 1, paddingHorizontal: 16, paddingVertical: 16, gap: 9 },
+  heroBody: { flex: 1, paddingHorizontal: 18, paddingVertical: 18, gap: 9 },
   eyebrowUrgent: { color: SEMANTIC.ember },
   heroTitle: { color: CHROME.chalk, fontSize: 27, lineHeight: 33, fontFamily: TYPE.display },
   heroPrompt: {
@@ -292,8 +294,8 @@ const s = StyleSheet.create({
     lineHeight: 22,
     fontFamily: TYPE.displayItalic,
     borderLeftWidth: 1,
-    borderLeftColor: CHROME.carve,
-    paddingLeft: 10,
+    borderLeftColor: SURFACE.edgeLive,
+    paddingLeft: 12,
   },
   heroWhy: { color: CHROME.dust, fontSize: 13, lineHeight: 21, fontFamily: TYPE.ui, marginBottom: 2 },
 

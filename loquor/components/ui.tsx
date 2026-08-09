@@ -23,7 +23,17 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { CHROME, MOTION, SEMANTIC, SPACE, TABULAR, TAB_CLEARANCE, TYPE } from "../theme";
+import {
+  CHROME,
+  MOTION,
+  RADIUS,
+  SEMANTIC,
+  SPACE,
+  SURFACE,
+  TABULAR,
+  TAB_CLEARANCE,
+  TYPE,
+} from "../theme";
 
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
   return (
@@ -314,7 +324,8 @@ export function Button({
   );
 }
 
-/** Recessed panel. The only container in the app — no cards, no shadows. */
+/** The only container in the app. A recessed surface, not an outlined box —
+ *  no shadow, no fill of its own colour, nothing that reads as a card. */
 export function Panel({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   return <View style={[s.panel, style]}>{children}</View>;
 }
@@ -344,31 +355,36 @@ const s = StyleSheet.create({
   display: { color: CHROME.chalk, fontSize: 27, lineHeight: 32, fontFamily: TYPE.display, letterSpacing: -0.5 },
   body: { color: "#C3D0D2", fontSize: 15, lineHeight: 23, fontFamily: TYPE.ui },
   meta: { color: CHROME.dust, fontSize: 12.5, lineHeight: 19, fontFamily: TYPE.ui },
-  hair: { height: 1, backgroundColor: CHROME.carve },
+  hair: { height: 1, backgroundColor: SURFACE.edge },
 
   figureRow: { flexDirection: "row", alignItems: "baseline", gap: 4 },
   figure: { color: CHROME.chalk, fontSize: 30, fontFamily: TYPE.display, letterSpacing: -1, ...TABULAR },
   figureUnit: { color: CHROME.dustDim, fontSize: 10, fontFamily: TYPE.mono },
 
+  // Full-width and pill-ended. A button the width of the column with square
+  // corners is a bar; the same button with its ends closed is a control.
   btn: {
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 3,
+    paddingVertical: 16,
+    paddingHorizontal: 22,
+    borderRadius: RADIUS.pill,
     alignItems: "center",
     borderWidth: 1,
   },
   btnPrimary: { backgroundColor: SEMANTIC.ember, borderColor: SEMANTIC.ember },
-  btnGhost: { backgroundColor: "transparent", borderColor: CHROME.carve },
-  btnQuiet: { backgroundColor: "transparent", borderColor: "transparent", paddingVertical: 10 },
+  btnGhost: { backgroundColor: SURFACE.sunk, borderColor: SURFACE.edgeLive },
+  btnQuiet: { backgroundColor: "transparent", borderColor: "transparent", paddingVertical: 11 },
   btnLabel: { color: CHROME.chalk, fontSize: 11, letterSpacing: 1.1, fontFamily: TYPE.monoMedium },
   btnLabelPrimary: { color: CHROME.floor },
 
+  // The border is still here so a caller can tint it — `borderColor: ember` on
+  // a Panel is how the app marks the one thing on a screen that is live. At rest
+  // it is a translucent edge rather than a drawn rectangle.
   panel: {
-    backgroundColor: CHROME.strata,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
-    borderRadius: 3,
-    padding: SPACE.md,
+    borderColor: SURFACE.edge,
+    borderRadius: RADIUS.panel,
+    padding: 18,
     gap: SPACE.sm,
   },
 });

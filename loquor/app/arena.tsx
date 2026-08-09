@@ -33,7 +33,7 @@ import {
   Screen,
 } from "../components/ui";
 import { Ignition } from "../components/boot";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE, heat } from "../theme";
+import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../theme";
 import { TOPICS_BY_ID } from "../content/topics";
 import { computeMetrics } from "../lib/metrics";
 import { transcribe } from "../lib/stt";
@@ -356,11 +356,12 @@ const s = StyleSheet.create({
     color: CHROME.chalk,
     fontSize: 13,
     fontFamily: TYPE.displayItalic,
-    backgroundColor: CHROME.strata,
+    backgroundColor: SURFACE.sunk,
     borderWidth: 1,
-    borderColor: CHROME.carve,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    borderColor: SURFACE.edgeLive,
+    borderRadius: RADIUS.pill,
+    paddingHorizontal: 13,
+    paddingVertical: 6,
   },
 
   center: { flex: 1, alignItems: "center", justifyContent: "center", gap: SPACE.sm },
@@ -386,7 +387,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  stopCore: { width: 30, height: 30, borderRadius: 3, backgroundColor: SEMANTIC.flaw },
+  stopCore: { width: 30, height: 30, borderRadius: 10, backgroundColor: SEMANTIC.flaw },
   clock: { color: CHROME.chalk, fontSize: 30, fontFamily: TYPE.monoMedium, letterSpacing: -1, ...TABULAR },
 
   termsLive: { flexDirection: "row", flexWrap: "wrap", gap: 10, justifyContent: "center", paddingBottom: SPACE.lg },
