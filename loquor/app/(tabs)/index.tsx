@@ -11,10 +11,21 @@
 // the point is speaking on something you did not pick.
 
 import { useCallback, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Body, Button, Eyebrow, Hair, Masthead, Meta, Screen } from "../../components/ui";
+import {
+  Body,
+  Button,
+  Eyebrow,
+  Hair,
+  Masthead,
+  Meta,
+  Pulse,
+  Reveal,
+  Screen,
+  Tap,
+} from "../../components/ui";
 import { StrataWall, fillerStrain, strain } from "../../components/viz";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
 import { TOPICS_BY_ID, pickTopic, type Topic } from "../../content/topics";
@@ -135,30 +146,35 @@ export default function Today() {
           .toUpperCase()}
       />
 
-      {/* The hero. One instruction, and the reason it is the one. */}
-      <View style={[s.hero, action?.urgent && s.heroUrgent]}>
-        <View style={s.heroBar} />
-        <View style={s.heroBody}>
-          <Eyebrow style={action?.urgent ? s.eyebrowUrgent : undefined}>
-            {action?.eyebrow ?? " "}
-          </Eyebrow>
-          <Text style={s.heroTitle}>{action?.title ?? " "}</Text>
-          {arena && topic ? <Text style={s.heroPrompt}>{topic.title}</Text> : null}
-          <Text style={s.heroWhy}>{action?.why ?? " "}</Text>
-          <Button
-            label={action?.cta ?? " "}
-            tone={action?.urgent ? "primary" : "primary"}
-            onPress={go}
-            disabled={!action || (arena && !topic)}
-          />
+      {/* The hero. One instruction, and the reason it is the one. Re-keyed on
+          the action id so it re-enters when the ladder moves on, which is the
+          only feedback that completing something changed anything. */}
+      <Reveal key={action?.id ?? "loading"} index={0}>
+        <View style={[s.hero, action?.urgent && s.heroUrgent]}>
+          <Pulse active={action?.urgent === true} style={s.heroBar}>
+            <View style={s.heroBarFill} />
+          </Pulse>
+          <View style={s.heroBody}>
+            <Eyebrow style={action?.urgent ? s.eyebrowUrgent : undefined}>
+              {action?.eyebrow ?? " "}
+            </Eyebrow>
+            <Text style={s.heroTitle}>{action?.title ?? " "}</Text>
+            {arena && topic ? <Text style={s.heroPrompt}>{topic.title}</Text> : null}
+            <Text style={s.heroWhy}>{action?.why ?? " "}</Text>
+            <Button
+              label={action?.cta ?? " "}
+              onPress={go}
+              disabled={!action || (arena && !topic)}
+            />
+          </View>
         </View>
-      </View>
+      </Reveal>
 
       {/* Shown once, to the person who has never recorded anything. After the
           first take the app has real numbers to talk about and does not need
           to explain itself. */}
       {ever === 0 ? (
-        <View style={s.explain}>
+        <Reveal index={1} style={s.explain}>
           <Text style={s.explainTitle}>What this actually is</Text>
           <Text style={s.explainBody}>
             You speak for ninety seconds. It transcribes what you said, counts the fillers, the
@@ -171,7 +187,7 @@ export default function Today() {
             in one. <Text style={s.explainKey}>Progress</Text> is the evidence.{" "}
             <Text style={s.explainKey}>Setup</Text> is your API key.
           </Text>
-        </View>
+        </Reveal>
       ) : null}
 
       {/* Secondary offer: a second take is never an obligation, so it is a
@@ -185,21 +201,23 @@ export default function Today() {
 
       <Hair style={{ marginTop: SPACE.sm }} />
 
-      <View style={s.head}>
-        <Eyebrow>FILLER RATE · LAST {Math.min(30, trend.length) || 30}</Eyebrow>
-        {last !== undefined ? (
-          <Text style={[s.lastRate, { color: strain(fillerStrain(last)) }]}>
-            {approx ? "≈" : ""}
-            {last.toFixed(1)}/min
-          </Text>
-        ) : null}
-      </View>
-      <StrataWall rates={trend} />
-      <Meta>
-        {trend.length < 3
-          ? "Three sessions before this means anything."
-          : "The hairline is five per minute — the point below which listeners stop noticing."}
-      </Meta>
+      <Reveal index={2} style={s.block}>
+        <View style={s.head}>
+          <Eyebrow>FILLER RATE · LAST {Math.min(30, trend.length) || 30}</Eyebrow>
+          {last !== undefined ? (
+            <Text style={[s.lastRate, { color: strain(fillerStrain(last)) }]}>
+              {approx ? "≈" : ""}
+              {last.toFixed(1)}/min
+            </Text>
+          ) : null}
+        </View>
+        <StrataWall rates={trend} />
+        <Meta>
+          {trend.length < 3
+            ? "Three sessions before this means anything."
+            : "The hairline is five per minute — the point below which listeners stop noticing."}
+        </Meta>
+      </Reveal>
 
       {recent.length > 0 ? (
         <>
@@ -213,32 +231,33 @@ export default function Today() {
             ) : null}
           </View>
           <View style={s.list}>
-            {recent.map((r) => (
-              <Pressable
-                key={r.id}
-                onPress={() => router.push({ pathname: "/scorecard", params: { id: r.id } })}
-                style={({ pressed }) => [s.row, pressed && { opacity: 0.6 }]}
-              >
-                <View
-                  style={[s.rowTick, { backgroundColor: strain(fillerStrain(r.filler_rate)) }]}
-                />
-                <View style={s.rowText}>
-                  <Text style={s.rowTitle} numberOfLines={1}>
-                    {r.topic_title}
-                  </Text>
-                  <Text style={s.rowMeta}>
-                    {new Date(r.started_at).toLocaleDateString(undefined, {
-                      day: "numeric",
-                      month: "short",
-                    })}
-                    {"  ·  "}
-                    {Math.round(r.duration_s)}s
-                    {"  ·  "}
-                    {r.wpm} wpm
-                    {r.rubric_total !== null ? `  ·  ${r.rubric_total}/20` : ""}
-                  </Text>
-                </View>
-              </Pressable>
+            {recent.map((r, i) => (
+              <Reveal key={r.id} index={4 + i}>
+                <Tap
+                  onPress={() => router.push({ pathname: "/scorecard", params: { id: r.id } })}
+                  style={s.row}
+                >
+                  <View
+                    style={[s.rowTick, { backgroundColor: strain(fillerStrain(r.filler_rate)) }]}
+                  />
+                  <View style={s.rowText}>
+                    <Text style={s.rowTitle} numberOfLines={1}>
+                      {r.topic_title}
+                    </Text>
+                    <Text style={s.rowMeta}>
+                      {new Date(r.started_at).toLocaleDateString(undefined, {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                      {"  ·  "}
+                      {Math.round(r.duration_s)}s
+                      {"  ·  "}
+                      {r.wpm} wpm
+                      {r.rubric_total !== null ? `  ·  ${r.rubric_total}/20` : ""}
+                    </Text>
+                  </View>
+                </Tap>
+              </Reveal>
             ))}
           </View>
         </>
@@ -260,8 +279,10 @@ const s = StyleSheet.create({
   },
   heroUrgent: { borderColor: SEMANTIC.ember },
   // The one bar of colour on the screen that is not data. It earns its place by
-  // being the thing your eye lands on before you have read a word.
-  heroBar: { width: 3, backgroundColor: SEMANTIC.ember },
+  // being the thing your eye lands on before you have read a word, and it
+  // breathes only when the thing it marks is blocking or expiring.
+  heroBar: { width: 3 },
+  heroBarFill: { flex: 1, backgroundColor: SEMANTIC.ember },
   heroBody: { flex: 1, paddingHorizontal: 16, paddingVertical: 16, gap: 9 },
   eyebrowUrgent: { color: SEMANTIC.ember },
   heroTitle: { color: CHROME.chalk, fontSize: 27, lineHeight: 33, fontFamily: TYPE.display },
@@ -281,14 +302,15 @@ const s = StyleSheet.create({
   explainBody: { color: CHROME.dust, fontSize: 12.5, lineHeight: 20, fontFamily: TYPE.ui },
   explainKey: { color: CHROME.chalk, fontFamily: TYPE.uiMedium },
 
+  block: { gap: SPACE.md },
   head: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  lastRate: { fontSize: 13, fontFamily: TYPE.uiMedium, color: CHROME.dust, ...TABULAR },
+  lastRate: { fontSize: 12, fontFamily: TYPE.monoMedium, color: CHROME.dust, ...TABULAR },
   list: { gap: 2 },
   row: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10 },
   rowTick: { width: 3, alignSelf: "stretch", minHeight: 26 },
   rowText: { flex: 1, gap: 3 },
   rowTitle: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.ui },
-  rowMeta: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui, ...TABULAR },
+  rowMeta: { color: CHROME.dustDim, fontSize: 9.5, fontFamily: TYPE.mono, ...TABULAR },
   credo: { color: CHROME.dustDim, fontSize: 12, marginTop: SPACE.lg, textAlign: "center" },
   credoIt: { fontFamily: TYPE.displayItalic },
 });

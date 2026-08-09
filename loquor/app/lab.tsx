@@ -21,7 +21,19 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import * as Speech from "expo-speech";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
+import {
+  Body,
+  Button,
+  Display,
+  Eyebrow,
+  Hair,
+  Masthead,
+  Meta,
+  Panel,
+  Reveal,
+  Screen,
+  Tap,
+} from "../components/ui";
 import { Aperture, Failed, ScoreBar, Working } from "../components/recorder";
 import { useTake } from "../components/useTake";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../theme";
@@ -59,7 +71,8 @@ export default function Lab() {
       <Eyebrow>PERSUASION</Eyebrow>
       <Display>Two ways of being listened to.</Display>
 
-      <Pressable onPress={() => setMode("argue")}>
+      <Reveal index={0}>
+      <Tap onPress={() => setMode("argue")}>
         <Panel>
           <Eyebrow>THE ARGUMENT</Eyebrow>
           <Display style={s.cardTitle}>Make the case in ninety seconds.</Display>
@@ -68,9 +81,11 @@ export default function Lab() {
             ninety seconds to record again.
           </Body>
         </Panel>
-      </Pressable>
+      </Tap>
+      </Reveal>
 
-      <Pressable onPress={() => setMode("room")}>
+      <Reveal index={1}>
+      <Tap onPress={() => setMode("room")}>
         <Panel>
           <Eyebrow>THE ROOM</Eyebrow>
           <Display style={s.cardTitle}>Get past the name badge.</Display>
@@ -79,17 +94,18 @@ export default function Lab() {
             how many turns it took, and whether you asked more than you told.
           </Body>
         </Panel>
-      </Pressable>
+      </Tap>
+      </Reveal>
 
       <Hair />
       <Eyebrow>FOUR MOVES THAT WORK ANYWHERE</Eyebrow>
       <View style={{ gap: SPACE.md }}>
-        {MOVES.map((m) => (
-          <View key={m.id} style={{ gap: 3 }}>
+        {MOVES.map((m, i) => (
+          <Reveal key={m.id} index={i + 2} style={{ gap: 3 }}>
             <Text style={s.moveName}>{m.name}</Text>
             <Text style={s.moveForm}>&ldquo;{m.form}&rdquo;</Text>
             <Text style={s.moveWhy}>{m.why}</Text>
-          </View>
+          </Reveal>
         ))}
       </View>
 
@@ -231,11 +247,11 @@ function Argue({ onExit }: { onExit: () => void }) {
 
         <View style={{ gap: SPACE.lg }}>
           {verdict.steps.map((st, i) => (
-            <View key={`${st.label}-${i}`} style={{ gap: 6 }}>
+            <Reveal key={`${st.label}-${i}`} index={i} style={{ gap: 6 }}>
               <ScoreBar label={st.label} score={st.score} />
               {st.heard ? <Text style={s.heard}>&ldquo;{st.heard}&rdquo;</Text> : null}
               <Text style={[s.note, st.score === 0 && { color: SEMANTIC.flaw }]}>{st.note}</Text>
-            </View>
+            </Reveal>
           ))}
         </View>
 
@@ -290,8 +306,9 @@ function Argue({ onExit }: { onExit: () => void }) {
 
       <Eyebrow>THE SHAPE</Eyebrow>
       <View style={{ gap: SPACE.sm }}>
+        {/* The shape arrives in the order you are meant to say it in. */}
         {scaffold.steps.map((st, i) => (
-          <View key={st.label} style={s.step}>
+          <Reveal key={st.label} index={i} style={s.step}>
             <Text style={s.stepNum}>{i + 1}</Text>
             <View style={{ flex: 1 }}>
               <Text style={s.stepLabel}>
@@ -300,7 +317,7 @@ function Argue({ onExit }: { onExit: () => void }) {
               </Text>
               <Text style={s.stepAsk}>{st.ask}</Text>
             </View>
-          </View>
+          </Reveal>
         ))}
       </View>
 
@@ -479,8 +496,10 @@ function Room({ onExit }: { onExit: () => void }) {
         </Meta>
 
         <View style={{ gap: SPACE.md }}>
-          {ROLEPLAY_LABELS.map((l) => (
-            <ScoreBar key={l.key} label={l.label} hint={l.hint} score={result.scores[l.key]} />
+          {ROLEPLAY_LABELS.map((l, i) => (
+            <Reveal key={l.key} index={i}>
+              <ScoreBar label={l.label} hint={l.hint} score={result.scores[l.key]} />
+            </Reveal>
           ))}
         </View>
 
@@ -515,11 +534,13 @@ function Room({ onExit }: { onExit: () => void }) {
 
         <View style={{ gap: SPACE.md }}>
           <Line who={c.name} text={c.opener} them />
+          {/* delay 0, not a stagger: each exchange mounts once, when it happens.
+              Staggering by index would make the tenth reply wait half a second. */}
           {history.map((e, i) => (
-            <View key={i} style={{ gap: SPACE.md }}>
+            <Reveal key={i} delay={0} style={{ gap: SPACE.md }}>
               <Line who="You" text={e.you} />
               <Line who={c.name} text={e.them} them substance={e.substance} />
-            </View>
+            </Reveal>
           ))}
         </View>
 
@@ -607,12 +628,12 @@ const s = StyleSheet.create({
   cardTitle: { fontSize: 21, lineHeight: 27 },
 
   moveName: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.uiMedium },
-  moveForm: { color: "#CFC5CE", fontSize: 14, lineHeight: 21, fontFamily: TYPE.displayItalic },
+  moveForm: { color: "#C3D0D2", fontSize: 14, lineHeight: 21, fontFamily: TYPE.displayItalic },
   moveWhy: { color: CHROME.dustDim, fontSize: 12, lineHeight: 18, fontFamily: TYPE.ui },
 
   question: { color: CHROME.chalk, fontFamily: TYPE.displayItalic, fontSize: 17, lineHeight: 25 },
   model: { color: CHROME.chalk, fontFamily: TYPE.displayItalic, fontSize: 15, lineHeight: 23 },
-  heard: { color: "#CFC5CE", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
+  heard: { color: "#C3D0D2", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
   note: { color: CHROME.dust, fontSize: 12, lineHeight: 18, fontFamily: TYPE.ui },
   hint: {
     color: CHROME.dustDim,
@@ -645,9 +666,9 @@ const s = StyleSheet.create({
   chipTextOn: { color: SEMANTIC.ember },
 
   step: { flexDirection: "row", gap: 12 },
-  stepNum: { color: CHROME.dustDim, fontSize: 12, fontFamily: TYPE.display, width: 12, ...TABULAR },
+  stepNum: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.monoMedium, width: 16, ...TABULAR },
   stepLabel: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.uiMedium },
-  stepShare: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui, ...TABULAR },
+  stepShare: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
   stepAsk: { color: CHROME.dust, fontSize: 13, lineHeight: 20, fontFamily: TYPE.ui },
 
   line: { paddingLeft: 12, borderLeftWidth: 1, borderLeftColor: CHROME.carve, gap: 3 },
@@ -657,6 +678,6 @@ const s = StyleSheet.create({
   lineTextThem: { color: CHROME.chalk, fontFamily: TYPE.displayItalic, fontSize: 15 },
 
   tallies: { flexDirection: "row", gap: SPACE.lg, flexWrap: "wrap" },
-  tallyValue: { color: CHROME.chalk, fontSize: 22, fontFamily: TYPE.display, ...TABULAR },
+  tallyValue: { color: CHROME.chalk, fontSize: 20, letterSpacing: -0.8, fontFamily: TYPE.monoMedium, ...TABULAR },
   tallyLabel: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
 });

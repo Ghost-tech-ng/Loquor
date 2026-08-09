@@ -10,7 +10,18 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
+import {
+  Body,
+  Button,
+  Display,
+  Eyebrow,
+  Hair,
+  Masthead,
+  Meta,
+  Panel,
+  Reveal,
+  Screen,
+} from "../components/ui";
 import { Rail, Score, Timeline, fillerStrain, strain } from "../components/viz";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../theme";
 import {
@@ -94,7 +105,11 @@ export default function Scorecard() {
       <Hair style={{ marginTop: SPACE.sm }} />
       <Eyebrow>DELIVERY · MEASURED</Eyebrow>
 
+      {/* The four rails land one after another rather than as a block. A
+          scorecard that appears all at once is read as a verdict; one that
+          arrives a measurement at a time is read as a measurement. */}
       <View style={s.rails}>
+        <Reveal index={0}>
         <Rail
           label="FILLER RATE"
           value={m.fillerRate.toFixed(1)}
@@ -110,6 +125,8 @@ export default function Scorecard() {
                 : "Loud enough to be the thing people remember."
           }
         />
+        </Reveal>
+        <Reveal index={1}>
         <Rail
           label="PACE"
           value={String(m.wpm)}
@@ -123,6 +140,8 @@ export default function Scorecard() {
                 : `Inside ${PACE_BAND_WPM.low}–${PACE_BAND_WPM.high}. This is the range people follow easily.`
           }
         />
+        </Reveal>
+        <Reveal index={2}>
         <Rail
           label="DEAD AIR"
           value={m.deadAirTotalS.toFixed(1)}
@@ -134,6 +153,8 @@ export default function Scorecard() {
               : `${m.deadAirCount} ${m.deadAirCount === 1 ? "stall" : "stalls"}, longest ${m.longestGapS.toFixed(1)}s.`
           }
         />
+        </Reveal>
+        <Reveal index={3}>
         <Rail
           label="HEDGING"
           value={m.hedgeDensity.toFixed(1)}
@@ -146,6 +167,7 @@ export default function Scorecard() {
               : `${m.hedgeCount} hedges — "I think", "maybe", "just". They cost you authority per use.`
           }
         />
+        </Reveal>
       </View>
 
       {j ? (
@@ -156,11 +178,15 @@ export default function Scorecard() {
             <Text style={s.total}>{row.rubric_total}/20</Text>
           </View>
 
-          <Display style={s.headline}>{j.headline}</Display>
+          <Reveal index={4}>
+            <Display style={s.headline}>{j.headline}</Display>
+          </Reveal>
 
           <View style={s.scores}>
-            {RUBRIC_LABELS.map(({ key, label }) => (
-              <Score key={key} label={label} score={j.rubric[key]} />
+            {RUBRIC_LABELS.map(({ key, label }, i) => (
+              <Reveal key={key} index={5 + i}>
+                <Score label={label} score={j.rubric[key]} />
+              </Reveal>
             ))}
           </View>
 
@@ -249,7 +275,7 @@ const s = StyleSheet.create({
   topic: { color: CHROME.chalk, fontFamily: TYPE.display, fontSize: 19, lineHeight: 25 },
   rails: { gap: SPACE.lg, marginTop: SPACE.xs },
   headRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  total: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.display, ...TABULAR },
+  total: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.monoMedium, ...TABULAR },
   headline: { fontSize: 22, lineHeight: 29 },
   scores: { gap: 10, marginTop: SPACE.xs },
   quote: { fontFamily: TYPE.displayItalic, color: CHROME.chalk },
@@ -261,6 +287,6 @@ const s = StyleSheet.create({
   compare: { flexDirection: "row", gap: SPACE.md },
   delta: { flex: 1, gap: 3 },
   deltaLabel: { color: CHROME.dustDim, fontSize: 9, letterSpacing: 1.8, fontFamily: TYPE.uiMedium },
-  deltaValue: { color: CHROME.chalk, fontSize: 16, fontFamily: TYPE.display, ...TABULAR },
-  deltaDiff: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui, ...TABULAR },
+  deltaValue: { color: CHROME.chalk, fontSize: 16, fontFamily: TYPE.monoMedium, ...TABULAR },
+  deltaDiff: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
 });

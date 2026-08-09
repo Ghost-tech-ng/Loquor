@@ -13,7 +13,7 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../../components/ui";
+import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen, Tap } from "../../components/ui";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
 import { contributionRaw, createRoom, pendingDebriefs, recentRooms, type RoomRow } from "../../lib/db";
 import { funnel, ratio } from "../../lib/coach";
@@ -101,6 +101,7 @@ export default function Rooms() {
       <Masthead right="ROOMS" />
 
       {pending.length > 0 ? (
+        <Reveal index={0}>
         <Panel style={{ borderColor: SEMANTIC.ember }}>
           <Eyebrow style={{ color: SEMANTIC.ember }}>
             {pending.length} DEBRIEF{pending.length === 1 ? "" : "S"} WAITING
@@ -113,14 +114,16 @@ export default function Rooms() {
             onPress={() => router.push({ pathname: "/room", params: { id: pending[0]!.id } })}
           />
         </Panel>
+        </Reveal>
       ) : null}
 
       <Eyebrow>CONTRIBUTION — LAST 90 DAYS</Eyebrow>
       <Display>{f.headline}</Display>
 
+      {/* The funnel fills top down, which is the direction you fall out of it. */}
       <View style={s.funnel}>
         {f.stages.map((st, i) => (
-          <View key={st.key} style={s.stage}>
+          <Reveal key={st.key} index={i + 1} style={s.stage}>
             <View style={s.stageHead}>
               <Text style={s.stageLabel}>{st.label}</Text>
               <Text style={s.stageCount}>{st.count}</Text>
@@ -136,7 +139,7 @@ export default function Rooms() {
                 {f.bottleneck?.key === st.key ? "  ← where you fall out" : ""}
               </Text>
             ) : null}
-          </View>
+          </Reveal>
         ))}
       </View>
 
@@ -186,20 +189,21 @@ export default function Rooms() {
         <>
           <Eyebrow>HISTORY</Eyebrow>
           <View style={{ gap: 0 }}>
-            {rooms.map((r) => (
-              <Pressable
-                key={r.id}
-                onPress={() => router.push({ pathname: "/room", params: { id: r.id } })}
-                style={s.row}
-              >
-                <View style={{ flex: 1 }}>
-                  <Text style={s.rowTitle} numberOfLines={1}>
-                    {r.title}
-                  </Text>
-                  <Text style={s.rowMeta}>{describe(r)}</Text>
-                </View>
-                <Text style={[s.rowState, stateTint(r)]}>{stateLabel(r)}</Text>
-              </Pressable>
+            {rooms.map((r, i) => (
+              <Reveal key={r.id} index={i}>
+                <Tap
+                  onPress={() => router.push({ pathname: "/room", params: { id: r.id } })}
+                  style={s.row}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.rowTitle} numberOfLines={1}>
+                      {r.title}
+                    </Text>
+                    <Text style={s.rowMeta}>{describe(r)}</Text>
+                  </View>
+                  <Text style={[s.rowState, stateTint(r)]}>{stateLabel(r)}</Text>
+                </Tap>
+              </Reveal>
             ))}
           </View>
         </>
@@ -235,8 +239,8 @@ const s = StyleSheet.create({
   stage: { gap: 2 },
   stageHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
   stageLabel: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.ui },
-  stageCount: { color: CHROME.chalk, fontSize: 16, fontFamily: TYPE.display, ...TABULAR },
-  stageRatio: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui, ...TABULAR },
+  stageCount: { color: CHROME.chalk, fontSize: 16, fontFamily: TYPE.monoMedium, ...TABULAR },
+  stageRatio: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
 
   input: {
     backgroundColor: CHROME.strata,
@@ -271,6 +275,6 @@ const s = StyleSheet.create({
     borderBottomColor: CHROME.carve,
   },
   rowTitle: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.ui },
-  rowMeta: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui, ...TABULAR },
+  rowMeta: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
   rowState: { fontSize: 9, letterSpacing: 1.6, fontFamily: TYPE.uiSemi },
 });

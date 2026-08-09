@@ -12,6 +12,8 @@
 
 import { StyleSheet, View } from "react-native";
 
+import { CHROME } from "../theme";
+
 const BOX = 22;
 
 type P = { tint: string };
@@ -97,6 +99,7 @@ const s = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     borderWidth: 1.5,
-    backgroundColor: "#150F1C",
+    // Knocks the rail out behind the knob, so it must match the bar it sits on.
+    backgroundColor: CHROME.raised,
   },
 });

@@ -8,7 +8,7 @@
 // stimulus; a locked button is just an obstacle.
 
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Easing, Pressable, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { File } from "expo-file-system";
@@ -20,7 +20,19 @@ import {
   useAudioRecorderState,
 } from "expo-audio";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
+import {
+  Body,
+  Button,
+  Display,
+  Eyebrow,
+  Hair,
+  Masthead,
+  Meta,
+  Panel,
+  Reveal,
+  Screen,
+} from "../components/ui";
+import { Ignition } from "../components/boot";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE, heat } from "../theme";
 import { TOPICS_BY_ID } from "../content/topics";
 import { computeMetrics } from "../lib/metrics";
@@ -33,6 +45,42 @@ const PRIMER_SECONDS = 60;
 const SOFT_CEILING_S = 120;
 
 type Stage = "primer" | "recording" | "working" | "error";
+
+/**
+ * A ring leaving the aperture once every two seconds, at roughly the cadence of
+ * an unhurried breath. It is not driven by the mic — the bloom behind it already
+ * is, and a second level-reactive element would just double the same signal.
+ * This one is a metronome: something on screen that keeps time while you talk.
+ */
+function Halo() {
+  const t = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.timing(t, {
+        toValue: 1,
+        duration: 2200,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      })
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [t]);
+
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[
+        s.halo,
+        {
+          opacity: t.interpolate({ inputRange: [0, 0.15, 1], outputRange: [0, 0.42, 0] }),
+          transform: [{ scale: t.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1.85] }) }],
+        },
+      ]}
+    />
+  );
+}
 
 export default function Arena() {
   const router = useRouter();
@@ -167,7 +215,7 @@ export default function Arena() {
       <Screen scroll={false}>
         <Masthead right={isRewrite ? "REWRITE" : "ARENA"} />
         <View style={s.center}>
-          <ActivityIndicator color={SEMANTIC.ember} />
+          <Ignition />
           <Eyebrow style={{ marginTop: SPACE.md }}>{step.toUpperCase()}</Eyebrow>
           <Meta style={s.centerText}>
             Delivery is counted here on the phone. Only the words go out.
@@ -199,6 +247,7 @@ export default function Arena() {
 
         <View style={s.center}>
           <View style={s.apertureWrap}>
+            <Halo />
             <View
               style={[
                 s.bloom,
@@ -243,7 +292,9 @@ export default function Arena() {
         </Text>
       </View>
 
-      <Display>{topic.title}</Display>
+      <Reveal index={0}>
+        <Display>{topic.title}</Display>
+      </Reveal>
 
       {target ? (
         <Panel>
@@ -253,24 +304,29 @@ export default function Arena() {
         </Panel>
       ) : (
         <>
+          {/* The primer lands a point at a time. Sixty seconds is not long, and
+              a wall of five bullets appearing at once is read as one block and
+              retained as none of it. */}
           <View style={s.bullets}>
             {topic.primer.map((b, i) => (
-              <View key={i} style={s.bullet}>
-                <View style={s.bulletTick} />
-                <Body style={s.bulletText}>{b}</Body>
-              </View>
+              <Reveal key={i} index={i + 1}>
+                <View style={s.bullet}>
+                  <View style={s.bulletTick} />
+                  <Body style={s.bulletText}>{b}</Body>
+                </View>
+              </Reveal>
             ))}
           </View>
 
           <Hair />
           <Eyebrow>DEPLOY THESE</Eyebrow>
-          <View style={s.terms}>
+          <Reveal index={topic.primer.length + 1} style={s.terms}>
             {topic.loadedTerms.map((w) => (
               <Text key={w} style={s.term}>
                 {w}
               </Text>
             ))}
-          </View>
+          </Reveal>
         </>
       )}
 
@@ -288,7 +344,7 @@ export default function Arena() {
 
 const s = StyleSheet.create({
   headRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  countdown: { color: CHROME.dustDim, fontSize: 12, fontFamily: TYPE.uiMedium, ...TABULAR },
+  countdown: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.monoMedium, ...TABULAR },
 
   bullets: { gap: SPACE.md, marginTop: SPACE.xs },
   bullet: { flexDirection: "row", gap: 12 },
@@ -313,6 +369,14 @@ const s = StyleSheet.create({
   liveTopic: { fontSize: 20, lineHeight: 26, color: CHROME.dust },
   apertureWrap: { alignItems: "center", justifyContent: "center", height: 240, width: 240 },
   bloom: { position: "absolute", width: 220, height: 220, borderRadius: 110 },
+  halo: {
+    position: "absolute",
+    width: 124,
+    height: 124,
+    borderRadius: 62,
+    borderWidth: 1,
+    borderColor: SEMANTIC.ember,
+  },
   aperture: {
     width: 116,
     height: 116,
@@ -323,7 +387,7 @@ const s = StyleSheet.create({
     justifyContent: "center",
   },
   stopCore: { width: 30, height: 30, borderRadius: 3, backgroundColor: SEMANTIC.flaw },
-  clock: { color: CHROME.chalk, fontSize: 34, fontFamily: TYPE.display, ...TABULAR },
+  clock: { color: CHROME.chalk, fontSize: 30, fontFamily: TYPE.monoMedium, letterSpacing: -1, ...TABULAR },
 
   termsLive: { flexDirection: "row", flexWrap: "wrap", gap: 10, justifyContent: "center", paddingBottom: SPACE.lg },
   termLive: { color: CHROME.dustDim, fontSize: 12, fontFamily: TYPE.displayItalic },

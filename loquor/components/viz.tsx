@@ -15,8 +15,8 @@ import { FILLER_TARGET_PER_MIN } from "../lib/metrics.ts";
 /** Chalk → flaw. `t` is 0 (clean) to 1 (bad). */
 export function strain(t: number): string {
   const c = Math.min(1, Math.max(0, t));
-  const from = [0xf0, 0xe9, 0xe4];
-  const to = [0xff, 0x4d, 0x6d];
+  const from = [0xed, 0xf3, 0xf2];
+  const to = [0xff, 0x4f, 0x6b];
   const mix = from.map((v, i) => Math.round(v + (to[i]! - v) * c));
   return `#${mix.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }

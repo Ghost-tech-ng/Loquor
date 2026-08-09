@@ -10,7 +10,7 @@
 // is a vocabulary app you stop opening.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { File } from "expo-file-system";
@@ -22,7 +22,8 @@ import {
   useAudioRecorderState,
 } from "expo-audio";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
+import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen } from "../components/ui";
+import { Ignition } from "../components/boot";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE, heat } from "../theme";
 import type { Gloss } from "../content/glossary";
 import { describeInterval, type Grade } from "../lib/fsrs";
@@ -165,7 +166,7 @@ export default function Lexicon() {
       <Screen scroll={false}>
         <Masthead right="LEXICON" />
         <View style={s.center}>
-          <ActivityIndicator color={SEMANTIC.ember} />
+          <Ignition />
           <Eyebrow style={{ marginTop: SPACE.md }}>
             {stage === "loading" ? "BUILDING THE QUEUE" : "LISTENING BACK"}
           </Eyebrow>
@@ -234,16 +235,19 @@ export default function Lexicon() {
           <Body style={s.quote}>&ldquo;{verdict.heard}&rdquo;</Body>
         </Panel>
 
+        {/* The gates check in one at a time, in the order they are judged. */}
         <View style={s.gates}>
-          {GATE_LABELS.map((g) => {
+          {GATE_LABELS.map((g, i) => {
             const pass = verdict.gates[g.key];
             return (
-              <View key={g.key} style={[s.gate, pass ? s.gatePass : s.gateFail]}>
-                <Text style={[s.gateMark, pass ? s.gateMarkPass : s.gateMarkFail]}>
-                  {pass ? "✓" : "✕"}
-                </Text>
-                <Text style={s.gateLabel}>{g.label.toUpperCase()}</Text>
-              </View>
+              <Reveal key={g.key} index={i}>
+                <View style={[s.gate, pass ? s.gatePass : s.gateFail]}>
+                  <Text style={[s.gateMark, pass ? s.gateMarkPass : s.gateMarkFail]}>
+                    {pass ? "✓" : "✕"}
+                  </Text>
+                  <Text style={s.gateLabel}>{g.label.toUpperCase()}</Text>
+                </View>
+              </Reveal>
             );
           })}
         </View>
@@ -414,7 +418,7 @@ const s = StyleSheet.create({
     fontFamily: TYPE.uiMedium,
     marginTop: 2,
   },
-  colloc: { color: "#CFC5CE", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
+  colloc: { color: "#C3D0D2", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
   quote: { fontFamily: TYPE.displayItalic },
   model: { fontSize: 17, lineHeight: 27, fontFamily: TYPE.displayItalic },
 
@@ -458,7 +462,7 @@ const s = StyleSheet.create({
   },
 
   readFoot: { gap: SPACE.sm, paddingBottom: SPACE.md, alignItems: "center" },
-  clockSmall: { color: CHROME.dustDim, fontSize: 14, fontFamily: TYPE.display, ...TABULAR },
+  clockSmall: { color: CHROME.dustDim, fontSize: 14, fontFamily: TYPE.monoMedium, ...TABULAR },
   stopBar: {
     alignSelf: "stretch",
     alignItems: "center",

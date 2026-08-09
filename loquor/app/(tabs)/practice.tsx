@@ -10,10 +10,10 @@
 // who won't tell you the interesting part until you earn it" means something.
 
 import { useCallback, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Eyebrow, Hair, Masthead, Meta, Screen } from "../../components/ui";
+import { Eyebrow, Hair, Masthead, Meta, Reveal, Screen, Tap } from "../../components/ui";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
 import { READINGS_BY_ID, pickReading, readingMinutes, type Reading } from "../../content/readings";
 import { TOPICS_BY_ID, pickTopic, type Topic } from "../../content/topics";
@@ -158,33 +158,31 @@ export default function Practice() {
     <Screen>
       <Masthead right="PRACTICE" />
 
-      <View style={s.intro}>
+      <Reveal index={0} style={s.intro}>
         <Text style={s.introTitle}>Five drills. All of them end in you talking.</Text>
         <Text style={s.introBody}>
           Nothing here is a quiz. You speak, it transcribes what you actually said, and it counts
           the things you cannot hear yourself doing. Start anywhere — the Arena is the whole product
           in three minutes.
         </Text>
-      </View>
+      </Reveal>
 
       <Hair />
 
       <View style={s.list}>
         {drills.map((d, i) => (
-          <Pressable
-            key={d.key}
-            onPress={d.go}
-            style={({ pressed }) => [s.card, pressed && { opacity: 0.66 }]}
-          >
-            <View style={s.cardHead}>
-              <Text style={s.index}>{String(i + 1).padStart(2, "0")}</Text>
-              <Text style={s.name}>{d.name}</Text>
-              <View style={s.spacer} />
-              {d.status ? <Text style={s.status}>{d.status}</Text> : null}
-            </View>
-            <Text style={s.trains}>{d.trains}</Text>
-            <Text style={s.shape}>{d.shape}</Text>
-          </Pressable>
+          <Reveal key={d.key} index={i + 1}>
+            <Tap onPress={d.go} style={s.card}>
+              <View style={s.cardHead}>
+                <Text style={s.index}>{String(i + 1).padStart(2, "0")}</Text>
+                <Text style={s.name}>{d.name}</Text>
+                <View style={s.spacer} />
+                {d.status ? <Text style={s.status}>{d.status}</Text> : null}
+              </View>
+              <Text style={s.trains}>{d.trains}</Text>
+              <Text style={s.shape}>{d.shape}</Text>
+            </Tap>
+          </Reveal>
         ))}
       </View>
 
@@ -215,10 +213,10 @@ const s = StyleSheet.create({
   cardHead: { flexDirection: "row", alignItems: "baseline", gap: 10 },
   // The number is the reading order, not a ranking — it is there so the five
   // read as one set rather than five unrelated offers.
-  index: { color: SEMANTIC.ember, fontSize: 11, fontFamily: TYPE.uiMedium, ...TABULAR },
-  name: { color: CHROME.chalk, fontSize: 19, fontFamily: TYPE.display },
+  index: { color: SEMANTIC.ember, fontSize: 9.5, fontFamily: TYPE.monoMedium, ...TABULAR },
+  name: { color: CHROME.chalk, fontSize: 19, fontFamily: TYPE.display, letterSpacing: -0.3 },
   spacer: { flex: 1 },
-  status: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui, ...TABULAR },
+  status: { color: CHROME.dustDim, fontSize: 9.5, fontFamily: TYPE.mono, ...TABULAR },
   trains: { color: CHROME.chalk, fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
   shape: { color: CHROME.dust, fontSize: 12, lineHeight: 19, fontFamily: TYPE.ui },
 });

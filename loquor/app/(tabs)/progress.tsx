@@ -15,10 +15,10 @@
 // synthesis, and regenerating it. Nothing here calls a model on mount.
 
 import { useCallback, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../../components/ui";
+import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen, Tap } from "../../components/ui";
 import { Rail, StrataWall, fillerStrain, strain } from "../../components/viz";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
 import { bandPosition, FILLER_TARGET_PER_MIN, PACE_BAND_WPM } from "../../lib/metrics";
@@ -164,16 +164,15 @@ export default function Progress() {
       <Masthead right="PROGRESS" />
 
       {data.baseline === null ? (
-        <Pressable
-          onPress={() => router.push("/onboarding")}
-          style={({ pressed }) => [s.callout, pressed && { opacity: 0.7 }]}
-        >
-          <Text style={s.calloutTitle}>No baseline recorded</Text>
-          <Text style={s.calloutBody}>
-            Ninety seconds, once, before any of this has coached you. Without it every figure below
-            is a number with nothing to compare it to.
-          </Text>
-        </Pressable>
+        <Reveal index={0}>
+          <Tap onPress={() => router.push("/onboarding")} style={s.callout}>
+            <Text style={s.calloutTitle}>No baseline recorded</Text>
+            <Text style={s.calloutBody}>
+              Ninety seconds, once, before any of this has coached you. Without it every figure
+              below is a number with nothing to compare it to.
+            </Text>
+          </Tap>
+        </Reveal>
       ) : null}
 
       {/* ── Consistency ─────────────────────────────────────────────────── */}
@@ -188,11 +187,13 @@ export default function Progress() {
           {c.longest > c.current ? ` · best ${c.longest}` : ""}
         </Text>
       </View>
-      <View style={s.grid}>
+      {/* The grid arrives as one object. Twenty-eight cells staggered would read
+          as an effect; the fortnight is a single fact. */}
+      <Reveal index={1} style={s.grid}>
         {c.grid.map((on, i) => (
           <View key={i} style={[s.cell, on && s.cellOn]} />
         ))}
-      </View>
+      </Reveal>
       <Meta>
         Days on which you recorded anything at all. Gaps are information — a fortnight of four days
         a week beats nine days and a fortnight off.
@@ -203,15 +204,15 @@ export default function Progress() {
       {/* ── This week's leading indicators ──────────────────────────────── */}
       <Eyebrow>THIS WEEK · WHAT YOU CONTROL</Eyebrow>
       <View style={s.targets}>
-        {w.targets.map((t) => (
-          <View key={t.key} style={s.target}>
+        {w.targets.map((t, i) => (
+          <Reveal key={t.key} index={i} style={s.target}>
             <View style={[s.targetTick, t.met && { backgroundColor: SEMANTIC.ember }]} />
             <Text style={s.targetLabel}>{t.label}</Text>
             <Text style={[s.targetValue, t.met && { color: CHROME.chalk }]}>
               {t.value}
               <Text style={s.targetOf}>/{t.target}</Text>
             </Text>
-          </View>
+          </Reveal>
         ))}
       </View>
       <Meta>
@@ -286,6 +287,9 @@ export default function Progress() {
       </View>
 
       {report ? (
+        // Re-keyed on the headline so a regenerate reads as a new paragraph
+        // arriving rather than as text silently swapping under the cursor.
+        <Reveal key={report.headline}>
         <Panel>
           <Body style={s.headline}>{report.headline}</Body>
           <Hair style={{ marginVertical: SPACE.xs }} />
@@ -295,6 +299,7 @@ export default function Progress() {
           <Text style={s.nextLabel}>NEXT WEEK</Text>
           <Text style={s.next}>{report.next_week}</Text>
         </Panel>
+        </Reveal>
       ) : (
         <Meta>
           {target.substantial
@@ -316,20 +321,15 @@ export default function Progress() {
       <Eyebrow style={{ marginTop: SPACE.xs }}>I SAID THE THING I WANTED TO SAY</Eyebrow>
       <View style={s.ratingRow}>
         {[1, 2, 3, 4, 5].map((n) => (
-          <Pressable
+          <Tap
             key={n}
             onPress={() => rate(n)}
-            hitSlop={6}
-            style={({ pressed }) => [
-              s.ratingCell,
-              rating !== null && n <= rating && s.ratingOn,
-              pressed && { opacity: 0.7 },
-            ]}
+            style={[s.ratingCell, rating !== null && n <= rating && s.ratingOn]}
           >
             <Text style={[s.ratingNum, rating !== null && n <= rating && { color: CHROME.floor }]}>
               {n}
             </Text>
-          </Pressable>
+          </Tap>
         ))}
       </View>
       <Meta>
@@ -343,8 +343,10 @@ export default function Progress() {
       {/* ── Ninety days ─────────────────────────────────────────────────── */}
       <Eyebrow>NINETY DAYS</Eyebrow>
       <View style={s.lags}>
-        {data.lagging.map((r) => (
-          <Lag key={r.key} row={r} approximate={approx && r.key === "filler"} />
+        {data.lagging.map((r, i) => (
+          <Reveal key={r.key} index={i}>
+            <Lag row={r} approximate={approx && r.key === "filler"} />
+          </Reveal>
         ))}
       </View>
       <Meta>
@@ -407,7 +409,7 @@ function weekLabel(w: WeekStats): string {
 
 const s = StyleSheet.create({
   head: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  weekLabel: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.6, fontFamily: TYPE.ui, ...TABULAR },
+  weekLabel: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.6, fontFamily: TYPE.mono, ...TABULAR },
 
   callout: {
     backgroundColor: CHROME.strata,
@@ -423,7 +425,7 @@ const s = StyleSheet.create({
   densityRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
   density: { fontSize: 34, ...TABULAR },
   densityOf: { color: CHROME.dustDim, fontSize: 15, fontFamily: TYPE.ui },
-  streak: { color: CHROME.dust, fontSize: 12, fontFamily: TYPE.ui, ...TABULAR },
+  streak: { color: CHROME.dust, fontSize: 12, fontFamily: TYPE.mono, ...TABULAR },
 
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 4 },
   cell: {
@@ -439,13 +441,13 @@ const s = StyleSheet.create({
   target: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 9 },
   targetTick: { width: 3, alignSelf: "stretch", minHeight: 18, backgroundColor: CHROME.carve },
   targetLabel: { flex: 1, color: CHROME.dust, fontSize: 14, fontFamily: TYPE.ui },
-  targetValue: { color: CHROME.dust, fontSize: 15, fontFamily: TYPE.uiMedium, ...TABULAR },
+  targetValue: { color: CHROME.dust, fontSize: 15, fontFamily: TYPE.monoMedium, ...TABULAR },
   targetOf: { color: CHROME.dustDim, fontSize: 12, fontFamily: TYPE.ui },
 
   headline: { fontSize: 17, lineHeight: 25, fontFamily: TYPE.display, color: CHROME.chalk },
   line: { gap: 3, paddingVertical: 4 },
   lineLabel: { color: CHROME.dustDim, fontSize: 9, letterSpacing: 2, fontFamily: TYPE.uiMedium },
-  lineText: { color: "#CFC5CE", fontSize: 14, lineHeight: 21, fontFamily: TYPE.ui },
+  lineText: { color: "#C3D0D2", fontSize: 14, lineHeight: 21, fontFamily: TYPE.ui },
   nextLabel: { color: SEMANTIC.ember, fontSize: 9, letterSpacing: 2, fontFamily: TYPE.uiSemi },
   next: { color: CHROME.chalk, fontSize: 15, lineHeight: 22, fontFamily: TYPE.displayItalic },
   failed: { color: SEMANTIC.flaw, fontSize: 12, fontFamily: TYPE.ui },
@@ -460,7 +462,7 @@ const s = StyleSheet.create({
     borderColor: CHROME.carve,
   },
   ratingOn: { backgroundColor: CHROME.chalk, borderColor: CHROME.chalk },
-  ratingNum: { color: CHROME.dust, fontSize: 14, fontFamily: TYPE.uiMedium, ...TABULAR },
+  ratingNum: { color: CHROME.dust, fontSize: 14, fontFamily: TYPE.monoMedium, ...TABULAR },
 
   lags: { gap: SPACE.md },
   lag: { gap: 6 },

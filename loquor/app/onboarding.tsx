@@ -20,10 +20,22 @@
 // score, and the number it produced would mean nothing.
 
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
+import {
+  Body,
+  Button,
+  Display,
+  Eyebrow,
+  Hair,
+  Masthead,
+  Meta,
+  Panel,
+  Reveal,
+  Screen,
+} from "../components/ui";
+import { Ignition } from "../components/boot";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE, heat } from "../theme";
 import { useTake, type Take } from "../components/useTake";
 import { getBaseline, saveBaseline, type BaselineRow } from "../lib/db";
@@ -33,6 +45,13 @@ const PROMPT =
   "Something you changed your mind about, and what changed it.";
 
 const SOFT_CEILING_S = 120;
+
+/** Thirty seconds a beat. Not a script — a handrail for the first thirty. */
+const SHAPE = [
+  "What you used to think, said flatly. No preamble, no “so basically”.",
+  "The thing that broke it — the argument, the incident, the number you could not explain away.",
+  "What you think now, and the one part you are still not sure about.",
+];
 
 type Stage = "brief" | "recording" | "working" | "rate" | "done";
 
@@ -129,7 +148,7 @@ export default function Onboarding() {
       <Screen scroll={false}>
         <Masthead right="BASELINE" />
         <View style={s.center}>
-          <ActivityIndicator color={SEMANTIC.ember} />
+          <Ignition />
           <Eyebrow style={{ marginTop: SPACE.md }}>TRANSCRIBING</Eyebrow>
           <Meta style={s.centerText}>
             Delivery is counted here on the phone. Only the words go out, and the audio is deleted
@@ -248,21 +267,47 @@ export default function Onboarding() {
     <Screen>
       <Masthead right="BASELINE" />
 
-      <Eyebrow>BEFORE ANYTHING ELSE</Eyebrow>
-      <Display>{PROMPT}</Display>
+      <Reveal index={0}>
+        <Eyebrow>BEFORE ANYTHING ELSE</Eyebrow>
+        <Display>{PROMPT}</Display>
+      </Reveal>
 
-      <Body>
-        Ninety seconds, recorded once. No score, no verdict, no model reads it — the app counts
-        fillers, pace, hedges and pauses on this phone and stores the four numbers.
-      </Body>
+      <Reveal index={1}>
+        <Body>
+          Ninety seconds, recorded once. No score, no verdict, no model reads it — the app counts
+          fillers, pace, hedges and pauses on this phone and stores the four numbers.
+        </Body>
+      </Reveal>
 
-      <Panel>
+      {/* The single most common way this recording goes wrong is thirty seconds
+          of silence followed by an apology. The shape below is not a script —
+          it is three beats, so there is always a next thing to reach for. */}
+      <Reveal index={2}>
+        <Hair />
+        <Eyebrow>IF YOU FREEZE, TALK IN THIS SHAPE</Eyebrow>
+        <View style={s.shape}>
+          {SHAPE.map((beat, i) => (
+            <View key={i} style={s.beat}>
+              <Text style={s.beatN}>{String(i + 1).padStart(2, "0")}</Text>
+              <Text style={s.beatText}>{beat}</Text>
+            </View>
+          ))}
+        </View>
         <Meta>
-          Speak badly if you speak badly. Every claim Loquor makes about your progress is measured
-          from this recording, so a baseline you performed carefully is a baseline that will make
-          three months of real work look like nothing.
+          Anything works — a technical opinion you dropped, a person you misjudged, a way of
+          working you defended until it stopped paying. Concrete beats important.
         </Meta>
-      </Panel>
+      </Reveal>
+
+      <Reveal index={3}>
+        <Panel>
+          <Meta>
+            Speak badly if you speak badly. Every claim Loquor makes about your progress is measured
+            from this recording, so a baseline you performed carefully is a baseline that will make
+            three months of real work look like nothing.
+          </Meta>
+        </Panel>
+      </Reveal>
 
       {take.error ? <Text style={s.failed}>{take.error}</Text> : null}
 
@@ -305,7 +350,12 @@ const s = StyleSheet.create({
     justifyContent: "center",
   },
   stopCore: { width: 30, height: 30, borderRadius: 3, backgroundColor: SEMANTIC.flaw },
-  clock: { color: CHROME.chalk, fontSize: 34, fontFamily: TYPE.display, ...TABULAR },
+  clock: { color: CHROME.chalk, fontSize: 30, fontFamily: TYPE.monoMedium, letterSpacing: -1, ...TABULAR },
+
+  shape: { gap: 11, marginTop: SPACE.sm },
+  beat: { flexDirection: "row", gap: 11 },
+  beatN: { color: SEMANTIC.ember, fontSize: 9.5, fontFamily: TYPE.monoMedium, paddingTop: 3, ...TABULAR },
+  beatText: { flex: 1, color: CHROME.chalk, fontSize: 13.5, lineHeight: 21, fontFamily: TYPE.ui },
 
   ratingRow: { flexDirection: "row", gap: 4 },
   ratingCell: {
@@ -317,13 +367,13 @@ const s = StyleSheet.create({
     borderColor: CHROME.carve,
   },
   ratingOn: { backgroundColor: CHROME.chalk, borderColor: CHROME.chalk },
-  ratingNum: { color: CHROME.dust, fontSize: 15, fontFamily: TYPE.uiMedium, ...TABULAR },
+  ratingNum: { color: CHROME.dust, fontSize: 14, fontFamily: TYPE.monoMedium, ...TABULAR },
 
   row: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
   rowLabel: { color: CHROME.dust, fontSize: 13, fontFamily: TYPE.ui },
   rowValue: { flexDirection: "row", alignItems: "baseline", gap: 4 },
-  rowNum: { color: CHROME.chalk, fontSize: 17, fontFamily: TYPE.display, ...TABULAR },
-  rowUnit: { color: CHROME.dustDim, fontSize: 10, fontFamily: TYPE.ui },
+  rowNum: { color: CHROME.chalk, fontSize: 16, fontFamily: TYPE.monoMedium, ...TABULAR },
+  rowUnit: { color: CHROME.dustDim, fontSize: 9, fontFamily: TYPE.mono },
 
   failed: { color: SEMANTIC.flaw, fontSize: 12, fontFamily: TYPE.ui },
 });

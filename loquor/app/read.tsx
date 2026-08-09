@@ -16,7 +16,7 @@
 // result would be byte-identical if you ran it again in two years.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { File } from "expo-file-system";
@@ -28,7 +28,8 @@ import {
   useAudioRecorderState,
 } from "expo-audio";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
+import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen } from "../components/ui";
+import { Ignition } from "../components/boot";
 import { Rail, strain } from "../components/viz";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE, heat } from "../theme";
 import {
@@ -180,7 +181,7 @@ export default function Read() {
       <Screen scroll={false}>
         <Masthead right="READING" />
         <View style={s.center}>
-          <ActivityIndicator color={SEMANTIC.ember} />
+          <Ignition />
           <Eyebrow style={{ marginTop: SPACE.md }}>ALIGNING</Eyebrow>
           <Meta style={s.centerText}>
             Comparing what you said against what was on the page. No model is grading this.
@@ -365,26 +366,27 @@ export default function Read() {
           {`${reading.sections.length} SECTIONS · ${done} RECORDED`}
         </Eyebrow>
 
-        {reading.sections.map((sec) => {
+        {reading.sections.map((sec, i) => {
           const b = bests.get(sec.n);
           const mins = wordCount(sec) / READ_WPM;
           return (
-            <Pressable
-              key={sec.n}
-              onPress={() => { setSectionN(sec.n); setOpenWord(null); setStage("study"); }}
-              style={[s.tocRow, sectionN === sec.n && s.tocRowHere]}
-            >
-              <Text style={s.tocN}>{String(sec.n).padStart(2, "0")}</Text>
-              <View style={s.tocBody}>
-                <Text style={s.tocHeading}>{sec.heading}</Text>
-                <Text style={s.tocMeta}>
-                  {`${Math.round(mins * 60)}s · ${sec.targets.join(", ")}`}
+            <Reveal key={sec.n} index={i}>
+              <Pressable
+                onPress={() => { setSectionN(sec.n); setOpenWord(null); setStage("study"); }}
+                style={[s.tocRow, sectionN === sec.n && s.tocRowHere]}
+              >
+                <Text style={s.tocN}>{String(sec.n).padStart(2, "0")}</Text>
+                <View style={s.tocBody}>
+                  <Text style={s.tocHeading}>{sec.heading}</Text>
+                  <Text style={s.tocMeta}>
+                    {`${Math.round(mins * 60)}s · ${sec.targets.join(", ")}`}
+                  </Text>
+                </View>
+                <Text style={[s.tocBest, b === undefined && s.tocBestNone]}>
+                  {b === undefined ? "—" : `${b.toFixed(0)}%`}
                 </Text>
-              </View>
-              <Text style={[s.tocBest, b === undefined && s.tocBestNone]}>
-                {b === undefined ? "—" : `${b.toFixed(0)}%`}
-              </Text>
-            </Pressable>
+              </Pressable>
+            </Reveal>
           );
         })}
 
@@ -517,7 +519,7 @@ const s = StyleSheet.create({
     fontFamily: TYPE.uiMedium,
     marginTop: 2,
   },
-  colloc: { color: "#CFC5CE", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
+  colloc: { color: "#C3D0D2", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
 
   tocRow: {
     flexDirection: "row",
@@ -528,11 +530,11 @@ const s = StyleSheet.create({
     borderBottomColor: CHROME.carve,
   },
   tocRowHere: { borderBottomColor: SEMANTIC.ember },
-  tocN: { color: CHROME.dustDim, fontSize: 13, fontFamily: TYPE.display, ...TABULAR },
+  tocN: { color: CHROME.dustDim, fontSize: 13, fontFamily: TYPE.monoMedium, ...TABULAR },
   tocBody: { flex: 1, gap: 2 },
   tocHeading: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.uiMedium },
   tocMeta: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui },
-  tocBest: { color: SEMANTIC.ember, fontSize: 13, fontFamily: TYPE.display, ...TABULAR },
+  tocBest: { color: SEMANTIC.ember, fontSize: 13, fontFamily: TYPE.monoMedium, ...TABULAR },
   tocBestNone: { color: CHROME.dustDim },
 
   studyText: { fontSize: 16, lineHeight: 26 },
@@ -541,7 +543,7 @@ const s = StyleSheet.create({
   readHeading: { color: CHROME.dustDim, fontSize: 12, letterSpacing: 2, fontFamily: TYPE.uiMedium },
   readText: { color: CHROME.chalk, fontSize: 21, lineHeight: 34, fontFamily: TYPE.ui },
   readFoot: { gap: SPACE.sm, paddingBottom: SPACE.md, alignItems: "center" },
-  clockSmall: { color: CHROME.dustDim, fontSize: 14, fontFamily: TYPE.display, ...TABULAR },
+  clockSmall: { color: CHROME.dustDim, fontSize: 14, fontFamily: TYPE.monoMedium, ...TABULAR },
   stopBar: {
     alignSelf: "stretch",
     alignItems: "center",

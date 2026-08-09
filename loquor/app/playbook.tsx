@@ -19,7 +19,19 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
+import {
+  Body,
+  Button,
+  Display,
+  Eyebrow,
+  Hair,
+  Masthead,
+  Meta,
+  Panel,
+  Reveal,
+  Screen,
+  Tap,
+} from "../components/ui";
 import { Aperture, Failed, ScoreBar, Working } from "../components/recorder";
 import { useTake } from "../components/useTake";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE, heat } from "../theme";
@@ -148,8 +160,10 @@ export default function Playbook() {
           {stats.filter((x) => x.mastery === "solid").length} solid.
         </Display>
 
-        {families.map((f) => (
-          <View key={f.family} style={{ gap: SPACE.sm }}>
+        {/* A family at a time, not thirty rows at once — the map is read as
+            five groups and that is how it should arrive. */}
+        {families.map((f, i) => (
+          <Reveal key={f.family} index={i} style={{ gap: SPACE.sm }}>
             <View style={s.famHead}>
               <Eyebrow>{FAMILY_LABELS[f.family].toUpperCase()}</Eyebrow>
               <Text style={s.famCount}>
@@ -159,7 +173,7 @@ export default function Playbook() {
             {stats
               .filter((x) => x.archetype.family === f.family)
               .map((x) => (
-                <Pressable
+                <Tap
                   key={x.archetype.id}
                   style={s.mapRow}
                   onPress={() => pick(x.archetype.id)}
@@ -174,9 +188,9 @@ export default function Playbook() {
                   <Text style={s.mapState}>
                     {x.state ? x.state.ewma.toFixed(1) : MASTERY_LABELS.untried}
                   </Text>
-                </Pressable>
+                </Tap>
               ))}
-          </View>
+          </Reveal>
         ))}
 
         <Button label="BACK TO THE DRILL" tone="ghost" onPress={() => setStage("brief")} />
@@ -222,13 +236,10 @@ export default function Playbook() {
         <Display>{verdict.verdict}</Display>
 
         <View style={{ gap: SPACE.md }}>
-          {QUESTION_LABELS.map((l) => (
-            <ScoreBar
-              key={l.key}
-              label={l.label}
-              hint={l.hint}
-              score={verdict.scores[l.key]}
-            />
+          {QUESTION_LABELS.map((l, i) => (
+            <Reveal key={l.key} index={i}>
+              <ScoreBar label={l.label} hint={l.hint} score={verdict.scores[l.key]} />
+            </Reveal>
           ))}
         </View>
 
@@ -305,7 +316,7 @@ const s = StyleSheet.create({
   mapLink: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 2, fontFamily: TYPE.uiMedium },
 
   form: { fontFamily: TYPE.displayItalic, fontSize: 17, lineHeight: 25, color: CHROME.chalk },
-  transcript: { fontFamily: TYPE.displayItalic, color: "#CFC5CE" },
+  transcript: { fontFamily: TYPE.displayItalic, color: "#C3D0D2" },
   heard: { color: CHROME.chalk },
   model: { color: CHROME.chalk, fontFamily: TYPE.displayItalic, fontSize: 16, lineHeight: 24 },
 
@@ -319,10 +330,10 @@ const s = StyleSheet.create({
   },
 
   famHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
-  famCount: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui, ...TABULAR },
+  famCount: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
   mapRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 7 },
   pip: { width: 5, height: 5, borderRadius: 3 },
   mapName: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.ui },
   mapForm: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui },
-  mapState: { color: CHROME.dust, fontSize: 11, fontFamily: TYPE.uiMedium, ...TABULAR },
+  mapState: { color: CHROME.dust, fontSize: 11, fontFamily: TYPE.monoMedium, ...TABULAR },
 });

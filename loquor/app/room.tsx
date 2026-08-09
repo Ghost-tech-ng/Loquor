@@ -14,7 +14,18 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
+import {
+  Body,
+  Button,
+  Display,
+  Eyebrow,
+  Hair,
+  Masthead,
+  Meta,
+  Panel,
+  Reveal,
+  Screen,
+} from "../components/ui";
 import { Aperture, Failed, Working } from "../components/recorder";
 import { useTake } from "../components/useTake";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../theme";
@@ -197,10 +208,10 @@ export default function Room() {
             <Eyebrow>WHAT YOU CONTRIBUTED</Eyebrow>
             <View style={{ gap: SPACE.sm }}>
               {debrief.contributions.map((c, i) => (
-                <View key={i} style={s.bullet}>
+                <Reveal key={i} index={i} style={s.bullet}>
                   <View style={s.bulletTick} />
                   <Body style={{ flex: 1 }}>{c}</Body>
-                </View>
+                </Reveal>
               ))}
             </View>
           </>
@@ -261,15 +272,17 @@ function Card({ prep, muted }: { prep: PrepCard; muted?: boolean }) {
 
       <View style={{ gap: SPACE.sm }}>
         <Eyebrow>THREE QUESTIONS TO HAVE LOADED</Eyebrow>
+        {/* Three questions, one at a time. You will only remember them if you
+            read them as three things rather than as a paragraph. */}
         {prep.questions.map((q, i) => (
-          <View key={q.id} style={s.q}>
+          <Reveal key={q.id} index={i} style={s.q}>
             <Text style={s.qNum}>{i + 1}</Text>
             <View style={{ flex: 1 }}>
               <Text style={s.qName}>{q.name}</Text>
               <Text style={s.qForm}>{q.form}</Text>
               <Text style={s.qCue}>{q.cue}</Text>
             </View>
-          </View>
+          </Reveal>
         ))}
       </View>
 
@@ -310,9 +323,9 @@ const s = StyleSheet.create({
   prompt: { color: CHROME.dustDim, fontSize: 12, fontFamily: TYPE.displayItalic, textAlign: "center" },
 
   q: { flexDirection: "row", gap: 12 },
-  qNum: { color: CHROME.dustDim, fontSize: 12, fontFamily: TYPE.display, width: 12, ...TABULAR },
+  qNum: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.monoMedium, width: 16, ...TABULAR },
   qName: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.uiMedium },
-  qForm: { color: "#CFC5CE", fontSize: 14, lineHeight: 21, fontFamily: TYPE.displayItalic },
+  qForm: { color: "#C3D0D2", fontSize: 14, lineHeight: 21, fontFamily: TYPE.displayItalic },
   qCue: { color: CHROME.dustDim, fontSize: 11, lineHeight: 17, fontFamily: TYPE.ui, marginTop: 2 },
 
   scName: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.uiMedium, marginTop: 4 },
@@ -320,7 +333,7 @@ const s = StyleSheet.create({
 
   tallies: { flexDirection: "row", gap: SPACE.lg, flexWrap: "wrap" },
   tally: { gap: 2 },
-  tallyValue: { color: CHROME.chalk, fontSize: 22, fontFamily: TYPE.display, ...TABULAR },
+  tallyValue: { color: CHROME.chalk, fontSize: 20, letterSpacing: -0.8, fontFamily: TYPE.monoMedium, ...TABULAR },
   tallyLabel: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
 
   bullet: { flexDirection: "row", gap: 12 },

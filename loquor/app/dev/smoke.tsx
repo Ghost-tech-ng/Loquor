@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   note: { color: CHROME.dustDim, fontSize: 11, lineHeight: 16 },
-  body: { color: "#CFC5CE", fontSize: 14, lineHeight: 21 },
+  body: { color: "#C3D0D2", fontSize: 14, lineHeight: 21 },
   apertureWrap: { alignItems: "center", justifyContent: "center", height: 180, marginTop: 12 },
   bloom: { position: "absolute", width: 180, height: 180, borderRadius: 90 },
   aperture: {

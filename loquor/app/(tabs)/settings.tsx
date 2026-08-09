@@ -9,7 +9,18 @@ import { useCallback, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../../components/ui";
+import {
+  Body,
+  Button,
+  Display,
+  Eyebrow,
+  Hair,
+  Masthead,
+  Meta,
+  Panel,
+  Reveal,
+  Screen,
+} from "../../components/ui";
 import { CHROME, SEMANTIC, SPACE, TYPE } from "../../theme";
 import { KEY_GUIDES, type KeyGuide } from "../../content/keyGuides";
 import {
@@ -119,20 +130,24 @@ export default function Settings() {
 
       <Eyebrow>WHO DOES THE WORK</Eyebrow>
       <View style={s.modes}>
-        {MODES.map((m) => {
+        {/* The controls on this screen stay Pressables. A radio that squeezes
+            under the thumb reads as a button that did something; these only
+            select. Only their arrival is animated. */}
+        {MODES.map((m, i) => {
           const on = settings.mode === m.mode;
           return (
-            <Pressable
-              key={m.mode}
-              onPress={() => applyMode(m.mode)}
-              style={({ pressed }) => [s.mode, on && s.modeOn, pressed && { opacity: 0.7 }]}
-            >
-              <View style={[s.radio, on && s.radioOn]} />
-              <View style={s.modeText}>
-                <Text style={[s.modeTitle, on && { color: CHROME.chalk }]}>{m.title}</Text>
-                <Text style={s.modeSub}>{m.sub}</Text>
-              </View>
-            </Pressable>
+            <Reveal key={m.mode} index={i}>
+              <Pressable
+                onPress={() => applyMode(m.mode)}
+                style={({ pressed }) => [s.mode, on && s.modeOn, pressed && { opacity: 0.7 }]}
+              >
+                <View style={[s.radio, on && s.radioOn]} />
+                <View style={s.modeText}>
+                  <Text style={[s.modeTitle, on && { color: CHROME.chalk }]}>{m.title}</Text>
+                  <Text style={s.modeSub}>{m.sub}</Text>
+                </View>
+              </Pressable>
+            </Reveal>
           );
         })}
       </View>
@@ -169,13 +184,13 @@ export default function Settings() {
       </Meta>
 
       <View style={s.keys}>
-        {KEY_GUIDES.map((g) => {
+        {KEY_GUIDES.map((g, i) => {
           const stored = keys[g.provider] ?? "";
           const inUse = needed.includes(g.provider);
           const isEditing = editing === g.provider;
 
           return (
-            <View key={g.provider} style={s.key}>
+            <Reveal key={g.provider} index={i} style={s.key}>
               <View style={s.keyHead}>
                 <View style={s.keyName}>
                   <Text style={[s.keyTitle, !inUse && { color: CHROME.dustDim }]}>{g.name}</Text>
@@ -232,7 +247,7 @@ export default function Settings() {
               )}
 
               {openGuide === g.provider ? <Guide guide={g} /> : null}
-            </View>
+            </Reveal>
           );
         })}
       </View>
@@ -369,11 +384,12 @@ function Guide({ guide }: { guide: KeyGuide }) {
       <Body style={{ fontSize: 14 }}>{guide.what}</Body>
       <Text style={g.cost}>{guide.cost}</Text>
       <Hair style={{ marginVertical: SPACE.xs }} />
+      {/* The steps land in the order you will do them. */}
       {guide.steps.map((step, i) => (
-        <View key={i} style={g.step}>
+        <Reveal key={i} index={i} style={g.step}>
           <Text style={g.stepNum}>{i + 1}</Text>
           <Text style={g.stepText}>{step}</Text>
-        </View>
+        </Reveal>
       ))}
       <Text style={g.url}>{guide.url}</Text>
     </Panel>
@@ -492,6 +508,6 @@ const g = StyleSheet.create({
   cost: { color: CHROME.dustDim, fontSize: 12, fontFamily: TYPE.ui },
   step: { flexDirection: "row", gap: 10, paddingVertical: 4 },
   stepNum: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui, width: 12, paddingTop: 2 },
-  stepText: { color: "#CFC5CE", fontSize: 13, lineHeight: 19, flex: 1, fontFamily: TYPE.ui },
+  stepText: { color: "#C3D0D2", fontSize: 13, lineHeight: 19, flex: 1, fontFamily: TYPE.ui },
   url: { color: CHROME.dust, fontSize: 12, fontFamily: TYPE.displayItalic, marginTop: SPACE.xs },
 });
