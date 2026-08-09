@@ -2,7 +2,9 @@
   "expo": {
     "name": "Loquor",
     "slug": "loquor",
+    "owner": "osemwegieeghosa",
     "version": "1.0.0",
+    "platforms": ["ios"],
     "orientation": "portrait",
     "scheme": "loquor",
     "userInterfaceStyle": "dark",
@@ -22,7 +24,7 @@
       "expo-font"
     ],
     "updates": {
-      "url": "https://u.expo.dev/PROJECT_ID_GOES_HERE",
+      "url": "https://u.expo.dev/dace44de-b31f-4aab-99e0-0fe192e03b1c",
       "fallbackToCacheTimeout": 0
     },
     "runtimeVersion": {
@@ -30,6 +32,12 @@
     },
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "dace44de-b31f-4aab-99e0-0fe192e03b1c"
+      }
     }
   }
 }
