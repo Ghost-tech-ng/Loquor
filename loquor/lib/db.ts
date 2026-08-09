@@ -188,6 +188,29 @@ function db(): Promise<SQLite.SQLiteDatabase> {
           text_json   TEXT NOT NULL,
           self_rating INTEGER
         );
+
+        -- The Valve. No transcript and no provider column, because this is the
+        -- one drill with neither: it never reaches a model or a network.
+        --
+        -- quiet_db and loud_db are stored despite being meaningless in absolute
+        -- terms. They are the session's own calibration, and without them the
+        -- rungs cannot be interpreted at all — a threshold of 3 in a 40 dB range
+        -- and a threshold of 3 in an 8 dB range are not the same claim, and only
+        -- these two columns can tell the difference later.
+        CREATE TABLE IF NOT EXISTS valve_sessions (
+          id         TEXT PRIMARY KEY NOT NULL,
+          started_at INTEGER NOT NULL,
+          duration_s REAL NOT NULL,
+          quiet_db   REAL NOT NULL,
+          loud_db    REAL NOT NULL,
+          threshold  INTEGER NOT NULL,  -- lowest leaking rung; RUNGS+1 = held throughout
+          top_clean  INTEGER NOT NULL,
+          complete   INTEGER NOT NULL,  -- 0 when the ladder stopped without finding a limit
+          rungs_json TEXT NOT NULL,
+          carry_rung INTEGER,
+          carry_s    REAL
+        );
+        CREATE INDEX IF NOT EXISTS idx_valve_started ON valve_sessions (started_at DESC);
       `);
       return d;
     });
@@ -907,12 +930,86 @@ export async function latestRating(): Promise<{ weekKey: number; rating: number 
   return row ? { weekKey: row.week_key, rating: row.self_rating } : null;
 }
 
+// ── The Valve ─────────────────────────────────────────────────────────────────
+
+export type ValveRow = {
+  id: string;
+  started_at: number;
+  duration_s: number;
+  quiet_db: number;
+  loud_db: number;
+  threshold: number;
+  top_clean: number;
+  complete: number;
+  rungs_json: string;
+  carry_rung: number | null;
+  carry_s: number | null;
+};
+
+export async function saveValveSession(args: {
+  id: string;
+  startedAt: number;
+  durationS: number;
+  quietDb: number;
+  loudDb: number;
+  threshold: number;
+  topClean: number;
+  complete: boolean;
+  rungs: unknown;
+  carryRung?: number | null;
+  carryS?: number | null;
+}): Promise<void> {
+  const d = await db();
+  await d.runAsync(
+    `INSERT OR REPLACE INTO valve_sessions
+       (id, started_at, duration_s, quiet_db, loud_db, threshold, top_clean,
+        complete, rungs_json, carry_rung, carry_s)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+    args.id,
+    args.startedAt,
+    args.durationS,
+    args.quietDb,
+    args.loudDb,
+    args.threshold,
+    args.topClean,
+    args.complete ? 1 : 0,
+    JSON.stringify(args.rungs),
+    args.carryRung ?? null,
+    args.carryS ?? null
+  );
+}
+
+export async function recentValveSessions(limit = 20): Promise<ValveRow[]> {
+  const d = await db();
+  return d.getAllAsync<ValveRow>(
+    `SELECT * FROM valve_sessions ORDER BY started_at DESC LIMIT ?`,
+    limit
+  );
+}
+
+/**
+ * Thresholds newest first, for the trend.
+ *
+ * Incomplete ladders are excluded. A session where the speaker never got loud
+ * enough to find their limit records a floor, not a reading, and averaging
+ * floors into a trend line would show improvement on the days he tried least.
+ */
+export async function valveThresholds(limit = 12): Promise<number[]> {
+  const d = await db();
+  const rows = await d.getAllAsync<{ threshold: number }>(
+    `SELECT threshold FROM valve_sessions
+      WHERE complete = 1 ORDER BY started_at DESC LIMIT ?`,
+    limit
+  );
+  return rows.map((r) => r.threshold);
+}
+
 export async function resetAll(): Promise<void> {
   const d = await db();
   await d.execAsync(
     `DELETE FROM sessions; DELETE FROM read_takes; DELETE FROM lexicon;
      DELETE FROM skill; DELETE FROM drills; DELETE FROM rooms;
-     DELETE FROM baseline; DELETE FROM reports;`
+     DELETE FROM baseline; DELETE FROM reports; DELETE FROM valve_sessions;`
   );
 }
 
@@ -939,6 +1036,7 @@ export const BACKUP_TABLES = [
   "rooms",
   "baseline",
   "reports",
+  "valve_sessions",
 ] as const;
 
 export type BackupTable = (typeof BACKUP_TABLES)[number];
@@ -958,6 +1056,7 @@ const ORDER: Record<BackupTable, string> = {
   rooms: "created_at ASC, id ASC",
   baseline: "id ASC",
   reports: "week_key ASC",
+  valve_sessions: "started_at ASC, id ASC",
 };
 
 export async function dumpTable(table: BackupTable): Promise<Record<string, unknown>[]> {

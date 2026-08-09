@@ -1,9 +1,9 @@
 // Practice — every drill in one place, each explained.
 //
-// These five used to be stacked down the Today screen as equal-weight cards
-// with two-line taglines, which asked a first-time user to choose between five
-// things they had no way to distinguish. Today now hands out one instruction;
-// this is where you come when you want to pick for yourself.
+// These used to be stacked down the Today screen as equal-weight cards with
+// two-line taglines, which asked a first-time user to choose between five things
+// they had no way to distinguish. Today now hands out one instruction; this is
+// where you come when you want to pick for yourself.
 //
 // So each card says what it *trains*, not what it is. "The Lab" means nothing
 // to someone who has never opened it. "Five ways to make a case, and a stranger
@@ -26,6 +26,7 @@ import {
   sectionBests,
   usedReadingIds,
   usedTopicIds,
+  valveThresholds,
 } from "../../lib/db";
 
 type Drill = {
@@ -51,12 +52,13 @@ export default function Practice() {
     null
   );
   const [cover, setCover] = useState<{ tried: number; solid: number; total: number } | null>(null);
+  const [valveThreshold, setValveThreshold] = useState<number | null>(null);
 
   useFocusEffect(
     useCallback(() => {
       let live = true;
       (async () => {
-        const [used, rows, readUsed, takes, stats, cov, today] = await Promise.all([
+        const [used, rows, readUsed, takes, stats, cov, today, valve] = await Promise.all([
           usedTopicIds(),
           recentSessions(1),
           usedReadingIds(),
@@ -64,6 +66,7 @@ export default function Practice() {
           lexiconStats(),
           coverage(),
           countToday(),
+          valveThresholds(1),
         ]);
 
         // A reading is a week's work, not a day's, so the piece already in
@@ -85,6 +88,7 @@ export default function Practice() {
         setLex(stats);
         setCover(cov);
         setTakesToday(today);
+        setValveThreshold(valve[0] ?? null);
       })();
       return () => {
         live = false;
@@ -152,6 +156,15 @@ export default function Practice() {
       status: null,
       go: () => router.push("/lab"),
     },
+    {
+      key: "valve",
+      name: "The Valve",
+      trains: "Getting loud without squeezing, so the sound comes out of your mouth and not your nose.",
+      shape:
+        "A five-level volume ladder against a mirror held under your nose. It finds the level where your soft palate stops sealing and the tone goes nasal, and that level is the number you move. Nothing is transcribed and nothing leaves the phone.",
+      status: valveThreshold === null ? null : valveThreshold > 5 ? "clean throughout" : `holds to ${valveThreshold - 1}`,
+      go: () => router.push("/valve"),
+    },
   ];
 
   return (
@@ -159,11 +172,12 @@ export default function Practice() {
       <Masthead right="PRACTICE" />
 
       <Reveal index={0} style={s.intro}>
-        <Text style={s.introTitle}>Five drills. All of them end in you talking.</Text>
+        <Text style={s.introTitle}>Six drills. All of them end in you talking.</Text>
         <Text style={s.introBody}>
           Nothing here is a quiz. You speak, it transcribes what you actually said, and it counts
           the things you cannot hear yourself doing. Start anywhere — the Arena is the whole product
-          in three minutes.
+          in three minutes. The Valve is the odd one out: it never listens to your words, only to
+          how the sound leaves you.
         </Text>
       </Reveal>
 
