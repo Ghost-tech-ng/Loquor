@@ -268,6 +268,16 @@ export async function countToday(): Promise<number> {
   return row?.n ?? 0;
 }
 
+/** Arena sessions ever. Today's ladder needs to tell a first-ever user from a
+ *  user who has simply not spoken yet today; the two need different copy. */
+export async function countSessions(): Promise<number> {
+  const d = await db();
+  const row = await d.getFirstAsync<{ n: number }>(
+    `SELECT COUNT(*) AS n FROM sessions WHERE is_rewrite = 0`
+  );
+  return row?.n ?? 0;
+}
+
 /**
  * Filler rate over the last `n` sessions, oldest first. Only sessions from the
  * same STT provider are compared — mixing Whisper and Deepgram counts would

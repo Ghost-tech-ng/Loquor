@@ -18,10 +18,10 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
-import { Rail, StrataWall, fillerStrain, strain } from "../components/viz";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../theme";
-import { bandPosition, FILLER_TARGET_PER_MIN, PACE_BAND_WPM } from "../lib/metrics";
+import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../../components/ui";
+import { Rail, StrataWall, fillerStrain, strain } from "../../components/viz";
+import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
+import { bandPosition, FILLER_TARGET_PER_MIN, PACE_BAND_WPM } from "../../lib/metrics";
 import {
   PACE_LABELS,
   condense,
@@ -29,13 +29,13 @@ import {
   paceBand,
   type LaggingRow,
   type WeekStats,
-} from "../lib/progress";
-import { overview, week, type Overview } from "../lib/progressStore";
-import { synthesise, SynthesisError, type Synthesis } from "../lib/synthesis";
-import { contributionRaw, getReport, saveReport, setWeekRating } from "../lib/db";
-import { archetypeStats, scaffoldStats } from "../lib/skillStore";
-import { funnel } from "../lib/coach";
-import { fillerCountIsApproximate, getKey, loadSettings, resolve } from "../lib/settings";
+} from "../../lib/progress";
+import { overview, week, type Overview } from "../../lib/progressStore";
+import { synthesise, SynthesisError, type Synthesis } from "../../lib/synthesis";
+import { contributionRaw, getReport, saveReport, setWeekRating } from "../../lib/db";
+import { archetypeStats, scaffoldStats } from "../../lib/skillStore";
+import { funnel } from "../../lib/coach";
+import { fillerCountIsApproximate, getKey, loadSettings, resolve } from "../../lib/settings";
 
 export default function Progress() {
   const router = useRouter();

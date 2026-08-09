@@ -13,12 +13,12 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
-import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../theme";
-import { contributionRaw, createRoom, pendingDebriefs, recentRooms, type RoomRow } from "../lib/db";
-import { funnel, ratio } from "../lib/coach";
-import { prepFor } from "../lib/skillStore";
-import { packIds, scheduleRoom } from "../lib/notify";
+import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../../components/ui";
+import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
+import { contributionRaw, createRoom, pendingDebriefs, recentRooms, type RoomRow } from "../../lib/db";
+import { funnel, ratio } from "../../lib/coach";
+import { prepFor } from "../../lib/skillStore";
+import { packIds, scheduleRoom } from "../../lib/notify";
 
 const WINDOW_MS = 90 * 86_400_000;
 

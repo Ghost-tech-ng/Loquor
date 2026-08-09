@@ -9,9 +9,9 @@ import { useCallback, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../components/ui";
-import { CHROME, SEMANTIC, SPACE, TYPE } from "../theme";
-import { KEY_GUIDES, type KeyGuide } from "../content/keyGuides";
+import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Screen } from "../../components/ui";
+import { CHROME, SEMANTIC, SPACE, TYPE } from "../../theme";
+import { KEY_GUIDES, type KeyGuide } from "../../content/keyGuides";
 import {
   DEFAULT_SETTINGS,
   getKey,
@@ -23,8 +23,8 @@ import {
   type Mode,
   type Provider,
   type Settings as SettingsShape,
-} from "../lib/settings";
-import { resetAll } from "../lib/db";
+} from "../../lib/settings";
+import { resetAll } from "../../lib/db";
 import {
   clearDaily,
   clearWeekly,
@@ -34,7 +34,7 @@ import {
   setDaily,
   setWeekly,
   type Repeating,
-} from "../lib/notify";
+} from "../../lib/notify";
 
 // A fixed set of times rather than a wheel picker. The exact minute does not
 // change whether a habit sticks, and a free picker is one more decision on a
