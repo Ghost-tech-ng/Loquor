@@ -21,6 +21,7 @@ import {
   Reveal,
   Screen,
 } from "../../components/ui";
+import { Backup } from "../../components/backup";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TYPE } from "../../theme";
 import { KEY_GUIDES, type KeyGuide } from "../../content/keyGuides";
 import {
@@ -252,6 +253,8 @@ export default function Settings() {
         })}
       </View>
 
+      <Backup />
+
       <Hair style={{ marginTop: SPACE.sm }} />
       <Eyebrow>REMINDERS</Eyebrow>
       <Meta>
@@ -300,8 +303,9 @@ export default function Settings() {
       <Hair style={{ marginTop: SPACE.sm }} />
       <Eyebrow>YOUR RECORDINGS</Eyebrow>
       <Meta>
-        Audio is deleted the moment it has been transcribed. Transcripts and scores stay on this
-        phone in a local database — there is no server to delete them from.
+        Audio is deleted the moment it has been transcribed, and is never uploaded anywhere.
+        Transcripts and scores live in a database on this phone, and in your own Firebase project
+        if you have turned backup on.
       </Meta>
       <Button
         label="ERASE EVERYTHING"
@@ -309,7 +313,7 @@ export default function Settings() {
         onPress={() =>
           Alert.alert(
             "Erase all sessions?",
-            "Every transcript, score, and trend goes. This cannot be undone.",
+            "Every transcript, score, and trend goes. If backup is on, the next one erases the cloud copy too — this is not a way to keep a hidden archive. This cannot be undone.",
             [
               { text: "Keep them", style: "cancel" },
               {

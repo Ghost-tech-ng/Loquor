@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
-import { StyleSheet, View } from "react-native";
+import { AppState, StyleSheet, View } from "react-native";
 // Deep imports, not the package roots. The root index re-exports all eighteen
 // weights of each family, and Metro bundles every asset it can reach — importing
 // from the root put 3 MB of unused TTFs into the payload.
@@ -18,6 +18,7 @@ import { MartianMono_500Medium } from "@expo-google-fonts/martian-mono/500Medium
 import { Boot } from "../components/boot";
 import { CHROME } from "../theme";
 import { seedKeysFromEnv } from "../lib/settings";
+import { autoBackup } from "../lib/backup";
 
 /** Shortest time the boot screen stays up. Fonts usually resolve faster than
  *  this on a warm start, and a 120ms flash of wordmark reads as a glitch —
@@ -28,6 +29,24 @@ export default function RootLayout() {
   // Dev convenience only, and it never overwrites what is already stored.
   useEffect(() => {
     void seedKeysFromEnv();
+  }, []);
+
+  // Automatic backup, such as Expo Go allows it. Backgrounding is the useful
+  // trigger: it is the moment after every write the user was going to make, and
+  // iOS gives a few seconds of runway before suspending — enough for the two or
+  // three chunk writes a day of practice actually dirties. Launch is the
+  // fallback for the day that runway is not granted.
+  //
+  // `force` on background, because the fifteen-minute floor exists to stop the
+  // foreground path backing up on every glance at the app, and leaving is
+  // exactly when the floor should not apply.
+  useEffect(() => {
+    void autoBackup();
+    const sub = AppState.addEventListener("change", (next) => {
+      if (next === "background") void autoBackup(true);
+      else if (next === "active") void autoBackup();
+    });
+    return () => sub.remove();
   }, []);
 
   const [floorPassed, setFloorPassed] = useState(false);

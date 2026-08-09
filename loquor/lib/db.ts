@@ -915,3 +915,87 @@ export async function resetAll(): Promise<void> {
      DELETE FROM baseline; DELETE FROM reports;`
   );
 }
+
+// ------------------------------------------------------------------- backup
+//
+// Generic row access, used only by the cloud backup. Everything else in this
+// file is a typed query written for one screen; these two are the deliberate
+// exception, because a backup that needs updating every time a column is added
+// is a backup that will silently go stale.
+
+/**
+ * Every table that carries user data, in a stable order.
+ *
+ * This doubles as the injection guard: a table name is the one thing SQLite
+ * cannot take as a bound parameter, so nothing outside this list is ever
+ * interpolated into a statement.
+ */
+export const BACKUP_TABLES = [
+  "sessions",
+  "read_takes",
+  "lexicon",
+  "skill",
+  "drills",
+  "rooms",
+  "baseline",
+  "reports",
+] as const;
+
+export type BackupTable = (typeof BACKUP_TABLES)[number];
+
+export function isBackupTable(name: string): name is BackupTable {
+  return (BACKUP_TABLES as readonly string[]).includes(name);
+}
+
+/** Primary-key ordering, so an append-only table always dirties its last chunk
+ *  and never reshuffles the ones before it. */
+const ORDER: Record<BackupTable, string> = {
+  sessions: "started_at ASC, id ASC",
+  read_takes: "started_at ASC, id ASC",
+  lexicon: "track ASC, word ASC",
+  skill: "drill ASC, item_id ASC",
+  drills: "started_at ASC, id ASC",
+  rooms: "created_at ASC, id ASC",
+  baseline: "id ASC",
+  reports: "week_key ASC",
+};
+
+export async function dumpTable(table: BackupTable): Promise<Record<string, unknown>[]> {
+  const d = await db();
+  return d.getAllAsync<Record<string, unknown>>(`SELECT * FROM ${table} ORDER BY ${ORDER[table]}`);
+}
+
+/**
+ * Writes rows back, keyed on each table's own primary key.
+ *
+ * INSERT OR REPLACE rather than DELETE-then-INSERT: a restore that fails
+ * halfway should leave the device with more of its history than it started
+ * with, never less. Columns are intersected with the live schema so a backup
+ * taken on an older build restores onto a newer one instead of throwing.
+ */
+export async function restoreRows(
+  table: BackupTable,
+  rows: Record<string, unknown>[]
+): Promise<number> {
+  if (rows.length === 0) return 0;
+  const d = await db();
+
+  const info = await d.getAllAsync<{ name: string }>(`PRAGMA table_info(${table})`);
+  const columns = new Set(info.map((c) => c.name));
+
+  let written = 0;
+  await d.withTransactionAsync(async () => {
+    for (const row of rows) {
+      const cols = Object.keys(row).filter((c) => columns.has(c));
+      if (cols.length === 0) continue;
+      const values = cols.map((c) => (row[c] ?? null) as SQLite.SQLiteBindValue);
+      await d.runAsync(
+        `INSERT OR REPLACE INTO ${table} (${cols.join(",")})
+         VALUES (${cols.map(() => "?").join(",")})`,
+        values
+      );
+      written++;
+    }
+  });
+  return written;
+}
