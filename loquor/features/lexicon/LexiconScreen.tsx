@@ -24,6 +24,7 @@ import {
 
 import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen } from "../../components/ui";
 import { Ignition } from "../../components/boot";
+import { Glyph } from "../../components/kit/Glyph";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../../theme";
 import type { Gloss } from "./glossary";
 import { describeInterval, type Grade } from "./fsrs";
@@ -242,9 +243,12 @@ export default function Lexicon() {
             return (
               <Reveal key={g.key} index={i}>
                 <View style={[s.gate, pass ? s.gatePass : s.gateFail]}>
-                  <Text style={[s.gateMark, pass ? s.gateMarkPass : s.gateMarkFail]}>
-                    {pass ? "✓" : "✕"}
-                  </Text>
+                  <Glyph
+                    name={pass ? "check" : "x"}
+                    size={16}
+                    strokeWidth={2.4}
+                    color={pass ? SEMANTIC.ember : SEMANTIC.flaw}
+                  />
                   <Text style={s.gateLabel}>{g.label.toUpperCase()}</Text>
                 </View>
               </Reveal>
@@ -418,7 +422,7 @@ const s = StyleSheet.create({
     fontFamily: TYPE.uiMedium,
     marginTop: 2,
   },
-  colloc: { color: "#C3D0D2", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
+  colloc: { color: "#C9C3B6", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
   quote: { fontFamily: TYPE.displayItalic },
   model: { fontSize: 17, lineHeight: 27, fontFamily: TYPE.displayItalic },
 
@@ -446,9 +450,6 @@ const s = StyleSheet.create({
   },
   gatePass: { borderColor: SEMANTIC.ember },
   gateFail: { borderColor: SURFACE.edge },
-  gateMark: { fontSize: 16, fontFamily: TYPE.uiSemi },
-  gateMarkPass: { color: SEMANTIC.ember },
-  gateMarkFail: { color: SEMANTIC.flaw },
   gateLabel: { color: CHROME.dustDim, fontSize: 9, letterSpacing: 1.6, fontFamily: TYPE.uiMedium },
 
   input: {

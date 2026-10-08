@@ -14,7 +14,7 @@ import Animated, {
 
 import { AURORA } from "../../theme";
 
-const COLOURS = [AURORA.violet, AURORA.teal, AURORA.coral, AURORA.gold, AURORA.pink, AURORA.sky];
+const COLOURS = [AURORA.brass, AURORA.sage, AURORA.terracotta, AURORA.gold, AURORA.plum, AURORA.steel];
 
 type Piece = {
   vx: number;

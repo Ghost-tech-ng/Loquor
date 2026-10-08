@@ -10,7 +10,7 @@
     "orientation": "portrait",
     "scheme": "speek",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#0B0A1A",
+    "backgroundColor": "#0B0F17",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.eghosa.loquor",
@@ -32,7 +32,7 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 180,
           "resizeMode": "contain",
-          "backgroundColor": "#0B0A1A"
+          "backgroundColor": "#0B0F17"
         }
       ]
     ],

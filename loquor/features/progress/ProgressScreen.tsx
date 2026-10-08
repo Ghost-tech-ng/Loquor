@@ -412,9 +412,9 @@ const s = StyleSheet.create({
   weekLabel: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.6, fontFamily: TYPE.mono, ...TABULAR },
 
   callout: {
-    backgroundColor: "rgba(224, 85, 63, 0.07)",
+    backgroundColor: "rgba(217, 168, 91, 0.07)",
     borderWidth: 1,
-    borderColor: "rgba(224, 85, 63, 0.4)",
+    borderColor: "rgba(217, 168, 91, 0.4)",
     borderRadius: RADIUS.panel,
     paddingHorizontal: 16,
     paddingVertical: 15,
@@ -450,7 +450,7 @@ const s = StyleSheet.create({
   headline: { fontSize: 17, lineHeight: 25, fontFamily: TYPE.display, color: CHROME.chalk },
   line: { gap: 3, paddingVertical: 4 },
   lineLabel: { color: CHROME.dustDim, fontSize: 9, letterSpacing: 2, fontFamily: TYPE.uiMedium },
-  lineText: { color: "#C3D0D2", fontSize: 14, lineHeight: 21, fontFamily: TYPE.ui },
+  lineText: { color: "#C9C3B6", fontSize: 14, lineHeight: 21, fontFamily: TYPE.ui },
   nextLabel: { color: SEMANTIC.ember, fontSize: 9, letterSpacing: 2, fontFamily: TYPE.uiSemi },
   next: { color: CHROME.chalk, fontSize: 15, lineHeight: 22, fontFamily: TYPE.displayItalic },
   failed: { color: SEMANTIC.flaw, fontSize: 12, fontFamily: TYPE.ui },

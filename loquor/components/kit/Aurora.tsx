@@ -5,8 +5,9 @@
 // tab navigator keeps screens mounted and five full-screen shaders animating
 // behind each other is a battery bill nobody sees the benefit of.
 //
-// Four soft blobs of aurora colour drifting on a night ground. Slow on purpose:
-// it should feel like the screen is breathing, not like it is busy.
+// Four soft pools of light drifting on a navy ground: a cold stage-blue wash,
+// a brass lamp, and faint sage and terracotta underneath. Slow on purpose: it
+// should feel like the screen is breathing, not like it is busy.
 //
 // Rendered at a quarter of the screen's size and scaled up. The blobs are pure
 // low-frequency colour, so the upscale is invisible, and the shader runs on a
@@ -20,6 +21,8 @@ import { useDerivedValue } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { AURORA, CHROME, alpha } from "../../theme";
+
+const STAGE_BLUE = "#2E4A78";
 
 const SKSL = `
 uniform float t;
@@ -35,16 +38,16 @@ half4 main(float2 xy) {
   float2 p = xy / res.x;
   float h = res.y / res.x;
   float s = t * 0.00011;
-  float3 col = float3(0.043, 0.039, 0.102);
-  float3 violet = float3(0.486, 0.361, 1.0);
-  float3 teal = float3(0.180, 0.902, 0.773);
-  float3 pink = float3(1.0, 0.373, 0.635);
-  float3 coral = float3(1.0, 0.478, 0.420);
+  float3 col = float3(0.043, 0.059, 0.090);
+  float3 stage = float3(0.180, 0.290, 0.470);
+  float3 brass = float3(0.851, 0.659, 0.357);
+  float3 sage = float3(0.435, 0.718, 0.643);
+  float3 terracotta = float3(0.878, 0.478, 0.373);
   float e = 1.0 + energy;
-  col += violet * 0.46 * e * blob(p, float2(0.12 + 0.16 * sin(s * 1.3), 0.06 * h + 0.07 * cos(s * 1.1)), 0.62);
-  col += teal * 0.20 * e * blob(p, float2(1.0 + 0.10 * cos(s * 0.9), 0.38 * h + 0.10 * sin(s * 1.4)), 0.48);
-  col += pink * 0.17 * e * blob(p, float2(0.18 + 0.18 * sin(s * 0.7 + 2.0), 0.78 * h + 0.08 * cos(s * 1.2)), 0.55);
-  col += coral * 0.10 * e * blob(p, float2(0.90 + 0.10 * sin(s), 1.02 * h), 0.45);
+  col += stage * 0.34 * e * blob(p, float2(0.12 + 0.16 * sin(s * 1.3), 0.06 * h + 0.07 * cos(s * 1.1)), 0.62);
+  col += brass * 0.15 * e * blob(p, float2(1.0 + 0.10 * cos(s * 0.9), 0.30 * h + 0.10 * sin(s * 1.4)), 0.50);
+  col += sage * 0.07 * e * blob(p, float2(0.18 + 0.18 * sin(s * 0.7 + 2.0), 0.80 * h + 0.08 * cos(s * 1.2)), 0.55);
+  col += terracotta * 0.07 * e * blob(p, float2(0.90 + 0.10 * sin(s), 1.02 * h), 0.45);
   return half4(half3(col), 1.0);
 }`;
 
@@ -97,13 +100,13 @@ function StaticAurora() {
   return (
     <View style={[StyleSheet.absoluteFill, { backgroundColor: CHROME.floor }]} pointerEvents="none">
       <LinearGradient
-        colors={[alpha(AURORA.violet, 0.4), "transparent"]}
+        colors={[alpha(STAGE_BLUE, 0.4), "transparent"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.7, y: 0.5 }}
         style={StyleSheet.absoluteFill}
       />
       <LinearGradient
-        colors={["transparent", alpha(AURORA.pink, 0.16)]}
+        colors={["transparent", alpha(AURORA.brass, 0.12)]}
         start={{ x: 0.6, y: 0.4 }}
         end={{ x: 0.1, y: 1 }}
         style={StyleSheet.absoluteFill}

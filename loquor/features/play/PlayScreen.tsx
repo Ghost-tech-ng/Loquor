@@ -17,6 +17,7 @@ import { Masthead, Screen } from "../../components/ui";
 import { Glass } from "../../components/kit/Glass";
 import { PressableScale, Rise } from "../../components/kit/motion";
 import { feel } from "../../components/kit/feel";
+import { Glyph, type GlyphName } from "../../components/kit/Glyph";
 import { AURORA, CHROME, RADIUS, SPACE, SURFACE, TABULAR, TYPE, alpha } from "../../theme";
 import { READINGS_BY_ID, pickReading, readingMinutes, type Reading } from "../reading/readings";
 import { GAMES_LIVE } from "../progression/progressionStore";
@@ -32,7 +33,7 @@ import {
 type Game = {
   key: string;
   name: string;
-  emoji: string;
+  icon: GlyphName;
   hook: string;
   /** Two stops: the card's own colour, so the five never blur into one. */
   tint: readonly [string, string];
@@ -43,41 +44,41 @@ const GAMES: Game[] = [
   {
     key: "alive",
     name: "Bring It to Life",
-    emoji: "🤖",
+    icon: "bot",
     hook: "Start as a robot. Your melody, punch and rhythm turn it back into you.",
-    tint: [AURORA.pink, AURORA.violet],
+    tint: [AURORA.plum, AURORA.brass],
     tag: "VOICE",
   },
   {
     key: "gauntlet",
     name: "No-Um Gauntlet",
-    emoji: "🛡️",
+    icon: "shield",
     hook: "Rounds from 20 seconds to 90. Three hearts. Every um costs one.",
-    tint: [AURORA.coral, AURORA.gold],
+    tint: [AURORA.terracotta, AURORA.gold],
     tag: "FOCUS",
   },
   {
     key: "pause",
     name: "Pause, Don't Um",
-    emoji: "⏸️",
+    icon: "pause",
     hook: "Talk until the gate flashes, then hold a clean silence. Live, no waiting.",
-    tint: [AURORA.teal, AURORA.sky],
+    tint: [AURORA.sage, AURORA.steel],
     tag: "LIVE",
   },
   {
     key: "bomb",
     name: "Word Bomb",
-    emoji: "💣",
+    icon: "bomb",
     hook: "A word drops with a lit fuse. Use it in a sentence out loud before it blows.",
-    tint: [AURORA.gold, AURORA.coral],
+    tint: [AURORA.gold, AURORA.terracotta],
     tag: "SPEAK",
   },
   {
     key: "blitz",
     name: "Lexicon Blitz",
-    emoji: "⚡",
+    icon: "zap",
     hook: "Sixty seconds, a definition, four words. Combos stack, and it counts as review.",
-    tint: [AURORA.violet, AURORA.teal],
+    tint: [AURORA.brass, AURORA.sage],
     tag: "TAP",
   },
 ];
@@ -85,7 +86,7 @@ const GAMES: Game[] = [
 type Drill = {
   key: string;
   name: string;
-  emoji: string;
+  icon: GlyphName;
   /** What it trains. One line, in the second person, no feature names. */
   trains: string;
   /** Live state, right-aligned. Null while loading. */
@@ -145,7 +146,7 @@ export default function Play() {
     {
       key: "read",
       name: "Read aloud",
-      emoji: "📖",
+      icon: "book",
       trains: reading
         ? `“${reading.title}”, about ${Math.round(readingMinutes(reading))} min in ${reading.sections.length} sittings. Your mouth, on words you understand but never say.`
         : "Your mouth, on words you already understand but have never actually said.",
@@ -160,7 +161,7 @@ export default function Play() {
     {
       key: "lexicon",
       name: "The Lexicon",
-      emoji: "🪶",
+      icon: "feather",
       trains: "The supply of words your mouth can reach for. A word is only yours once you have said it in a real room.",
       status:
         lex === null
@@ -175,7 +176,7 @@ export default function Play() {
     {
       key: "playbook",
       name: "The Playbook",
-      emoji: "♟️",
+      icon: "knight",
       trains: "Asking the question that changes the room, instead of the one that fills silence.",
       status: cover === null ? null : `${cover.tried}/${cover.total}`,
       go: () => router.push("/playbook"),
@@ -183,7 +184,7 @@ export default function Play() {
     {
       key: "lab",
       name: "The Lab",
-      emoji: "🧪",
+      icon: "flask",
       trains: "Making a case under pressure, and getting past small talk with someone you just met.",
       status: null,
       go: () => router.push("/lab"),
@@ -191,7 +192,7 @@ export default function Play() {
     {
       key: "valve",
       name: "The Valve",
-      emoji: "🌬️",
+      icon: "wind",
       trains: "Getting loud without squeezing, so the sound comes out of your mouth and not your nose.",
       status:
         valveThreshold === null
@@ -233,8 +234,8 @@ export default function Play() {
                 end={{ x: 1, y: 1 }}
                 style={[StyleSheet.absoluteFill, { borderRadius: RADIUS.panel }]}
               />
-              <View style={s.gameEmojiWrap}>
-                <Text style={s.gameEmoji}>{g.emoji}</Text>
+              <View style={[s.gameIconWrap, { borderColor: alpha(g.tint[0], 0.45) }]}>
+                <Glyph name={g.icon} size={26} strokeWidth={1.7} color={g.tint[0]} />
               </View>
               <View style={{ flex: 1, gap: 4 }}>
                 <View style={s.gameHead}>
@@ -247,7 +248,7 @@ export default function Play() {
               </View>
               {!GAMES_LIVE ? (
                 <View style={s.lock}>
-                  <Text style={s.lockText}>🔒</Text>
+                  <Glyph name="lock" size={13} strokeWidth={2.2} color={CHROME.dust} />
                 </View>
               ) : null}
             </View>
@@ -264,7 +265,9 @@ export default function Play() {
         <Rise key={d.key} index={i + 9}>
           <PressableScale onPress={d.go} scaleTo={0.97} accessibilityLabel={d.name}>
             <Glass style={s.drill} radius={RADIUS.soft + 6}>
-              <Text style={s.drillEmoji}>{d.emoji}</Text>
+              <View style={s.drillIcon}>
+                <Glyph name={d.icon} size={22} strokeWidth={1.7} color={AURORA.brass} />
+              </View>
               <View style={{ flex: 1, gap: 3 }}>
                 <View style={s.gameHead}>
                   <Text style={s.drillName}>{d.name}</Text>
@@ -299,26 +302,32 @@ const s = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.14)",
     backgroundColor: SURFACE.sunk,
   },
-  gameEmojiWrap: {
+  gameIconWrap: {
     width: 54,
     height: 54,
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.12)",
+    borderWidth: 1,
+    backgroundColor: "rgba(11, 15, 23, 0.45)",
   },
-  gameEmoji: { fontSize: 28 },
   gameHead: { flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "space-between" },
   gameName: { color: CHROME.chalk, fontSize: 19, fontFamily: TYPE.display, letterSpacing: -0.3, flexShrink: 1 },
-  gameHook: { color: "#E6E2FA", fontSize: 13.5, lineHeight: 19, fontFamily: TYPE.ui },
+  gameHook: { color: CHROME.chalk, opacity: 0.86, fontSize: 13.5, lineHeight: 19, fontFamily: TYPE.ui },
   tag: { borderWidth: 1, borderRadius: RADIUS.pill, paddingHorizontal: 8, paddingVertical: 2 },
   tagText: { fontSize: 9.5, letterSpacing: 1.2, fontFamily: TYPE.uiBold },
   lock: { position: "absolute", top: 10, right: 12, opacity: 0.8 },
-  lockText: { fontSize: 12 },
 
   drill: { flexDirection: "row", alignItems: "center", gap: 14, paddingVertical: 14 },
-  drillEmoji: { fontSize: 26 },
+  drillIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: alpha(AURORA.brass, 0.1),
+  },
   drillName: { color: CHROME.chalk, fontSize: 17, fontFamily: TYPE.displaySoft },
   drillTrains: { color: CHROME.dust, fontSize: 13, lineHeight: 19, fontFamily: TYPE.ui },
-  status: { color: AURORA.teal, fontSize: 11, fontFamily: TYPE.monoMedium, ...TABULAR },
+  status: { color: AURORA.sage, fontSize: 11, fontFamily: TYPE.monoMedium, ...TABULAR },
 });

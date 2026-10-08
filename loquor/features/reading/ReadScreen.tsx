@@ -505,7 +505,7 @@ const s = StyleSheet.create({
     paddingVertical: 7,
     gap: 1,
   },
-  chipOpen: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(224, 85, 63, 0.1)" },
+  chipOpen: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(217, 168, 91, 0.1)" },
   chipWord: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.displayItalic },
   chipSay: { color: CHROME.dustDim, fontSize: 10, fontFamily: TYPE.ui, letterSpacing: 0.4 },
 
@@ -519,7 +519,7 @@ const s = StyleSheet.create({
     fontFamily: TYPE.uiMedium,
     marginTop: 2,
   },
-  colloc: { color: "#C3D0D2", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
+  colloc: { color: "#C9C3B6", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
 
   tocRow: {
     flexDirection: "row",

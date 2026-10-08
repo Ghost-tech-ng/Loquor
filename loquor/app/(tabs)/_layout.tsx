@@ -94,7 +94,7 @@ function Bar({ state, navigation }: BottomTabBarProps) {
         {cell > 0 ? (
           <Animated.View style={[s.blobCell, { width: cell }, blob]} pointerEvents="none">
             <LinearGradient
-              colors={[alpha(GRADIENT.primary[0], 0.55), alpha(GRADIENT.primary[1], 0.38)]}
+              colors={[alpha(GRADIENT.primary[0], 0.32), alpha(GRADIENT.primary[1], 0.18)]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={s.blob}
@@ -162,12 +162,12 @@ const s = StyleSheet.create({
     height: BAR_H,
     borderRadius: RADIUS.bar,
     borderWidth: 1,
-    borderColor: alpha(AURORA.violet, 0.35),
+    borderColor: alpha(AURORA.brass, 0.22),
     overflow: "hidden",
   },
   blobCell: { position: "absolute", top: 0, bottom: 0, left: 0, padding: INSET },
   blob: { flex: 1, borderRadius: RADIUS.bar - INSET },
   item: { flex: 1, alignItems: "center", justifyContent: "center", gap: 3 },
-  label: { color: "rgba(244,241,255,0.55)", fontSize: 11, fontFamily: TYPE.uiSemi },
-  labelOn: { color: "#FFFFFF" },
+  label: { color: alpha(CHROME.chalk, 0.5), fontSize: 11, fontFamily: TYPE.uiSemi },
+  labelOn: { color: AURORA.brass },
 });

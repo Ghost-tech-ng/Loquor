@@ -477,7 +477,7 @@ const s = StyleSheet.create({
 
   segment: { gap: 3 },
   segOpt: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: RADIUS.pill },
-  segOptOn: { backgroundColor: "rgba(224, 85, 63, 0.13)" },
+  segOptOn: { backgroundColor: "rgba(217, 168, 91, 0.13)" },
   segLabel: { color: CHROME.dust, fontSize: 13, fontFamily: TYPE.ui },
 
   keys: { gap: SPACE.md, marginTop: SPACE.xs },
@@ -547,6 +547,6 @@ const g = StyleSheet.create({
   cost: { color: CHROME.dustDim, fontSize: 12, fontFamily: TYPE.ui },
   step: { flexDirection: "row", gap: 10, paddingVertical: 4 },
   stepNum: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.ui, width: 12, paddingTop: 2 },
-  stepText: { color: "#C3D0D2", fontSize: 13, lineHeight: 19, flex: 1, fontFamily: TYPE.ui },
+  stepText: { color: "#C9C3B6", fontSize: 13, lineHeight: 19, flex: 1, fontFamily: TYPE.ui },
   url: { color: CHROME.dust, fontSize: 12, fontFamily: TYPE.displayItalic, marginTop: SPACE.xs },
 });

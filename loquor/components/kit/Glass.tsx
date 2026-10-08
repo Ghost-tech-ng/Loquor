@@ -37,7 +37,7 @@ export function Glass({
       <View style={[StyleSheet.absoluteFill, s.clip, { borderRadius: radius }]} pointerEvents="none">
         <View style={[StyleSheet.absoluteFill, s.fill]} />
         <LinearGradient
-          colors={[glow ? alpha(glow, 0.2) : "rgba(255,255,255,0.08)", "rgba(255,255,255,0)"]}
+          colors={[glow ? alpha(glow, 0.16) : "rgba(242,238,230,0.06)", "rgba(255,255,255,0)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 0.6 }}
           style={StyleSheet.absoluteFill}
@@ -50,7 +50,7 @@ export function Glass({
           {
             borderRadius: radius,
             borderWidth: StyleSheet.hairlineWidth * 2,
-            borderColor: glow ? alpha(glow, 0.55) : SURFACE.edge,
+            borderColor: glow ? alpha(glow, 0.5) : SURFACE.edge,
           },
         ]}
       />
@@ -61,6 +61,6 @@ export function Glass({
 
 const s = StyleSheet.create({
   clip: { overflow: "hidden" },
-  fill: { backgroundColor: "rgba(16, 13, 38, 0.62)" },
+  fill: { backgroundColor: "rgba(20, 26, 38, 0.74)" },
   pad: { padding: 18 },
 });

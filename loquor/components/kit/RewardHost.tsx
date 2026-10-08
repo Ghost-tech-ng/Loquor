@@ -20,6 +20,7 @@ import { onReward, type Reward } from "../../features/progression/progressionSto
 import { AURORA, CHROME, GRADIENT, SEMANTIC, TYPE, alpha } from "../../theme";
 import { Confetti } from "./Confetti";
 import { feel } from "./feel";
+import { Glyph } from "./Glyph";
 import { GlowButton } from "./GlowButton";
 import { Glass } from "./Glass";
 import { XPBar } from "./Meters";
@@ -60,7 +61,7 @@ export function RewardHost() {
     <Modal transparent visible animationType="none" onRequestClose={close} statusBarTranslucent>
       <Animated.View entering={FadeIn.duration(220)} exiting={FadeOut.duration(200)} style={StyleSheet.absoluteFill}>
         <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel="Close">
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(6,5,16,0.78)" }]} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(5, 7, 12, 0.8)" }]} />
         </Pressable>
       </Animated.View>
 
@@ -70,7 +71,7 @@ export function RewardHost() {
         style={[s.sheetWrap, { paddingBottom: insets.bottom + 16 }]}
         pointerEvents="box-none"
       >
-        <Glass glow={levelled ? AURORA.gold : AURORA.violet} style={s.sheet}>
+        <Glass glow={levelled ? AURORA.gold : AURORA.brass} style={s.sheet}>
           <View style={s.orb}>
             <VoiceOrb size={88} mood="happy" />
           </View>
@@ -112,7 +113,7 @@ export function RewardHost() {
               {reward.quests.map((q, i) => (
                 <Animated.View key={q.id} entering={ZoomIn.delay(600 + i * 140).springify()} style={s.item}>
                   <View style={[s.tick, { backgroundColor: alpha(SEMANTIC.solid, 0.18) }]}>
-                    <Text style={[s.tickMark, { color: SEMANTIC.solid }]}>✓</Text>
+                    <Glyph name="check" size={15} strokeWidth={2.6} color={SEMANTIC.solid} />
                   </View>
                   <Text style={s.itemText} numberOfLines={2}>
                     {q.title}
@@ -131,7 +132,7 @@ export function RewardHost() {
                   entering={ZoomIn.delay(900 + i * 180).springify().damping(8)}
                   style={s.badge}
                 >
-                  <Text style={s.badgeEmoji}>{b.emoji}</Text>
+                  <Glyph name={b.icon} size={30} strokeWidth={1.6} color={AURORA.gold} />
                   <Text style={s.badgeName} numberOfLines={1}>
                     {b.name}
                   </Text>
@@ -180,10 +181,9 @@ const s = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.05)",
+    backgroundColor: "rgba(242,238,230,0.05)",
   },
   tick: { width: 26, height: 26, borderRadius: 13, alignItems: "center", justifyContent: "center" },
-  tickMark: { fontFamily: TYPE.uiBold, fontSize: 15 },
   itemText: { flex: 1, fontFamily: TYPE.uiMedium, fontSize: 15, color: CHROME.chalk },
   itemXp: { fontFamily: TYPE.monoMedium, fontSize: 13, color: SEMANTIC.xp },
   badges: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 10, marginTop: 16 },
@@ -192,10 +192,9 @@ const s = StyleSheet.create({
     width: 96,
     paddingVertical: 12,
     borderRadius: 18,
-    backgroundColor: alpha(GRADIENT.primary[0], 0.16),
+    backgroundColor: alpha(AURORA.gold, 0.1),
     borderWidth: 1,
-    borderColor: alpha(GRADIENT.primary[1], 0.4),
+    borderColor: alpha(AURORA.gold, 0.4),
   },
-  badgeEmoji: { fontSize: 32 },
   badgeName: { fontFamily: TYPE.uiSemi, fontSize: 12, color: CHROME.chalk, marginTop: 4 },
 });

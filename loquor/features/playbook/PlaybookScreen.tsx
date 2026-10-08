@@ -316,7 +316,7 @@ const s = StyleSheet.create({
   mapLink: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 2, fontFamily: TYPE.uiMedium },
 
   form: { fontFamily: TYPE.displayItalic, fontSize: 17, lineHeight: 25, color: CHROME.chalk },
-  transcript: { fontFamily: TYPE.displayItalic, color: "#C3D0D2" },
+  transcript: { fontFamily: TYPE.displayItalic, color: "#C9C3B6" },
   heard: { color: CHROME.chalk },
   model: { color: CHROME.chalk, fontFamily: TYPE.displayItalic, fontSize: 16, lineHeight: 24 },
 

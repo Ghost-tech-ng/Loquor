@@ -99,13 +99,13 @@ export function GlowButton({
           >
             <Animated.View pointerEvents="none" style={[s.sheen, sheen]}>
               <LinearGradient
-                colors={["rgba(255,255,255,0)", "rgba(255,255,255,0.35)", "rgba(255,255,255,0)"]}
+                colors={["rgba(255,255,255,0)", "rgba(255,248,230,0.45)", "rgba(255,255,255,0)"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={StyleSheet.absoluteFill}
               />
             </Animated.View>
-            <Text style={[s.label, compact && s.labelCompact]}>
+            <Text style={[s.label, s.labelOnFill, compact && s.labelCompact]}>
               {icon ? `${icon}  ` : ""}
               {label}
             </Text>
@@ -144,7 +144,8 @@ const s = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: SURFACE.edgeLive,
   },
-  label: { fontFamily: TYPE.uiBold, fontSize: 17, color: "#FFFFFF", letterSpacing: 0.2 },
+  label: { fontFamily: TYPE.uiBold, fontSize: 17, color: CHROME.chalk, letterSpacing: 0.2 },
+  labelOnFill: { color: CHROME.ink },
   labelCompact: { fontSize: 15 },
   quietLabel: { color: CHROME.dust, fontFamily: TYPE.uiSemi },
 });

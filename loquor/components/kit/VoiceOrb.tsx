@@ -191,13 +191,13 @@ export function VoiceOrb({
     <Animated.View
       style={[{ width: size, height: size }, body, style]}
     >
-      {glow ? <Halo color="#FF5FA2" opacity={0.45} spread={size * 0.22} style={{ top: -size * 0.16, bottom: -size * 0.28 }} /> : null}
+      {glow ? <Halo color="#D9A85B" opacity={0.4} spread={size * 0.22} style={{ top: -size * 0.16, bottom: -size * 0.28 }} /> : null}
       <Svg width={size} height={size} viewBox="0 0 100 100" style={StyleSheet.absoluteFill}>
         <Defs>
           <LinearGradient id="orbFill" x1="14" y1="12" x2="86" y2="90" gradientUnits="userSpaceOnUse">
-            <Stop offset="0" stopColor="#7C5CFF" />
-            <Stop offset="0.55" stopColor="#FF5FA2" />
-            <Stop offset="1" stopColor="#FFB36B" />
+            <Stop offset="0" stopColor="#F2D193" />
+            <Stop offset="0.55" stopColor="#D9A85B" />
+            <Stop offset="1" stopColor="#A8733A" />
           </LinearGradient>
           <RadialGradient id="orbGloss" cx="36" cy="28" r="30" gradientUnits="userSpaceOnUse">
             <Stop offset="0" stopColor="#FFFFFF" stopOpacity={0.45} />

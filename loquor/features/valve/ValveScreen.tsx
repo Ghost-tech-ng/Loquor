@@ -698,7 +698,7 @@ function Result({
 
 const s = StyleSheet.create({
   phrase: { color: CHROME.chalk, fontSize: 20, lineHeight: 28, fontFamily: TYPE.displaySoft },
-  passage: { color: "#C3D0D2", fontSize: 16, lineHeight: 26, fontFamily: TYPE.ui },
+  passage: { color: "#C9C3B6", fontSize: 16, lineHeight: 26, fontFamily: TYPE.ui },
 
   clockWrap: { alignItems: "center", gap: SPACE.md, paddingVertical: SPACE.lg },
   clock: { color: CHROME.chalk, fontSize: 52, fontFamily: TYPE.display, ...TABULAR },

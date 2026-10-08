@@ -8,20 +8,20 @@ import { Resvg } from "@resvg/resvg-js";
 const mark = readFileSync(new URL("../assets/brand/speek.svg", import.meta.url), "utf8");
 const inner = mark.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
 
-// The icon is full-bleed (iOS refuses transparency): the night ground with two
-// aurora glows, and the mark at about 72% so the rounded mask never clips it.
+// The icon is full-bleed (iOS refuses transparency): the navy ground with a
+// stage-blue wash and a brass lamp glow, and the mark at about 72% so the rounded mask never clips it.
 const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="1024" height="1024">
   <defs>
     <radialGradient id="g1" cx="18" cy="12" r="70" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#7C5CFF" stop-opacity="0.55"/>
-      <stop offset="1" stop-color="#7C5CFF" stop-opacity="0"/>
+      <stop offset="0" stop-color="#2E4A78" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#2E4A78" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="g2" cx="92" cy="96" r="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2EE6C5" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="#2EE6C5" stop-opacity="0"/>
+      <stop offset="0" stop-color="#D9A85B" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#D9A85B" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="100" height="100" fill="#0B0A1A"/>
+  <rect width="100" height="100" fill="#0B0F17"/>
   <rect width="100" height="100" fill="url(#g1)"/>
   <rect width="100" height="100" fill="url(#g2)"/>
   <g transform="translate(10 11) scale(0.8)">${inner}</g>

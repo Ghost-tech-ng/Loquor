@@ -1,61 +1,60 @@
-// Speek design tokens — Aurora Night.
+// Speek design tokens — Midnight & Brass.
 //
-// The old rule was "chrome is colourless, colour is data", and it produced an
-// honest instrument nobody wanted to open. The ground is still dark so a
-// measurement can still glow, but the chrome now has a light of its own: a slow
-// aurora behind everything, glass in front of it, and a gradient on anything you
-// are meant to press. Data keeps its own ramp (HEAT) so a filler rate never
-// borrows a colour that means "tap me".
+// A stage at night, or an old radio studio: a deep navy room, warm brass on the
+// things you press, ivory type. The aurora still drifts behind everything, but
+// in lamp colours now — brass, sage, a little terracotta — so the screen glows
+// like a lit dial rather than a light show. Data keeps its own ramp (HEAT) so a
+// filler rate never borrows the colour that means "tap me".
 //
 // The export names are the old ones on purpose. Every screen reads CHROME,
 // SURFACE and TYPE, so remapping the values here re-skins the whole app at once.
 
 export const AURORA = {
-  violet: "#7C5CFF",
-  teal: "#2EE6C5",
-  coral: "#FF7A6B",
-  gold: "#FFC857",
-  pink: "#FF5FA2",
-  sky: "#5CC8FF",
+  brass: "#D9A85B",      // primary: buttons, the active tab, the one thing to press
+  sage: "#6FB7A4",       // good, cleared, owned
+  terracotta: "#E07A5F", // alert: fillers, hedges, over the line
+  gold: "#EFC984",       // XP — a lighter brass, so a reward reads as a reward
+  plum: "#A0708F",       // a quiet counterweight in gradients and the sky
+  steel: "#7FA3C2",      // cool accents: freezes, info
 } as const;
 
 export const CHROME = {
-  floor: "#0B0A1A",     // night indigo
-  strata: "#141230",    // recessed panels and inputs
-  raised: "#1D1A40",    // the tab bar and sheets
-  carve: "#2B2758",     // hairlines
-  chalk: "#F4F1FF",     // primary text
-  dust: "#A7A3C7",      // secondary text
-  dustDim: "#6E6A91",   // labels
+  floor: "#0B0F17",     // near-black navy
+  strata: "#10151F",    // recessed panels and inputs
+  raised: "#141A26",    // cards, the tab bar and sheets
+  carve: "#252D3B",     // hairlines
+  chalk: "#F2EEE6",     // primary text, ivory
+  dust: "#ABA69A",      // secondary text
+  dustDim: "#726E66",   // labels
+  ink: "#141008",       // text on a brass fill
 } as const;
 
-// Vocal energy, silence → peak. Still the ramp every live meter samples, now
-// drawn from the aurora so the meters belong to the same sky as the chrome.
+// Vocal energy, silence → peak: a cold dial warming to a hot lamp.
 export const HEAT = [
-  "#1E2266",
-  "#4B3FD1",
-  "#9B5CFF",
-  "#FF5FA2",
-  "#FF9A5C",
-  "#FFE3A3",
+  "#18233A",
+  "#2F4C6B",
+  "#4F8E86",
+  "#D9A85B",
+  "#E07A5F",
+  "#F6E2B6",
 ] as const;
 
 export const SEMANTIC = {
-  ember: AURORA.coral, // live, recording
-  flaw: AURORA.pink,   // filler markers, hedges, over-threshold
-  solid: AURORA.teal,  // owned, mastered, cleared
+  ember: AURORA.brass,      // live, recording, the active choice
+  flaw: AURORA.terracotta,  // filler markers, hedges, over-threshold
+  solid: AURORA.sage,       // owned, mastered, cleared
   xp: AURORA.gold,
 } as const;
 
 /** Gradient stops, as tuples so they drop straight into LinearGradient. */
 export const GRADIENT = {
-  primary: [AURORA.violet, AURORA.pink] as const,
-  cool: [AURORA.violet, AURORA.teal] as const,
-  warm: [AURORA.coral, AURORA.gold] as const,
-  flame: ["#FF5A36", "#FF9A3C", AURORA.gold] as const,
-  xp: [AURORA.gold, "#FF9A3C"] as const,
-  good: [AURORA.teal, AURORA.sky] as const,
-  brand: [AURORA.violet, AURORA.teal, AURORA.coral] as const,
+  primary: ["#E8BE74", "#C08A45"] as const,
+  cool: [AURORA.steel, AURORA.sage] as const,
+  warm: [AURORA.terracotta, AURORA.brass] as const,
+  flame: ["#D9583A", "#E8964A", AURORA.gold] as const,
+  xp: [AURORA.gold, AURORA.brass] as const,
+  good: ["#86C7B5", "#4F9886"] as const,
+  brand: [AURORA.brass, AURORA.sage, AURORA.terracotta] as const,
 };
 
 // Interpolate the heat ramp. `t` clamps to 0..1.
@@ -128,11 +127,11 @@ export const RADIUS = {
   pill: 999,
 } as const;
 
-/** Glass: translucent so it sits on the aurora. */
+/** Glass: slate cards, translucent enough to sit on the sky. */
 export const SURFACE = {
-  sunk: "rgba(255, 255, 255, 0.055)",
-  edge: "rgba(255, 255, 255, 0.10)",
-  edgeLive: "rgba(255, 255, 255, 0.18)",
+  sunk: "rgba(242, 238, 230, 0.05)",
+  edge: "rgba(242, 238, 230, 0.10)",
+  edgeLive: "rgba(242, 238, 230, 0.18)",
 } as const;
 
 /** Clearance under every scrolling screen so the floating bar never covers the

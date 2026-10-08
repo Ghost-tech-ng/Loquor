@@ -33,6 +33,7 @@ import {
   TYPE,
 } from "../theme";
 import { GlowButton } from "./kit/GlowButton";
+import { Glyph } from "./kit/Glyph";
 import { PressableScale, Rise } from "./kit/motion";
 
 // What <View> actually accepts. Not StyleProp<ViewStyle>: Expo's web typings
@@ -237,7 +238,7 @@ export function Masthead({
             accessibilityRole="button"
             accessibilityLabel="Close"
           >
-            <Text style={s.chipLabel}>✕</Text>
+            <Glyph name="x" size={14} strokeWidth={2.2} />
           </Pressable>
         ) : null}
       </View>
@@ -329,8 +330,8 @@ const s = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: AURORA.violet,
-    shadowColor: AURORA.violet,
+    backgroundColor: AURORA.brass,
+    shadowColor: AURORA.brass,
     shadowOpacity: 0.9,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 0 },
@@ -357,7 +358,7 @@ const s = StyleSheet.create({
 
   eyebrow: { color: CHROME.dust, fontSize: 11, letterSpacing: 1.6, fontFamily: TYPE.uiBold },
   display: { color: CHROME.chalk, fontSize: 30, lineHeight: 36, fontFamily: TYPE.display, letterSpacing: -0.6 },
-  body: { color: "#DAD6F2", fontSize: 16, lineHeight: 25, fontFamily: TYPE.ui },
+  body: { color: "#E4DFD4", fontSize: 16, lineHeight: 25, fontFamily: TYPE.ui },
   meta: { color: CHROME.dust, fontSize: 13.5, lineHeight: 20, fontFamily: TYPE.ui },
   hair: { height: 1, backgroundColor: SURFACE.edge },
 

@@ -62,13 +62,13 @@ export function StreakFlame({
     ],
   }));
 
-  const top = alive ? "#FFE08A" : "#4A4766";
-  const mid = alive ? "#FF9A3C" : "#3A3757";
-  const base = alive ? "#FF4D2E" : "#2B2848";
+  const top = alive ? "#F6DFA6" : "#3E4656";
+  const mid = alive ? "#E8964A" : "#2F3644";
+  const base = alive ? "#D9583A" : "#222834";
 
   return (
     <View style={{ width: size, height: size }}>
-      {alive ? <Halo color="#FF7A2E" opacity={hot ? 0.6 : 0.38} spread={size * 0.4} /> : null}
+      {alive ? <Halo color="#E8964A" opacity={hot ? 0.6 : 0.38} spread={size * 0.4} /> : null}
       <Animated.View style={[{ position: "absolute", width: size, height: size }, outer]}>
         <Svg width={size} height={size} viewBox="0 0 24 24">
           <Defs>
@@ -83,7 +83,7 @@ export function StreakFlame({
       </Animated.View>
       <Animated.View style={[{ position: "absolute", width: size, height: size }, inner]}>
         <Svg width={size} height={size} viewBox="0 0 24 24">
-          <Path d={INNER} fill={alive ? "#FFF3C4" : "#5A5778"} opacity={alive ? 0.95 : 0.6} />
+          <Path d={INNER} fill={alive ? "#FFF1CF" : "#4E5666"} opacity={alive ? 0.95 : 0.6} />
         </Svg>
       </Animated.View>
     </View>

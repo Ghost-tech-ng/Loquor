@@ -628,12 +628,12 @@ const s = StyleSheet.create({
   cardTitle: { fontSize: 21, lineHeight: 27 },
 
   moveName: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.uiMedium },
-  moveForm: { color: "#C3D0D2", fontSize: 14, lineHeight: 21, fontFamily: TYPE.displayItalic },
+  moveForm: { color: "#C9C3B6", fontSize: 14, lineHeight: 21, fontFamily: TYPE.displayItalic },
   moveWhy: { color: CHROME.dustDim, fontSize: 12, lineHeight: 18, fontFamily: TYPE.ui },
 
   question: { color: CHROME.chalk, fontFamily: TYPE.displayItalic, fontSize: 17, lineHeight: 25 },
   model: { color: CHROME.chalk, fontFamily: TYPE.displayItalic, fontSize: 15, lineHeight: 23 },
-  heard: { color: "#C3D0D2", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
+  heard: { color: "#C9C3B6", fontSize: 13, lineHeight: 20, fontFamily: TYPE.displayItalic },
   note: { color: CHROME.dust, fontSize: 12, lineHeight: 18, fontFamily: TYPE.ui },
   hint: {
     color: CHROME.dustDim,
@@ -662,7 +662,7 @@ const s = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: RADIUS.pill,
   },
-  chipOn: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(224, 85, 63, 0.1)" },
+  chipOn: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(217, 168, 91, 0.1)" },
   chipText: { color: CHROME.dust, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
   chipTextOn: { color: SEMANTIC.ember },
 

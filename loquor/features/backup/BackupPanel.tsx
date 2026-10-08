@@ -331,7 +331,7 @@ const s = StyleSheet.create({
     padding: 3,
     marginTop: 2,
   },
-  trackOn: { backgroundColor: "rgba(224, 85, 63, 0.18)", borderColor: SEMANTIC.ember },
+  trackOn: { backgroundColor: "rgba(217, 168, 91, 0.18)", borderColor: SEMANTIC.ember },
   knob: { width: 16, height: 16, borderRadius: RADIUS.pill, backgroundColor: CHROME.dustDim },
   knobOn: { backgroundColor: SEMANTIC.ember, alignSelf: "flex-end" },
 

@@ -325,7 +325,7 @@ const s = StyleSheet.create({
   q: { flexDirection: "row", gap: 12 },
   qNum: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.monoMedium, width: 16, ...TABULAR },
   qName: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.uiMedium },
-  qForm: { color: "#C3D0D2", fontSize: 14, lineHeight: 21, fontFamily: TYPE.displayItalic },
+  qForm: { color: "#C9C3B6", fontSize: 14, lineHeight: 21, fontFamily: TYPE.displayItalic },
   qCue: { color: CHROME.dustDim, fontSize: 11, lineHeight: 17, fontFamily: TYPE.ui, marginTop: 2 },
 
   scName: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.uiMedium, marginTop: 4 },

@@ -115,7 +115,7 @@ export function Boot({ exiting = false }: { exiting?: boolean }) {
   return (
     <Animated.View style={[s.root, fade]}>
       <LinearGradient
-        colors={[alpha(AURORA.violet, 0.35), "rgba(0,0,0,0)", alpha(AURORA.pink, 0.22)]}
+        colors={[alpha(AURORA.brass, 0.35), "rgba(0,0,0,0)", alpha(AURORA.sage, 0.14)]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
