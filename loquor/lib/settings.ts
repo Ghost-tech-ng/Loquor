@@ -24,6 +24,8 @@ export type Settings = {
    * can be compared on the same reading.
    */
   readingPrimer: "disfluency" | "passage";
+  /** Game chimes. Haptics stay on regardless; they make no noise in a quiet room. */
+  sfx: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -31,6 +33,7 @@ export const DEFAULT_SETTINGS: Settings = {
   sttProvider: "groq",
   judgeProvider: "groq",
   readingPrimer: "disfluency",
+  sfx: true,
 };
 
 const SETTINGS_KEY = "loquor.settings";

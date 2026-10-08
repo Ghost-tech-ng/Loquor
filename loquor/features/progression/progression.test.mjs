@@ -129,9 +129,59 @@ test("the first quest targets the weak spot", () => {
 test("quests behind unavailable features are never offered", () => {
   for (let day = 0; day < 200; day++) {
     for (const id of pickQuests(day, ctx)) {
-      assert.ok(!id.startsWith("game-") && id !== "debrief-1");
+      assert.notEqual(QUESTS_BY_ID.get(id).needs, "games", id);
+      assert.notEqual(id, "debrief-1");
     }
   }
+});
+
+const noGames = {
+  gameRuns: 0,
+  blitzCorrect: 0,
+  bombBest: 0,
+  pauseClean: 0,
+  gauntletCleared: 0,
+  focusBest: 0,
+  aliveBest: 0,
+};
+
+test("game quests read the day's bests", () => {
+  const facts = {
+    arenaTakes: 0,
+    bestFiller: null,
+    readings: 0,
+    lexiconReviews: 0,
+    drills: 0,
+    valveRuns: 0,
+    debriefs: 0,
+    ...noGames,
+    gameRuns: 2,
+    blitzCorrect: 12,
+    gauntletCleared: 2,
+    focusBest: 50,
+    aliveBest: 64,
+  };
+  const states = questStates(["blitz-10", "gauntlet-3", "focus-45", "alive-70"], facts, new Set());
+  assert.deepEqual(
+    states.map((s) => [s.quest.id, s.value, s.done]),
+    [
+      ["blitz-10", 10, true],
+      ["gauntlet-3", 2, false],
+      ["focus-45", 45, true],
+      ["alive-70", 0, false],
+    ]
+  );
+});
+
+test("game quests appear once games are live, never two from one family", () => {
+  const live = { ...ctx, gamesAvailable: true };
+  let seen = 0;
+  for (let day = 0; day < 200; day++) {
+    const picked = pickQuests(day, live).map((id) => QUESTS_BY_ID.get(id));
+    seen += picked.filter((q) => q.needs === "games").length;
+    assert.equal(new Set(picked.map((q) => q.family)).size, picked.length);
+  }
+  assert.ok(seen > 50);
 });
 
 test("questStates caps progress at the goal and marks done", () => {
@@ -143,7 +193,7 @@ test("questStates caps progress at the goal and marks done", () => {
     drills: 0,
     valveRuns: 0,
     debriefs: 0,
-    gameRuns: 0,
+    ...noGames,
   };
   const states = questStates(["arena-2", "clean-3", "lex-10", "gone"], facts, new Set(["arena-2"]));
   assert.equal(states.length, 3);
@@ -169,7 +219,19 @@ const blank = {
   rubricBest: null,
   streakBest: 0,
   level: 1,
+  ...noGames,
 };
+
+test("game badges unlock at their lines", () => {
+  const ids = (f) => newlyEarned({ ...blank, ...f }, new Set()).map((b) => b.id);
+  assert.deepEqual(ids({ gameRuns: 1 }), ["player-one"]);
+  assert.ok(ids({ gameRuns: 1, bombBest: 5 }).includes("bomb-squad"));
+  assert.ok(!ids({ gameRuns: 1, bombBest: 4 }).includes("bomb-squad"));
+  assert.ok(ids({ gameRuns: 1, gauntletCleared: 6 }).includes("iron-focus"));
+  assert.ok(ids({ gameRuns: 1, aliveBest: 90 }).includes("human"));
+  assert.ok(!ids({ gameRuns: 1, aliveBest: 89 }).includes("human"));
+  assert.ok(ids({ gameRuns: 1, blitzCorrect: 20, pauseClean: 10 }).includes("golden-silence"));
+});
 
 test("a new user has no badges", () => {
   assert.deepEqual(newlyEarned(blank, new Set()), []);

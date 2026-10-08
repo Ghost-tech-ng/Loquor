@@ -18,6 +18,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { CHROME, GRADIENT, RADIUS, SURFACE, TYPE } from "../../theme";
+import { Glyph, type GlyphName } from "./Glyph";
 import { Halo } from "./Halo";
 import { PressableScale } from "./motion";
 
@@ -44,7 +45,7 @@ export function GlowButton({
   onPress: () => void;
   tone?: GlowTone;
   disabled?: boolean;
-  icon?: string;
+  icon?: GlyphName;
   style?: BoxStyle;
   compact?: boolean;
 }) {
@@ -105,18 +106,20 @@ export function GlowButton({
                 style={StyleSheet.absoluteFill}
               />
             </Animated.View>
-            <Text style={[s.label, s.labelOnLight, compact && s.labelCompact]}>
-              {icon ? `${icon}  ` : ""}
-              {label}
-            </Text>
+            <View style={s.row}>
+              {icon ? <Glyph name={icon} size={compact ? 16 : 18} strokeWidth={2.2} color={CHROME.ink} /> : null}
+              <Text style={[s.label, s.labelOnLight, compact && s.labelCompact]}>{label}</Text>
+            </View>
           </LinearGradient>
         </View>
       ) : (
         <View style={[s.pill, { height }, tone === "ghost" ? s.ghost : null]}>
-          <Text style={[s.label, compact && s.labelCompact, tone === "quiet" && s.quietLabel]}>
-            {icon ? `${icon}  ` : ""}
-            {label}
-          </Text>
+          <View style={s.row}>
+            {icon ? (
+              <Glyph name={icon} size={compact ? 16 : 18} strokeWidth={2.2} color={tone === "quiet" ? CHROME.dust : CHROME.chalk} />
+            ) : null}
+            <Text style={[s.label, compact && s.labelCompact, tone === "quiet" && s.quietLabel]}>{label}</Text>
+          </View>
         </View>
       )}
     </PressableScale>
@@ -139,6 +142,7 @@ const s = StyleSheet.create({
     overflow: "hidden",
   },
   sheen: { position: "absolute", top: 0, bottom: 0, width: 60 },
+  row: { flexDirection: "row", alignItems: "center", gap: 8 },
   ghost: {
     backgroundColor: SURFACE.sunk,
     borderWidth: StyleSheet.hairlineWidth * 2,

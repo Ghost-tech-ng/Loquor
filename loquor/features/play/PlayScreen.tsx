@@ -13,14 +13,15 @@ import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { Masthead, Screen } from "../../components/ui";
+import { Masthead, Screen } from "../../components/kit/Screen";
 import { Glass } from "../../components/kit/Glass";
 import { PressableScale, Rise } from "../../components/kit/motion";
 import { feel } from "../../components/kit/feel";
 import { Glyph, type GlyphName } from "../../components/kit/Glyph";
 import { AURORA, CHROME, RADIUS, SPACE, SURFACE, TABULAR, TYPE, alpha } from "../../theme";
 import { READINGS_BY_ID, pickReading, readingMinutes, type Reading } from "../reading/readings";
-import { GAMES_LIVE } from "../progression/progressionStore";
+import { bestOf } from "../games/runs";
+import type { GameId } from "../progression/xp";
 import { coverage } from "../../lib/skillStore";
 import {
   lexiconStats,
@@ -31,13 +32,15 @@ import {
 } from "../../lib/db";
 
 type Game = {
-  key: string;
+  key: GameId;
   name: string;
   icon: GlyphName;
   hook: string;
   /** Two stops: the card's own colour, so the five never blur into one. */
   tint: readonly [string, string];
   tag: string;
+  /** How a best reads on the card. */
+  unit: (n: number) => string;
 };
 
 const GAMES: Game[] = [
@@ -48,6 +51,7 @@ const GAMES: Game[] = [
     hook: "Start as a robot. Your melody, punch and rhythm turn it back into you.",
     tint: [AURORA.plum, AURORA.emerald],
     tag: "VOICE",
+    unit: (n) => `${n} liveliness`,
   },
   {
     key: "gauntlet",
@@ -56,6 +60,7 @@ const GAMES: Game[] = [
     hook: "Rounds from 20 seconds to 90. Three hearts. Every um costs one.",
     tint: [AURORA.coral, AURORA.cyan],
     tag: "FOCUS",
+    unit: (n) => `${n}s survived`,
   },
   {
     key: "pause",
@@ -64,6 +69,7 @@ const GAMES: Game[] = [
     hook: "Talk until the gate flashes, then hold a clean silence. Live, no waiting.",
     tint: [AURORA.mint, AURORA.steel],
     tag: "LIVE",
+    unit: (n) => `${n.toLocaleString()} pts`,
   },
   {
     key: "bomb",
@@ -72,6 +78,7 @@ const GAMES: Game[] = [
     hook: "A word drops with a lit fuse. Use it in a sentence out loud before it blows.",
     tint: [AURORA.cyan, AURORA.coral],
     tag: "SPEAK",
+    unit: (n) => `${n}/5 defused`,
   },
   {
     key: "blitz",
@@ -80,6 +87,7 @@ const GAMES: Game[] = [
     hook: "Sixty seconds, a definition, four words. Combos stack, and it counts as review.",
     tint: [AURORA.emerald, AURORA.mint],
     tag: "TAP",
+    unit: (n) => `${n.toLocaleString()} pts`,
   },
 ];
 
@@ -104,10 +112,17 @@ export default function Play() {
   );
   const [cover, setCover] = useState<{ tried: number; solid: number; total: number } | null>(null);
   const [valveThreshold, setValveThreshold] = useState<number | null>(null);
+  const [bests, setBests] = useState<Partial<Record<GameId, number>>>({});
 
   useFocusEffect(
     useCallback(() => {
       let live = true;
+      void Promise.all(GAMES.map(async (g) => [g.key, await bestOf(g.key)] as const)).then((pairs) => {
+        if (!live) return;
+        const next: Partial<Record<GameId, number>> = {};
+        for (const [k, v] of pairs) if (v !== null) next[k] = v;
+        setBests(next);
+      });
       (async () => {
         const [readUsed, takes, stats, cov, valve] = await Promise.all([
           usedReadingIds(),
@@ -217,34 +232,18 @@ export default function Play() {
 
       <Rise index={1} style={s.sectionHead}>
         <Text style={s.sectionTitle}>Games</Text>
-        {!GAMES_LIVE ? <Text style={s.soon}>ARRIVING NEXT UPDATE</Text> : null}
+        <Text style={s.soon}>FIVE GAMES</Text>
       </Rise>
-
-      {!GAMES_LIVE ? (
-        <Rise index={2}>
-          <PressableScale onPress={() => router.push("/dev/pitch")} scaleTo={0.97} accessibilityLabel="Pitch test">
-            <Glass style={s.drill} radius={RADIUS.soft + 6} glow={AURORA.cyan}>
-              <View style={[s.drillIcon, { backgroundColor: alpha(AURORA.cyan, 0.12) }]}>
-                <Glyph name="waveform" size={22} strokeWidth={1.7} color={AURORA.cyan} />
-              </View>
-              <View style={{ flex: 1, gap: 3 }}>
-                <Text style={s.drillName}>Pitch test</Text>
-                <Text style={s.drillTrains}>
-                  Two minutes on your phone decides how the voice game gets built.
-                </Text>
-              </View>
-              <Glyph name="chevron" size={18} color={CHROME.dust} />
-            </Glass>
-          </PressableScale>
-        </Rise>
-      ) : null}
 
       {GAMES.map((g, i) => (
         <Rise key={g.key} index={i + 2}>
           <PressableScale
-            onPress={() => feel.warn()}
+            onPress={() => {
+              feel.tap();
+              router.push(`/play/${g.key}`);
+            }}
             scaleTo={0.97}
-            accessibilityLabel={`${g.name}, coming next`}
+            accessibilityLabel={g.name}
           >
             <View style={s.game}>
               <LinearGradient
@@ -264,12 +263,13 @@ export default function Play() {
                   </View>
                 </View>
                 <Text style={s.gameHook}>{g.hook}</Text>
+                {bests[g.key] !== undefined ? (
+                  <View style={s.bestRow}>
+                    <Glyph name="trophy" size={12} color={AURORA.cyan} strokeWidth={2} />
+                    <Text style={s.bestText}>{g.unit(bests[g.key]!)}</Text>
+                  </View>
+                ) : null}
               </View>
-              {!GAMES_LIVE ? (
-                <View style={s.lock}>
-                  <Glyph name="lock" size={13} strokeWidth={2.2} color={CHROME.dust} />
-                </View>
-              ) : null}
             </View>
           </PressableScale>
         </Rise>
@@ -335,7 +335,8 @@ const s = StyleSheet.create({
   gameHook: { color: CHROME.chalk, opacity: 0.86, fontSize: 13.5, lineHeight: 19, fontFamily: TYPE.ui },
   tag: { borderWidth: 1, borderRadius: RADIUS.pill, paddingHorizontal: 8, paddingVertical: 2 },
   tagText: { fontSize: 9.5, letterSpacing: 1.2, fontFamily: TYPE.uiBold },
-  lock: { position: "absolute", top: 10, right: 12, opacity: 0.8 },
+  bestRow: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 2 },
+  bestText: { color: AURORA.cyan, fontSize: 12, fontFamily: TYPE.monoMedium, ...TABULAR },
 
   drill: { flexDirection: "row", alignItems: "center", gap: 14, paddingVertical: 14 },
   drillIcon: {

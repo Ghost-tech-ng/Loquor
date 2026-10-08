@@ -7,6 +7,7 @@
 
 import {
   AudioWaveform,
+  Bell,
   Bomb,
   BookOpen,
   Bot,
@@ -17,8 +18,10 @@ import {
   DoorOpen,
   Feather,
   FlaskConical,
+  Gamepad2,
   Flame,
   Gem,
+  Heart,
   Library,
   Lock,
   Medal,
@@ -27,10 +30,14 @@ import {
   Mountain,
   Pause,
   Rocket,
+  RotateCcw,
   Shield,
   Snowflake,
+  Sparkles,
   Sword,
+  Timer,
   Trophy,
+  Volume2,
   Wind,
   X,
   Zap,
@@ -52,7 +59,13 @@ export type GlyphName =
   | "snowflake"
   | "check"
   | "x"
-  | "chevron";
+  | "chevron"
+  | "heart"
+  | "replay"
+  | "sparkles"
+  | "bell"
+  | "volume"
+  | "timer";
 
 const MAP: Record<GlyphName, LucideIcon> = {
   mic: Mic,
@@ -83,6 +96,13 @@ const MAP: Record<GlyphName, LucideIcon> = {
   check: Check,
   x: X,
   chevron: ChevronRight,
+  heart: Heart,
+  replay: RotateCcw,
+  sparkles: Sparkles,
+  bell: Bell,
+  volume: Volume2,
+  timer: Timer,
+  gamepad: Gamepad2,
 };
 
 export function Glyph({

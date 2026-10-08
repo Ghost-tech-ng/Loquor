@@ -42,6 +42,7 @@ import { transcribe } from "../../lib/stt";
 import { judge } from "./judge";
 import { countSessions, getSession, recentSessions, saveSession } from "../../lib/db";
 import { getKey, loadSettings, resolve } from "../../lib/settings";
+import { liveliness } from "../games/prosody";
 
 const PRIMER_SECONDS = 90;
 const SOFT_CEILING_S = 120;
@@ -113,6 +114,7 @@ export default function Arena() {
   const [takes, setTakes] = useState(0);
   const [hint, setHint] = useState(false);
   const [opened, setOpened] = useState<ReadonlySet<string>>(new Set());
+  const levels = useRef<number[]>([]);
 
   const isRewrite = Boolean(params.rewriteOf);
 
@@ -160,6 +162,12 @@ export default function Arena() {
     })();
   }, [params.rewriteOf]);
 
+  // One reading per meter tick, for the punch half of liveliness.
+  useEffect(() => {
+    if (stage !== "recording") return;
+    levels.current.push(typeof state.metering === "number" ? state.metering : -160);
+  }, [stage, state.durationMillis, state.metering]);
+
   useEffect(() => {
     if (stage !== "primer" || left <= 0) return;
     const t = setTimeout(() => setLeft((n) => n - 1), 1000);
@@ -184,6 +192,7 @@ export default function Arena() {
       // Another screen may have left the session in playback-only mode.
       await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
       await recorder.prepareToRecordAsync();
+      levels.current = [];
       recorder.record();
     } catch (err) {
       setError(explainFailure("Starting the mic", err));
@@ -253,7 +262,10 @@ export default function Arena() {
         /* a leftover temp file is not worth failing the session over */
       }
 
-      router.replace({ pathname: "/scorecard", params: { id } });
+      // Not stored with the session: the reading is a coaching hint for this
+      // take, and the sessions table has no column for it.
+      const live = liveliness({ levelsDb: levels.current, words: t.words });
+      router.replace({ pathname: "/scorecard", params: live ? { id, live: String(live.score) } : { id } });
     } catch (err) {
       setError(explainFailure(current, err));
       setStage("error");

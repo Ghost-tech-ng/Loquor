@@ -36,6 +36,7 @@ import {
   type Provider,
   type Settings as SettingsShape,
 } from "../../lib/settings";
+import { play, setSfxEnabled } from "../../components/kit/sfx";
 import { resetAll } from "../../lib/db";
 import {
   clearDaily,
@@ -272,6 +273,23 @@ export default function Settings() {
       </View>
 
       <Backup />
+
+      <Hair style={{ marginTop: SPACE.sm }} />
+      <Eyebrow>SOUND</Eyebrow>
+      <Meta>Chimes in the games. Haptics stay on either way.</Meta>
+      <Segment
+        options={[
+          { value: "on", label: "Chimes on" },
+          { value: "off", label: "Silent" },
+        ]}
+        value={settings.sfx ? "on" : "off"}
+        onChange={(v) => {
+          const on = v === "on";
+          setSfxEnabled(on);
+          if (on) play("correct");
+          void applyCustom({ sfx: on });
+        }}
+      />
 
       <Hair style={{ marginTop: SPACE.sm }} />
       <Eyebrow>REMINDERS</Eyebrow>

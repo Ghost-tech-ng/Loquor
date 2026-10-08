@@ -36,10 +36,12 @@ import { RUBRIC_LABELS, type Judgement } from "./judge";
 import { getSession, type SessionRow } from "../../lib/db";
 import { fillerCountIsApproximate } from "../../lib/settings";
 import { celebrate } from "../progression/progressionStore";
+import { LIVELY_LINE, labelFor } from "../games/prosody";
 
 export default function Scorecard() {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const { id, live } = useLocalSearchParams<{ id?: string; live?: string }>();
+  const lively = live !== undefined && Number.isFinite(Number(live)) ? Number(live) : null;
   const [row, setRow] = useState<SessionRow | null>(null);
   const [parent, setParent] = useState<SessionRow | null>(null);
   const [missing, setMissing] = useState(false);
@@ -173,6 +175,17 @@ export default function Scorecard() {
           }
         />
         </Reveal>
+        {lively !== null ? (
+          <Reveal index={4}>
+            <Rail
+              label="LIVELINESS"
+              value={String(lively)}
+              unit={`/100 · ${labelFor(lively)}`}
+              position={lively / 100}
+              bandLabel={LIVELY_LINE[labelFor(lively)]}
+            />
+          </Reveal>
+        ) : null}
       </View>
 
       {j ? (
@@ -183,13 +196,13 @@ export default function Scorecard() {
             <Text style={s.total}>{row.rubric_total}/20</Text>
           </View>
 
-          <Reveal index={4}>
+          <Reveal index={5}>
             <Display style={s.headline}>{j.headline}</Display>
           </Reveal>
 
           <View style={s.scores}>
             {RUBRIC_LABELS.map(({ key, label }, i) => (
-              <Reveal key={key} index={5 + i}>
+              <Reveal key={key} index={6 + i}>
                 <Score label={label} score={j.rubric[key]} />
               </Reveal>
             ))}

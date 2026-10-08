@@ -52,6 +52,7 @@ import { transcribe } from "../../lib/stt";
 import { saveTake, sectionBests } from "../../lib/db";
 import { gradeRecognition } from "../lexicon/lexiconStore";
 import { getKey, loadSettings, resolve } from "../../lib/settings";
+import { LIVELY_LINE, liveliness, type Liveliness } from "../games/prosody";
 
 type Stage = "contents" | "study" | "reading" | "working" | "result" | "error";
 
@@ -67,6 +68,8 @@ export default function Read() {
   const [sectionN, setSectionN] = useState(Number(params.section ?? 1) || 1);
   const [openWord, setOpenWord] = useState<string | null>(null);
   const [score, setScore] = useState<ReadingScore | null>(null);
+  const [lively, setLively] = useState<Liveliness | null>(null);
+  const levels = useRef<number[]>([]);
   const [bests, setBests] = useState<Map<number, number>>(new Map());
   const [error, setError] = useState<string | null>(null);
   const granted = useRef(false);
@@ -89,6 +92,12 @@ export default function Read() {
 
   useEffect(refreshBests, [refreshBests]);
 
+  // One reading per meter tick, for the punch half of liveliness.
+  useEffect(() => {
+    if (stage !== "reading") return;
+    levels.current.push(typeof state.metering === "number" ? state.metering : -160);
+  }, [stage, state.durationMillis, state.metering]);
+
   if (!reading) {
     return (
       <Screen>
@@ -107,6 +116,7 @@ export default function Read() {
     if (!granted.current) return;
     setError(null);
     await recorder.prepareToRecordAsync();
+    levels.current = [];
     recorder.record();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setStage("reading");
@@ -161,6 +171,7 @@ export default function Read() {
       }
 
       setScore(result);
+      setLively(liveliness({ levelsDb: levels.current, words: t.words }));
       setBests((m) => {
         const next = new Map(m);
         const prev = next.get(section.n);
@@ -302,6 +313,16 @@ export default function Read() {
           bandLabel="Long stops in the middle of a clause — searching, not phrasing."
           tint={strain(Math.min(1, score.hesitations / 8))}
         />
+
+        {lively ? (
+          <Rail
+            label="LIVELINESS"
+            value={String(lively.score)}
+            unit={`/100 · ${lively.label}`}
+            position={lively.score / 100}
+            bandLabel={LIVELY_LINE[lively.label]}
+          />
+        ) : null}
 
         {score.stumbles.length > 0 ? (
           <>

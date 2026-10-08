@@ -15,6 +15,13 @@ export type LifetimeFacts = {
   rubricBest: number | null;
   streakBest: number;
   level: number;
+  gameRuns: number;
+  blitzCorrect: number;
+  bombBest: number;
+  pauseClean: number;
+  gauntletCleared: number;
+  focusBest: number;
+  aliveBest: number;
 };
 
 export type BadgeIcon =
@@ -34,7 +41,13 @@ export type BadgeIcon =
   | "door"
   | "wind"
   | "rocket"
-  | "crown";
+  | "crown"
+  | "gamepad"
+  | "timer"
+  | "bomb"
+  | "pause"
+  | "shield"
+  | "sparkles";
 
 export type Badge = {
   id: string;
@@ -60,6 +73,12 @@ export const BADGES: Badge[] = [
   { id: "tactician", name: "Tactician", how: "Five Playbook or Lab drills", icon: "knight", earned: (f) => f.drills >= 5 },
   { id: "in-the-room", name: "In the Room", how: "Debrief a real meeting", icon: "door", earned: (f) => f.debriefs >= 1 },
   { id: "open-throat", name: "Open Throat", how: "Hold the whole Valve ladder clean", icon: "wind", earned: (f) => f.valveClean >= 1 },
+  { id: "player-one", name: "Player One", how: "Play your first game", icon: "gamepad", earned: (f) => f.gameRuns >= 1 },
+  { id: "blitz-master", name: "Blitz Master", how: "Twenty right in one Lexicon Blitz", icon: "timer", earned: (f) => f.blitzCorrect >= 20 },
+  { id: "bomb-squad", name: "Bomb Squad", how: "Defuse all five bombs in one round", icon: "bomb", earned: (f) => f.bombBest >= 5 },
+  { id: "golden-silence", name: "Golden Silence", how: "Ten clean pauses in one round of Pause, Don't Um", icon: "pause", earned: (f) => f.pauseClean >= 10 },
+  { id: "iron-focus", name: "Iron Focus", how: "Clear every round of the Gauntlet", icon: "shield", earned: (f) => f.gauntletCleared >= 6 },
+  { id: "human", name: "Human After All", how: "Score 90 or more in Bring It to Life", icon: "sparkles", earned: (f) => f.aliveBest >= 90 },
   { id: "rising", name: "Rising", how: "Reach level 5", icon: "rocket", earned: (f) => f.level >= 5 },
   { id: "speaker", name: "Speaker", how: "Reach level 10", icon: "crown", earned: (f) => f.level >= 10 },
 ];

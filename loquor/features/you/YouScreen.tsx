@@ -22,6 +22,7 @@ import { BADGES, type Badge } from "../progression/badges";
 import { RANKS } from "../progression/levels";
 import { snapshot, type Progress as Snapshot } from "../progression/progressionStore";
 import Progress from "../progress/ProgressScreen";
+import { gameFacts, type GameFacts } from "../../lib/db";
 
 function nextRank(level: number): { name: string; at: number } | null {
   const next = RANKS.find((r) => r.from > level);
@@ -32,6 +33,7 @@ function Header() {
   const router = useRouter();
   const [p, setP] = useState<Snapshot | null>(null);
   const [picked, setPicked] = useState<Badge | null>(null);
+  const [games, setGames] = useState<GameFacts | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -39,6 +41,11 @@ function Header() {
       snapshot()
         .then((next) => {
           if (live) setP(next);
+        })
+        .catch(() => {});
+      gameFacts()
+        .then((next) => {
+          if (live) setGames(next);
         })
         .catch(() => {});
       return () => {
@@ -105,7 +112,27 @@ function Header() {
         Every 7-day run banks a freeze, up to two. Miss a day and one is spent for you.
       </Text>
 
-      <Rise index={2} style={{ gap: 10 }}>
+      <Rise index={2} style={s.statRow}>
+        <Glass style={s.stat}>
+          <View style={s.statIcon}>
+            <Glyph name="shield" size={28} strokeWidth={1.7} color={AURORA.coral} />
+          </View>
+          <Text style={s.statNum}>{games?.focusBest ? `${games.focusBest}s` : "—"}</Text>
+          <Text style={s.statLabel}>focus span</Text>
+        </Glass>
+        <Glass style={s.stat}>
+          <View style={s.statIcon}>
+            <Glyph name="sparkles" size={28} strokeWidth={1.7} color={AURORA.plum} />
+          </View>
+          <Text style={s.statNum}>{games?.aliveBest ? games.aliveBest : "—"}</Text>
+          <Text style={s.statLabel}>best liveliness</Text>
+        </Glass>
+      </Rise>
+      <Text style={s.freezeNote}>
+        Focus span is your longest clean stretch in the Gauntlet. Liveliness is your best in Bring It to Life.
+      </Text>
+
+      <Rise index={3} style={{ gap: 10 }}>
         <View style={s.head}>
           <Text style={s.title}>Badges</Text>
           <Text style={s.meta}>
@@ -167,7 +194,7 @@ function Header() {
         )}
       </Rise>
 
-      <Rise index={3} style={[s.head, { marginTop: SPACE.md }]}>
+      <Rise index={4} style={[s.head, { marginTop: SPACE.md }]}>
         <Text style={s.title}>The record</Text>
         <PressableScale onPress={() => router.push("/settings")} style={s.settings} accessibilityLabel="Settings">
           <Text style={s.settingsText}>Settings ›</Text>

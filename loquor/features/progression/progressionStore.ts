@@ -26,7 +26,7 @@ import { streakOf, type Streak } from "./streak";
 import { totalXp } from "./xp";
 
 /** Flipped when the Play games land; until then their quests stay out of the pool. */
-export const GAMES_LIVE = false;
+export const GAMES_LIVE = true;
 
 const SEEN_XP_KEY = "speek.seenXp";
 const questsKey = (day: number) => `speek.quests.${day}`;

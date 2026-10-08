@@ -1067,6 +1067,44 @@ export async function gameBest(game: string): Promise<number | null> {
   return row?.best ?? null;
 }
 
+export type GameFacts = {
+  gameRuns: number;
+  blitzCorrect: number;
+  bombBest: number;
+  pauseClean: number;
+  gauntletCleared: number;
+  /** Longest stretch, in seconds, with no filler and no dead air. */
+  focusBest: number;
+  aliveBest: number;
+};
+
+/** Bests across game runs, for one window [a, b) or for all time. */
+export async function gameFacts(a = 0, b = Number.MAX_SAFE_INTEGER): Promise<GameFacts> {
+  const d = await db();
+  const row = await d.getFirstAsync<Record<keyof GameFacts, number | null>>(
+    `SELECT
+       COUNT(*) AS gameRuns,
+       MAX(CASE WHEN game = 'blitz' THEN json_extract(meta_json, '$.correct') END) AS blitzCorrect,
+       MAX(CASE WHEN game = 'bomb' THEN score END) AS bombBest,
+       MAX(CASE WHEN game = 'pause' THEN json_extract(meta_json, '$.clean') END) AS pauseClean,
+       MAX(CASE WHEN game = 'gauntlet' THEN json_extract(meta_json, '$.cleared') END) AS gauntletCleared,
+       MAX(CASE WHEN game = 'gauntlet' THEN json_extract(meta_json, '$.focus') END) AS focusBest,
+       MAX(CASE WHEN game = 'alive' THEN score END) AS aliveBest
+     FROM game_scores WHERE at >= ? AND at < ?`,
+    a,
+    b
+  );
+  return {
+    gameRuns: row?.gameRuns ?? 0,
+    blitzCorrect: row?.blitzCorrect ?? 0,
+    bombBest: row?.bombBest ?? 0,
+    pauseClean: row?.pauseClean ?? 0,
+    gauntletCleared: row?.gauntletCleared ?? 0,
+    focusBest: row?.focusBest ?? 0,
+    aliveBest: row?.aliveBest ?? 0,
+  };
+}
+
 export type QuestClaimRow = { day: number; quest_id: string; at: number; xp: number };
 
 export async function questClaims(day: number): Promise<QuestClaimRow[]> {
@@ -1152,8 +1190,7 @@ export async function dayFacts(a: number, b: number): Promise<{
   drills: number;
   valveRuns: number;
   debriefs: number;
-  gameRuns: number;
-}> {
+} & GameFacts> {
   const d = await db();
   const one = async (sql: string) =>
     (await d.getFirstAsync<{ n: number | null }>(sql, a, b))?.n ?? null;
@@ -1168,7 +1205,7 @@ export async function dayFacts(a: number, b: number): Promise<{
     one(`SELECT COUNT(*) AS n FROM drills WHERE started_at >= ? AND started_at < ?`),
     one(`SELECT COUNT(*) AS n FROM valve_sessions WHERE started_at >= ? AND started_at < ?`),
     one(`SELECT COUNT(*) AS n FROM rooms WHERE debriefed_at >= ? AND debriefed_at < ?`),
-    one(`SELECT COUNT(*) AS n FROM game_scores WHERE at >= ? AND at < ?`),
+    gameFacts(a, b),
   ]);
   return {
     arenaTakes: arena ?? 0,
@@ -1178,7 +1215,7 @@ export async function dayFacts(a: number, b: number): Promise<{
     drills: drills ?? 0,
     valveRuns: valve ?? 0,
     debriefs: rooms ?? 0,
-    gameRuns: games ?? 0,
+    ...games,
   };
 }
 
@@ -1193,10 +1230,10 @@ export async function lifetimeFacts(): Promise<{
   valveRuns: number;
   valveClean: number;
   rubricBest: number | null;
-}> {
+} & GameFacts> {
   const d = await db();
   const one = async (sql: string) => (await d.getFirstAsync<{ n: number | null }>(sql))?.n ?? null;
-  const [arena, best, reads, owned, drills, rooms, valve, clean, rubric] = await Promise.all([
+  const [arena, best, reads, owned, drills, rooms, valve, clean, rubric, games] = await Promise.all([
     one(`SELECT COUNT(*) AS n FROM sessions`),
     one(`SELECT MIN(filler_rate) AS n FROM sessions WHERE duration_s >= 60`),
     one(`SELECT COUNT(*) AS n FROM read_takes`),
@@ -1206,6 +1243,7 @@ export async function lifetimeFacts(): Promise<{
     one(`SELECT COUNT(*) AS n FROM valve_sessions`),
     one(`SELECT COUNT(*) AS n FROM valve_sessions WHERE complete = 1 AND threshold > 5`),
     one(`SELECT MAX(rubric_total) AS n FROM sessions`),
+    gameFacts(),
   ]);
   return {
     arenaTakes: arena ?? 0,
@@ -1217,6 +1255,7 @@ export async function lifetimeFacts(): Promise<{
     valveRuns: valve ?? 0,
     valveClean: clean ?? 0,
     rubricBest: rubric,
+    ...games,
   };
 }
 

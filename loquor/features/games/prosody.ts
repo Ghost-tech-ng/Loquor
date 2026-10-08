@@ -133,6 +133,14 @@ export function labelFor(score: number): LivelinessLabel {
   return "Alive";
 }
 
+/** One plain sentence per label, for wherever a liveliness score is shown. */
+export const LIVELY_LINE: Record<LivelinessLabel, string> = {
+  Robot: "Flat and even, like a voice reading off a page. Let the pitch rise and fall.",
+  Reading: "Some life in it, but still steady like a page. Lean on the words that matter.",
+  Talking: "Sounds like you are talking to someone. That is the goal.",
+  Alive: "Lively. Your voice is doing as much work as your words.",
+};
+
 /** Whatever parts are measurable, weighted; null when none are. */
 export function liveliness(args: {
   points?: readonly PitchPoint[];

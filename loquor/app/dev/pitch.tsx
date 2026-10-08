@@ -12,7 +12,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Svg, { Line, Polyline } from "react-native-svg";
 import { File } from "expo-file-system";
 import {
   AudioModule,
@@ -31,54 +30,14 @@ import {
 import { Masthead, Screen } from "../../components/ui";
 import { Glass } from "../../components/kit/Glass";
 import { GlowButton } from "../../components/kit/GlowButton";
+import { MelodyLine } from "../../components/kit/MelodyLine";
 import { AURORA, CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
-import { PitchTracker, monoFloat, semitones, type PitchPoint } from "../../features/games/pitch";
+import { PitchTracker, monoFloat, type PitchPoint } from "../../features/games/pitch";
 import { melody } from "../../features/games/prosody";
 
 type Verdict = "untested" | "running" | "works" | "fails";
 
-const LINE_W = 320;
-const LINE_H = 120;
 const SHOW_S = 5;
-const ST_LO = semitones(70);
-const ST_HI = semitones(400);
-
-function MelodyLine({ points, until }: { points: readonly PitchPoint[]; until: number }) {
-  const from = Math.max(0, until - SHOW_S);
-  const visible = points.filter((p) => p.t >= from && p.clarity >= 0.7);
-  // Break the line wherever a gap means a new phrase, so silence reads as silence.
-  const runs: string[] = [];
-  let run: string[] = [];
-  visible.forEach((p, i) => {
-    if (i > 0 && p.t - visible[i - 1]!.t > 0.12) {
-      if (run.length > 1) runs.push(run.join(" "));
-      run = [];
-    }
-    const x = ((p.t - from) / SHOW_S) * LINE_W;
-    const y = LINE_H - ((semitones(p.hz) - ST_LO) / (ST_HI - ST_LO)) * LINE_H;
-    run.push(`${x.toFixed(1)},${y.toFixed(1)}`);
-  });
-  if (run.length > 1) runs.push(run.join(" "));
-  return (
-    <Svg width="100%" height={LINE_H} viewBox={`0 0 ${LINE_W} ${LINE_H}`}>
-      {[110, 165, 220].map((hz) => {
-        const y = LINE_H - ((semitones(hz) - ST_LO) / (ST_HI - ST_LO)) * LINE_H;
-        return <Line key={hz} x1={0} x2={LINE_W} y1={y} y2={y} stroke={CHROME.carve} strokeWidth={0.5} />;
-      })}
-      {runs.map((pts, i) => (
-        <Polyline
-          key={i}
-          points={pts}
-          fill="none"
-          stroke={AURORA.mint}
-          strokeWidth={3}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
-      ))}
-    </Svg>
-  );
-}
 
 function Badge({ v }: { v: Verdict }) {
   const color =
@@ -223,7 +182,7 @@ function LiveTests() {
         </View>
         <Text style={s.body}>Pitch read straight off the mic while you talk.</Text>
         <View style={s.line}>
-          <MelodyLine points={tracker.current.points} until={Math.max(now, SHOW_S)} />
+          <MelodyLine points={tracker.current.points} until={Math.max(now, SHOW_S)} window={SHOW_S} />
         </View>
         {detail ? <Text style={s.detail}>{detail}</Text> : null}
         <GlowButton label={live === "running" ? "Listening…" : "Test live melody"} onPress={runLive} disabled={busy} compact />
@@ -329,7 +288,7 @@ function PlaybackTest() {
       </View>
       <Text style={s.body}>The fallback: record first, then read the melody off the replay.</Text>
       <View style={s.line}>
-        <MelodyLine points={points} until={Math.max(points[points.length - 1]?.t ?? 0, SHOW_S)} />
+        <MelodyLine points={points} />
       </View>
       {detail ? <Text style={s.detail}>{detail}</Text> : null}
       <GlowButton label={verdict === "running" ? "Working…" : "Test replay sampling"} onPress={run} disabled={verdict === "running"} compact tone="ghost" />

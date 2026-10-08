@@ -14,6 +14,12 @@ export type DayFacts = {
   valveRuns: number;
   debriefs: number;
   gameRuns: number;
+  blitzCorrect: number;
+  bombBest: number;
+  pauseClean: number;
+  gauntletCleared: number;
+  focusBest: number;
+  aliveBest: number;
 };
 
 export type Quest = {
@@ -46,6 +52,12 @@ export const QUESTS: Quest[] = [
   { id: "valve-1", family: "valve", title: "Climb the Valve ladder", xp: 50, goal: 1, route: "/valve", value: (f) => f.valveRuns },
   { id: "debrief-1", family: "rooms", title: "Debrief a room you were in", xp: 70, goal: 1, route: "/rooms", value: (f) => f.debriefs, needs: "debrief" },
   { id: "game-1", family: "games", title: "Play any game", xp: 40, goal: 1, route: "/play", value: (f) => f.gameRuns, needs: "games" },
+  { id: "blitz-10", family: "games", title: "Get 10 right in Lexicon Blitz", xp: 60, goal: 10, route: "/play/blitz", value: (f) => f.blitzCorrect, needs: "games" },
+  { id: "bomb-3", family: "games", title: "Defuse 3 bombs in one round", xp: 60, goal: 3, route: "/play/bomb", value: (f) => f.bombBest, needs: "games" },
+  { id: "pause-5", family: "games", title: "Hold 5 clean pauses in Pause, Don't Um", xp: 60, goal: 5, route: "/play/pause", value: (f) => f.pauseClean, needs: "games" },
+  { id: "gauntlet-3", family: "focus", title: "Survive round 3 in the Gauntlet", xp: 80, goal: 3, route: "/play/gauntlet", value: (f) => f.gauntletCleared, needs: "games" },
+  { id: "focus-45", family: "focus", title: "Talk 45 seconds clean in the Gauntlet", xp: 90, goal: 45, route: "/play/gauntlet", value: (f) => f.focusBest, needs: "games" },
+  { id: "alive-70", family: "alive", title: "Score 70+ in Bring It to Life", xp: 80, goal: 1, route: "/play/alive", value: (f) => (f.aliveBest >= 70 ? 1 : 0), needs: "games" },
   { id: "game-3", family: "games", title: "Play three games", xp: 70, goal: 3, route: "/play", value: (f) => f.gameRuns, needs: "games" },
 ];
 
