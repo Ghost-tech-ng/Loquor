@@ -160,7 +160,7 @@ export function Boot({ exiting = false }: { exiting?: boolean }) {
 
 const s = StyleSheet.create({
   root: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: CHROME.floor,
     alignItems: "center",
     justifyContent: "center",

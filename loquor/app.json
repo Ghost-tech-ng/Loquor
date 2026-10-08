@@ -4,11 +4,12 @@
     "slug": "loquor",
     "owner": "osemwegieeghosa",
     "version": "1.0.0",
-    "platforms": ["ios"],
+    "platforms": [
+      "ios"
+    ],
     "orientation": "portrait",
     "scheme": "loquor",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
     "backgroundColor": "#150F1C",
     "ios": {
       "supportsTablet": false,
@@ -21,7 +22,10 @@
       "expo-router",
       "expo-audio",
       "expo-sqlite",
-      "expo-font"
+      "expo-font",
+      "expo-secure-store",
+      "expo-status-bar",
+      "expo-asset"
     ],
     "updates": {
       "url": "https://u.expo.dev/dace44de-b31f-4aab-99e0-0fe192e03b1c",
