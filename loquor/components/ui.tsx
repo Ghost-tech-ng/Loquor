@@ -36,8 +36,8 @@ import { GlowButton } from "./kit/GlowButton";
 import { PressableScale, Rise } from "./kit/motion";
 
 // What <View> actually accepts. Not StyleProp<ViewStyle>: Expo's web typings
-// widen ViewStyle with position "fixed" | "sticky", which RN 0.88's native
-// View props no longer accept, so the exported interface stopped fitting.
+// widen ViewStyle with position "fixed" | "sticky", which the native View
+// props do not accept, so the exported interface does not fit.
 type BoxStyle = ViewProps["style"];
 
 /** Transparent: the aurora is painted once at the root and shows through. */

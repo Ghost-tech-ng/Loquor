@@ -73,7 +73,7 @@ function Item({
   );
 }
 
-function Bar({ state, emitter, navigateToTab }: BottomTabBarProps) {
+function Bar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const [width, setWidth] = useState(0);
   const cell = width / Math.max(1, state.routes.length);
@@ -114,17 +114,17 @@ function Bar({ state, emitter, navigateToTab }: BottomTabBarProps) {
                 icon={meta.icon}
                 focused={focused}
                 onPress={() => {
-                  const event = emitter.emit({
+                  const event = navigation.emit({
                     type: "tabPress",
                     target: route.key,
                     canPreventDefault: true,
                   });
                   if (!focused && !event.defaultPrevented) {
                     feel.select();
-                    navigateToTab(route.key);
+                    navigation.navigate(route.name, route.params);
                   }
                 }}
-                onLongPress={() => emitter.emit({ type: "tabLongPress", target: route.key })}
+                onLongPress={() => navigation.emit({ type: "tabLongPress", target: route.key })}
               />
             );
           })}
