@@ -35,16 +35,28 @@ import {
 import { Ignition } from "../../components/boot";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../../theme";
 import { TOPICS_BY_ID } from "./topics";
+import { ANSWER_SHAPE, EXPLAIN } from "./explain";
+import { SCAFFOLD_NAMES, scaffoldLevel, takesToNext, type Scaffold } from "./scaffold";
 import { computeMetrics } from "../../lib/metrics";
 import { transcribe } from "../../lib/stt";
 import { judge } from "./judge";
-import { getSession, saveSession } from "../../lib/db";
+import { countSessions, getSession, recentSessions, saveSession } from "../../lib/db";
 import { getKey, loadSettings, resolve } from "../../lib/settings";
 
-const PRIMER_SECONDS = 60;
+const PRIMER_SECONDS = 90;
 const SOFT_CEILING_S = 120;
 
 type Stage = "primer" | "recording" | "working" | "error";
+
+/** A failure message the user can act on, with the step it happened in. */
+function explainFailure(step: string, err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err);
+  const where = step ? `While ${step.toLowerCase()}: ` : "";
+  if (/network request failed|failed to fetch|network/i.test(raw)) {
+    return `${where}couldn't reach the server. Check your internet connection and try again.`;
+  }
+  return `${where}${raw}`;
+}
 
 /**
  * A ring leaving the aperture once every two seconds, at roughly the cadence of
@@ -96,8 +108,33 @@ export default function Arena() {
   const [error, setError] = useState<string | null>(null);
   const [target, setTarget] = useState<string | null>(null);
   const granted = useRef(false);
+  const stopping = useRef(false);
+  const [scaffold, setScaffold] = useState<Scaffold>(0);
+  const [takes, setTakes] = useState(0);
+  const [hint, setHint] = useState(false);
+  const [opened, setOpened] = useState<ReadonlySet<string>>(new Set());
 
   const isRewrite = Boolean(params.rewriteOf);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [n, rows] = await Promise.all([countSessions(), recentSessions(3)]);
+        setTakes(n);
+        setScaffold(scaffoldLevel(n, rows.map((r) => r.rubric_total)));
+      } catch {
+        // Without history the primer stays fully guided, which is the safe default.
+      }
+    })();
+  }, []);
+
+  const toggleTerm = (w: string) =>
+    setOpened((prev) => {
+      const next = new Set(prev);
+      if (next.has(w)) next.delete(w);
+      else next.add(w);
+      return next;
+    });
 
   useEffect(() => {
     (async () => {
@@ -142,34 +179,51 @@ export default function Arena() {
   const start = async () => {
     if (!granted.current) return;
     setError(null);
-    await recorder.prepareToRecordAsync();
-    recorder.record();
+    stopping.current = false;
+    try {
+      // Another screen may have left the session in playback-only mode.
+      await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
+      await recorder.prepareToRecordAsync();
+      recorder.record();
+    } catch (err) {
+      setError(explainFailure("Starting the mic", err));
+      setStage("error");
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setStage("recording");
   };
 
   const stop = async () => {
+    // A second tap while the recorder is still stopping would run the whole
+    // pipeline twice.
+    if (stopping.current) return;
+    stopping.current = true;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await recorder.stop();
-    const uri = recorder.uri;
     const seconds = (state.durationMillis ?? 0) / 1000;
+    let current = "Saving the recording";
+    setStep(current);
     setStage("working");
 
     try {
+      await recorder.stop();
+      const uri = recorder.uri;
       if (!uri) throw new Error("The recorder produced no file. Try once more.");
       if ((new File(uri).size ?? 0) === 0) throw new Error("The recording came back empty. Try once more.");
 
       const settings = await loadSettings();
       const { stt, judge: judgeProvider } = resolve(settings);
 
-      setStep("Transcribing");
+      current = "Transcribing";
+      setStep(current);
       const sttKey = (await getKey(stt)) ?? "";
       const t = await transcribe(uri, stt, sttKey);
 
       const metrics = computeMetrics(t.words, t.durationS ?? seconds);
       if (metrics.wordCount === 0) throw new Error("Nothing was picked up. Check the mic and try again.");
 
-      setStep("Judging");
+      current = "Judging";
+      setStep(current);
       const judgeKey = (await getKey(judgeProvider)) ?? "";
       const verdict = await judge(
         { topic: target ? `Re-say this well: ${target}` : topic.title, transcript: t.text, metrics },
@@ -177,6 +231,7 @@ export default function Arena() {
         judgeKey
       );
 
+      current = "Saving the session";
       const id = `${Date.now().toString(36)}${Math.floor(Math.random() * 1e6).toString(36)}`;
       await saveSession({
         id,
@@ -200,7 +255,7 @@ export default function Arena() {
 
       router.replace({ pathname: "/scorecard", params: { id } });
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(explainFailure(current, err));
       setStage("error");
     }
   };
@@ -269,6 +324,7 @@ export default function Arena() {
           <Eyebrow>{over ? "PAST NINETY — LAND IT" : "TAP TO FINISH"}</Eyebrow>
         </View>
 
+        <Meta style={s.centerText}>Side → reason → example → land it</Meta>
         <View style={s.termsLive}>
           {topic.loadedTerms.map((w) => (
             <Text key={w} style={s.termLive}>
@@ -281,6 +337,48 @@ export default function Arena() {
   }
 
   // primer
+  const plain = EXPLAIN[topic.id];
+  const nextIn = takesToNext(takes, scaffold);
+
+  const askPanel = plain ? (
+    <Reveal index={2}>
+      <Panel>
+        <Eyebrow>IN PLAIN WORDS</Eyebrow>
+        <Body>{plain.ask}</Body>
+      </Panel>
+    </Reveal>
+  ) : null;
+
+  const sidesBlock = plain ? (
+    <Reveal index={3} style={s.block}>
+      <Eyebrow>PICK A SIDE</Eyebrow>
+      {plain.sides.map((side, i) => (
+        <View key={i} style={s.side}>
+          <Text style={s.sideMark}>{i === 0 ? "A" : "B"}</Text>
+          <Body style={s.flex}>{side}</Body>
+        </View>
+      ))}
+    </Reveal>
+  ) : null;
+
+  // The primer lands a point at a time. A wall of bullets appearing at once is
+  // read as one block and retained as none of it.
+  const primerBlock = (
+    <>
+      <Eyebrow>WORTH KNOWING</Eyebrow>
+      <View style={s.bullets}>
+        {topic.primer.map((b, i) => (
+          <Reveal key={i} index={i + 4}>
+            <View style={s.bullet}>
+              <View style={s.bulletTick} />
+              <Body style={s.flex}>{b}</Body>
+            </View>
+          </Reveal>
+        ))}
+      </View>
+    </>
+  );
+
   return (
     <Screen>
       <Masthead right={isRewrite ? "REWRITE" : "ARENA"} />
@@ -304,36 +402,82 @@ export default function Arena() {
         </Panel>
       ) : (
         <>
-          {/* The primer lands a point at a time. Sixty seconds is not long, and
-              a wall of five bullets appearing at once is read as one block and
-              retained as none of it. */}
-          <View style={s.bullets}>
-            {topic.primer.map((b, i) => (
-              <Reveal key={i} index={i + 1}>
-                <View style={s.bullet}>
-                  <View style={s.bulletTick} />
-                  <Body style={s.bulletText}>{b}</Body>
-                </View>
-              </Reveal>
-            ))}
-          </View>
+          <Reveal index={1}>
+            <Meta style={s.levelLine}>
+              {SCAFFOLD_NAMES[scaffold]}
+              {nextIn !== null ? ` · ${nextIn} ${nextIn === 1 ? "take" : "takes"} to ${SCAFFOLD_NAMES[scaffold + 1]}` : " · no training wheels"}
+            </Meta>
+          </Reveal>
+
+          {/* Guided starts with the plain version; from Bridged on, the topic's own
+              wording leads and the plain version has to be asked for. Reading the
+              richer register first is the point — the plain one is a fallback. */}
+          {scaffold === 0 ? (
+            <>
+              {askPanel}
+              {sidesBlock}
+              <Hair />
+              {primerBlock}
+            </>
+          ) : (
+            <>
+              {primerBlock}
+              {scaffold === 1 && sidesBlock}
+              {plain && (
+                <Pressable onPress={() => setHint((h) => !h)} hitSlop={8}>
+                  <Text style={s.hintToggle}>
+                    {hint ? "Hide it" : scaffold === 1 ? "Say it simpler" : "Need a hint?"}
+                  </Text>
+                </Pressable>
+              )}
+              {hint && askPanel}
+              {hint && scaffold >= 2 && sidesBlock}
+            </>
+          )}
 
           <Hair />
-          <Eyebrow>DEPLOY THESE</Eyebrow>
-          <Reveal index={topic.primer.length + 1} style={s.terms}>
-            {topic.loadedTerms.map((w) => (
-              <Text key={w} style={s.term}>
-                {w}
-              </Text>
-            ))}
+          <Eyebrow>WORDS TO USE</Eyebrow>
+          {scaffold === 2 && !hint && <Meta>Tap a word if you&rsquo;re not sure what it means.</Meta>}
+          <Reveal index={topic.primer.length + 4} style={scaffold >= 2 ? s.termWrap : s.block}>
+            {topic.loadedTerms.map((w) => {
+              const meaning = plain?.terms[w];
+              const show = Boolean(meaning) && (scaffold <= 1 || hint || (scaffold === 2 && opened.has(w)));
+              const chip = <Text style={[s.term, scaffold === 2 && opened.has(w) && s.termOpen]}>{w}</Text>;
+              return (
+                <View key={w} style={show && scaffold >= 2 ? s.termFull : s.termRow}>
+                  {scaffold === 2 ? (
+                    <Pressable onPress={() => toggleTerm(w)} hitSlop={4}>
+                      {chip}
+                    </Pressable>
+                  ) : (
+                    chip
+                  )}
+                  {show ? <Meta style={s.flex}>{meaning}</Meta> : null}
+                </View>
+              );
+            })}
+          </Reveal>
+
+          <Hair />
+          <Eyebrow>HOW TO ANSWER</Eyebrow>
+          <Reveal index={topic.primer.length + 5} style={s.block}>
+            {scaffold <= 1 ? (
+              ANSWER_SHAPE.map((line, i) => (
+                <View key={i} style={s.side}>
+                  <Text style={s.stepNum}>{i + 1}</Text>
+                  <Body style={s.flex}>{line}</Body>
+                </View>
+              ))
+            ) : (
+              <Body>Position, reason, evidence, concession, close.</Body>
+            )}
           </Reveal>
         </>
       )}
 
       <Hair />
       <Meta>
-        Ninety seconds. Take a position in the first sentence, then defend it. You are not
-        summarising the primer — you are using it.
+        About ninety seconds. Use the facts above as ammunition — don&rsquo;t read them back.
       </Meta>
 
       <Button label="START" onPress={start} />
@@ -346,12 +490,34 @@ const s = StyleSheet.create({
   headRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   countdown: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.monoMedium, ...TABULAR },
 
+  flex: { flex: 1 },
+  block: { gap: SPACE.sm },
   bullets: { gap: SPACE.md, marginTop: SPACE.xs },
   bullet: { flexDirection: "row", gap: 12 },
   bulletTick: { width: 1, alignSelf: "stretch", backgroundColor: CHROME.carve },
-  bulletText: { flex: 1 },
 
-  terms: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  side: { flexDirection: "row", gap: 12, alignItems: "flex-start" },
+  sideMark: {
+    color: SEMANTIC.ember,
+    fontFamily: TYPE.monoMedium,
+    fontSize: 13,
+    width: 22,
+    height: 22,
+    lineHeight: 22,
+    textAlign: "center",
+    borderRadius: 11,
+    borderWidth: 1,
+    borderColor: SEMANTIC.ember,
+    marginTop: 1,
+  },
+  stepNum: { color: SEMANTIC.xp, fontFamily: TYPE.monoMedium, fontSize: 13, width: 22, textAlign: "center", marginTop: 2 },
+
+  termRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  termWrap: { flexDirection: "row", flexWrap: "wrap", gap: SPACE.sm },
+  termFull: { flexDirection: "row", alignItems: "center", gap: 10, width: "100%" },
+  termOpen: { borderColor: SEMANTIC.ember },
+  levelLine: { color: SEMANTIC.xp, fontFamily: TYPE.monoMedium, letterSpacing: 1 },
+  hintToggle: { color: SEMANTIC.ember, fontFamily: TYPE.monoMedium, fontSize: 12, letterSpacing: 1 },
   term: {
     color: CHROME.chalk,
     fontSize: 13,
