@@ -1,7 +1,7 @@
 rules_version = '2';
 
 // The only thing between one user's backup and everyone else. The web API key
-// in lib/cloud.ts is public by design, so these rules are the security model,
+// in features/backup/cloud.ts is public by design, so these rules are the security model,
 // not a layer on top of one. Deploy with: firebase deploy --only firestore:rules
 
 service cloud.firestore {
@@ -11,7 +11,7 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == uid;
     }
 
-    // Exactly the two shapes lib/backup.ts writes. Anything else under a user's
+    // Exactly the two shapes features/backup/backup.ts writes. Anything else under a user's
     // tree is refused, so a bug that writes somewhere new fails loudly instead
     // of quietly growing an unbacked-up, unrestorable corner of the database.
     match /users/{uid}/meta/manifest {
