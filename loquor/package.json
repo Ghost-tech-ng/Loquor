@@ -6,10 +6,11 @@
   "scripts": {
     "start": "expo start",
     "ios": "expo start --ios",
+    "test": "node --experimental-strip-types --test lib/*.test.mjs",
+    "typecheck": "tsc --noEmit",
     "doctor": "npx expo-doctor",
     "check": "npx expo install --check",
-    "typecheck": "tsc --noEmit",
-    "publish:preview": "eas update --branch preview --message \"phase 0 smoke test\""
+    "publish:preview": "eas update --branch preview --platform ios --environment preview"
   },
   "dependencies": {
     "@expo-google-fonts/bricolage-grotesque": "^0.4.1",

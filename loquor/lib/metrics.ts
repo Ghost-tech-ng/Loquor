@@ -98,12 +98,20 @@ export function computeMetrics(words: Word[], fallbackDurationS?: number): Metri
   let deadAirTotalS = 0;
   let longestGapS = 0;
 
-  for (let i = 1; i < words.length; i++) {
-    const gap = words[i]!.start - words[i - 1]!.end;
+  // The edges only exist when the recorder told us how long the take was. A
+  // trailing gap over the threshold is not the reach for the stop button —
+  // that takes a second — it is running out of things to say with the clock on.
+  const gaps: [number, number][] = [];
+  if (origin === 0) gaps.push([0, first.start]);
+  for (let i = 1; i < words.length; i++) gaps.push([words[i - 1]!.end, words[i]!.start]);
+  if (origin === 0) gaps.push([last.end, durationS]);
+
+  for (const [from, to] of gaps) {
+    const gap = to - from;
     if (gap > longestGapS) longestGapS = gap;
     if (gap > DEAD_AIR_THRESHOLD_S) {
       deadAirTotalS += gap;
-      deadAirSpans.push([frac(words[i - 1]!.end), frac(words[i]!.start)]);
+      deadAirSpans.push([frac(from), frac(to)]);
     }
   }
 

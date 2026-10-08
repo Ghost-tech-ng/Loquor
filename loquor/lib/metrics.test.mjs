@@ -87,6 +87,40 @@ test("a filler inside a long gap does not rescue it", () => {
   assert.ok(m.deadAirTotalS > 6);
 });
 
+test("a stall before the first word is dead air", () => {
+  const words = [
+    { word: "caching", start: 4.0, end: 4.5 },
+    { word: "helps", start: 4.6, end: 5.0 },
+  ];
+  const m = computeMetrics(words, 6);
+  assert.equal(m.deadAirCount, 1);
+  assert.equal(m.deadAirTotalS, 4);
+  assert.equal(m.longestGapS, 4);
+  assert.deepEqual(m.deadAirSpans[0], [0, 4 / 6]);
+});
+
+test("running dry before the clock stops is dead air", () => {
+  const words = [
+    { word: "caching", start: 0.5, end: 1.0 },
+    { word: "helps", start: 1.1, end: 1.5 },
+  ];
+  const m = computeMetrics(words, 8);
+  assert.equal(m.deadAirCount, 1);
+  assert.equal(m.deadAirTotalS, 6.5);
+  assert.deepEqual(m.deadAirSpans[0], [1.5 / 8, 1]);
+});
+
+test("reaction time and the reach for stop are not dead air", () => {
+  const words = seq(["caching", "helps", "here"], { from: 1.2 });
+  const end = words[words.length - 1].end;
+  assert.equal(computeMetrics(words, end + 1.5).deadAirCount, 0);
+});
+
+test("without a recorder duration the edges are unknown, not silent", () => {
+  const words = seq(["caching", "helps"], { from: 4 });
+  assert.equal(computeMetrics(words).deadAirCount, 0);
+});
+
 test("hedge density is a percentage of content words", () => {
   const words = seq(["i", "think", "we", "should", "maybe", "just", "cache", "it"], { rate: 7.5 });
   const m = computeMetrics(words);

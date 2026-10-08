@@ -49,14 +49,55 @@ export function isFiller(token: string): boolean {
   return NON_LEXICAL_SET.has(normalise(token));
 }
 
-// Hedges are matched on the joined transcript rather than token-by-token because
-// most of them are multi-word. Returns total occurrences.
+const HEDGE_TOKENS: readonly (readonly string[])[] = [...HEDGES]
+  .map((p) => p.split(" "))
+  .sort((a, b) => b.length - a.length);
+
+const LIKE_AS_VERB_OR_COMPARISON = new Set([
+  "i", "you", "we", "they", "would", "d", "don't", "didn't", "doesn't",
+  "look", "looks", "looked", "looking", "feel", "feels", "felt",
+  "seem", "seems", "seemed", "sound", "sounds", "sounded",
+  "something", "nothing", "anything", "more", "much", "just",
+]);
+const KIND_AS_NOUN = new Set([
+  "what", "which", "this", "that", "these", "those", "the", "a", "any",
+  "every", "each", "same", "different", "one",
+]);
+const KNOW_AS_QUESTION = new Set(["do", "did", "does", "if", "what", "as"]);
+
+/** A phrase that is spelled like a hedge but is doing literal work. */
+function isLiteral(phrase: readonly string[], prev: string | undefined, rest: readonly string[]): boolean {
+  const head = phrase.join(" ");
+  if (head === "like") return prev !== undefined && (LIKE_AS_VERB_OR_COMPARISON.has(prev) || prev.endsWith("'d"));
+  if (head === "kind of" || head === "sort of") return prev !== undefined && KIND_AS_NOUN.has(prev);
+  if (head === "you know") return prev !== undefined && KNOW_AS_QUESTION.has(prev);
+  if (head === "just") {
+    if (rest[0] === "in" && rest[1] === "time") return true;
+    return prev === "a" || prev === "the" || prev === "most";
+  }
+  return false;
+}
+
+// Walks the tokens once, longest phrase first, and consumes what it matches —
+// "i feel like" is one hedge, not "i feel like" plus "like". Counting each
+// phrase independently over the whole string double-counted every overlap and
+// made the trend line measure vocabulary rather than habit.
 export function countHedges(text: string): number {
-  const norm = normalise(text);
+  const tokens = normalise(text).split(" ").filter(Boolean);
   let total = 0;
-  for (const phrase of HEDGES) {
-    const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    total += (norm.match(new RegExp(`\\b${escaped}\\b`, "g")) || []).length;
+  let i = 0;
+  while (i < tokens.length) {
+    const hit = HEDGE_TOKENS.find(
+      (p) =>
+        p.every((t, k) => tokens[i + k] === t) &&
+        !isLiteral(p, tokens[i - 1], tokens.slice(i + p.length, i + p.length + 2)),
+    );
+    if (hit) {
+      total++;
+      i += hit.length;
+    } else {
+      i++;
+    }
   }
   return total;
 }
