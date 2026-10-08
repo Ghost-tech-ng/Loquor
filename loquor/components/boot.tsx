@@ -1,48 +1,52 @@
-// The boot screen.
+// The boot screen, and the app's one "working" animation.
 //
 // Fonts, the database migration and the first read all have to finish before
-// anything can be drawn, and until now that window was a bare rectangle —
-// indistinguishable, for the second or two it lasts, from an app that has hung.
+// anything can be drawn. That second is the first thing seen on every launch,
+// so it is the logo arriving: the orb drops in on a spring, blinks at you, and
+// the wordmark rises one letter at a time.
 //
-// What it draws is the heat ramp igniting left to right: the same six colours
-// the strata wall and the record aperture use, in the same order. "Sound is the
-// only source of light" (PRD §12), so the one moment the app has nothing to
-// show is the one moment it shows the light source itself. The wordmark then
-// sets one letter at a time, left to right, at speaking pace.
-//
-// No spinner. A spinner is the same animation in every app ever made, and this
-// is the first thing seen on every launch.
+// No spinner. A spinner is the same animation in every app ever made.
 
 import { useEffect, useRef } from "react";
-import { Animated, Easing, StyleSheet, Text, View } from "react-native";
+import { Animated as RNAnimated, Easing as RNEasing, StyleSheet, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import Animated, {
+  Easing,
+  FadeInUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 
-import { CHROME, HEAT } from "../theme";
+import { AURORA, CHROME, HEAT, alpha } from "../theme";
+import { VoiceOrb } from "./kit/VoiceOrb";
 
-const WORDMARK = ["L", "O", "Q", "V", "O", "R"];
+const WORDMARK = ["S", "p", "e", "e", "k"];
 
 /**
- * The ignition sweep on its own. Also used as the Arena's working indicator,
- * because the app already has a "wait" animation and inventing a second one is
- * how a product starts feeling like two products.
+ * The ignition sweep: the heat ramp lighting left to right. The Arena, Reading,
+ * Lexicon and Onboarding use it while they wait on a transcript.
  */
 export function Ignition({ scale = 1 }: { scale?: number }) {
   // One driver. Each bar reads a different slice of it, so the sweep is a
   // single interpolation rather than six timers that can drift.
-  const t = useRef(new Animated.Value(0)).current;
+  const t = useRef(new RNAnimated.Value(0)).current;
 
   useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(t, {
+    const loop = RNAnimated.loop(
+      RNAnimated.sequence([
+        RNAnimated.timing(t, {
           toValue: 1,
           duration: 900,
-          easing: Easing.out(Easing.cubic),
+          easing: RNEasing.out(RNEasing.cubic),
           useNativeDriver: true,
         }),
-        Animated.timing(t, {
+        RNAnimated.timing(t, {
           toValue: 0,
           duration: 700,
-          easing: Easing.in(Easing.cubic),
+          easing: RNEasing.in(RNEasing.cubic),
           useNativeDriver: true,
         }),
       ])
@@ -57,7 +61,7 @@ export function Ignition({ scale = 1 }: { scale?: number }) {
         const start = i / HEAT.length;
         const range = [start, Math.min(1, start + 0.45), 1];
         return (
-          <Animated.View
+          <RNAnimated.View
             key={colour}
             style={[
               s.bar,
@@ -88,72 +92,53 @@ export function Ignition({ scale = 1 }: { scale?: number }) {
 }
 
 export function Boot({ exiting = false }: { exiting?: boolean }) {
-  // A one-shot for the wordmark, which sets once and stays.
-  const set = useRef(new Animated.Value(0)).current;
-  const out = useRef(new Animated.Value(1)).current;
+  const drop = useSharedValue(0);
+  const out = useSharedValue(1);
 
   useEffect(() => {
-    const type = Animated.timing(set, {
-      toValue: 1,
-      duration: 620,
-      delay: 120,
-      easing: Easing.out(Easing.quad),
-      useNativeDriver: true,
-    });
-    type.start();
-    return () => type.stop();
-  }, [set]);
+    drop.value = withDelay(80, withSpring(1, { damping: 9, stiffness: 140, mass: 0.8 }));
+  }, [drop]);
 
   useEffect(() => {
-    if (!exiting) return;
-    Animated.timing(out, {
-      toValue: 0,
-      duration: 260,
-      easing: Easing.in(Easing.quad),
-      useNativeDriver: true,
-    }).start();
+    if (exiting) out.value = withTiming(0, { duration: 260, easing: Easing.in(Easing.quad) });
   }, [exiting, out]);
 
+  const orb = useAnimatedStyle(() => ({
+    opacity: Math.min(1, drop.value * 2),
+    transform: [{ translateY: (1 - drop.value) * -60 }, { scale: 0.5 + drop.value * 0.5 }],
+  }));
+  const fade = useAnimatedStyle(() => ({
+    opacity: out.value,
+    transform: [{ scale: 1 + (1 - out.value) * 0.06 }],
+  }));
+
   return (
-    <Animated.View style={[s.root, { opacity: out }]}>
-      <View style={s.center}>
-        <Ignition />
+    <Animated.View style={[s.root, fade]}>
+      <LinearGradient
+        colors={[alpha(AURORA.violet, 0.35), "rgba(0,0,0,0)", alpha(AURORA.pink, 0.22)]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <Animated.View style={orb}>
+        <VoiceOrb size={132} />
+      </Animated.View>
 
-        <View style={s.word}>
-          {WORDMARK.map((ch, i) => {
-            const start = i / (WORDMARK.length + 1);
-            const range = [start, start + 1 / (WORDMARK.length + 1)];
-            return (
-              <Animated.Text
-                key={`${ch}-${i}`}
-                style={[
-                  s.letter,
-                  {
-                    opacity: set.interpolate({
-                      inputRange: range,
-                      outputRange: [0, 1],
-                      extrapolate: "clamp",
-                    }),
-                    transform: [
-                      {
-                        translateY: set.interpolate({
-                          inputRange: range,
-                          outputRange: [5, 0],
-                          extrapolate: "clamp",
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              >
-                {ch}
-              </Animated.Text>
-            );
-          })}
-        </View>
-
-        <Animated.Text style={[s.credo, { opacity: set }]}>I speak.</Animated.Text>
+      {/* System font on purpose: this paints before useFonts resolves. */}
+      <View style={s.word}>
+        {WORDMARK.map((ch, i) => (
+          <Animated.Text
+            key={`${ch}-${i}`}
+            entering={FadeInUp.delay(380 + i * 70).springify().damping(12)}
+            style={s.letter}
+          >
+            {ch}
+          </Animated.Text>
+        ))}
       </View>
+      <Animated.Text entering={FadeInUp.delay(820).duration(500)} style={s.credo}>
+        say it like you mean it
+      </Animated.Text>
     </Animated.View>
   );
 }
@@ -165,14 +150,11 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  center: { alignItems: "center", gap: 15 },
 
   ramp: { flexDirection: "row", alignItems: "center", gap: 5, height: 40 },
   bar: { width: 3, height: 34, borderRadius: 1.5 },
 
-  // No custom family: the boot screen paints before useFonts resolves, so
-  // anything set in a loaded face would render in the system font and then jump.
-  word: { flexDirection: "row", marginTop: 8 },
-  letter: { color: CHROME.chalk, fontSize: 13, letterSpacing: 7, fontWeight: "500" },
-  credo: { color: CHROME.dust, fontSize: 12, fontStyle: "italic" },
+  word: { flexDirection: "row", marginTop: 22 },
+  letter: { color: CHROME.chalk, fontSize: 44, fontWeight: "800", letterSpacing: -1 },
+  credo: { color: CHROME.dust, fontSize: 14, fontStyle: "italic", marginTop: 6, letterSpacing: 0.4 },
 });

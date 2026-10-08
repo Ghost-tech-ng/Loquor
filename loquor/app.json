@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Loquor",
+    "name": "Speek",
     "slug": "loquor",
     "owner": "osemwegieeghosa",
     "version": "1.0.0",
@@ -8,14 +8,14 @@
       "ios"
     ],
     "orientation": "portrait",
-    "scheme": "loquor",
+    "scheme": "speek",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#150F1C",
+    "backgroundColor": "#0B0A1A",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.eghosa.loquor",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "Loquor records your practice answers so it can measure pace, pauses and filler words. Audio is deleted after transcription."
+        "NSMicrophoneUsageDescription": "Speek listens to your practice so it can score your pace, pauses, fillers and liveliness. Audio is deleted after it is analysed."
       }
     },
     "plugins": [
@@ -25,7 +25,16 @@
       "expo-font",
       "expo-secure-store",
       "expo-status-bar",
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#0B0A1A"
+        }
+      ]
     ],
     "updates": {
       "url": "https://u.expo.dev/dace44de-b31f-4aab-99e0-0fe192e03b1c",
@@ -42,6 +51,7 @@
       "eas": {
         "projectId": "dace44de-b31f-4aab-99e0-0fe192e03b1c"
       }
-    }
+    },
+    "icon": "./assets/icon.png"
   }
 }

@@ -211,6 +211,30 @@ function db(): Promise<SQLite.SQLiteDatabase> {
           carry_s    REAL
         );
         CREATE INDEX IF NOT EXISTS idx_valve_started ON valve_sessions (started_at DESC);
+
+        -- Progression. XP and levels are never stored: they are derived from
+        -- the history above plus these three, so a restore or a deleted take
+        -- can never leave a total that disagrees with the record.
+        CREATE TABLE IF NOT EXISTS game_scores (
+          id        TEXT PRIMARY KEY NOT NULL,
+          game      TEXT NOT NULL,
+          at        INTEGER NOT NULL,
+          score     REAL NOT NULL,
+          xp        INTEGER NOT NULL,
+          meta_json TEXT
+        );
+        CREATE INDEX IF NOT EXISTS idx_game_scores ON game_scores (game, at DESC);
+        CREATE TABLE IF NOT EXISTS quest_claims (
+          day      INTEGER NOT NULL,
+          quest_id TEXT NOT NULL,
+          at       INTEGER NOT NULL,
+          xp       INTEGER NOT NULL,
+          PRIMARY KEY (day, quest_id)
+        );
+        CREATE TABLE IF NOT EXISTS badges (
+          badge TEXT PRIMARY KEY NOT NULL,
+          at    INTEGER NOT NULL
+        );
       `);
       return d;
     });
@@ -1004,12 +1028,205 @@ export async function valveThresholds(limit = 12): Promise<number[]> {
   return rows.map((r) => r.threshold);
 }
 
+// -------------------------------------------------------------- progression
+
+export type GameScoreRow = {
+  id: string;
+  game: string;
+  at: number;
+  score: number;
+  xp: number;
+  meta_json: string | null;
+};
+
+export async function saveGameScore(args: {
+  id: string;
+  game: string;
+  score: number;
+  xp: number;
+  meta?: unknown;
+}): Promise<void> {
+  const d = await db();
+  await d.runAsync(
+    `INSERT OR REPLACE INTO game_scores (id, game, at, score, xp, meta_json) VALUES (?,?,?,?,?,?)`,
+    args.id,
+    args.game,
+    Date.now(),
+    args.score,
+    args.xp,
+    args.meta === undefined ? null : JSON.stringify(args.meta)
+  );
+}
+
+export async function gameBest(game: string): Promise<number | null> {
+  const d = await db();
+  const row = await d.getFirstAsync<{ best: number | null }>(
+    `SELECT MAX(score) AS best FROM game_scores WHERE game = ?`,
+    game
+  );
+  return row?.best ?? null;
+}
+
+export type QuestClaimRow = { day: number; quest_id: string; at: number; xp: number };
+
+export async function questClaims(day: number): Promise<QuestClaimRow[]> {
+  const d = await db();
+  return d.getAllAsync<QuestClaimRow>(`SELECT * FROM quest_claims WHERE day = ?`, day);
+}
+
+export async function claimQuest(day: number, questId: string, xp: number): Promise<void> {
+  const d = await db();
+  await d.runAsync(
+    `INSERT OR IGNORE INTO quest_claims (day, quest_id, at, xp) VALUES (?,?,?,?)`,
+    day,
+    questId,
+    Date.now(),
+    xp
+  );
+}
+
+export async function earnedBadges(): Promise<{ badge: string; at: number }[]> {
+  const d = await db();
+  return d.getAllAsync<{ badge: string; at: number }>(`SELECT * FROM badges ORDER BY at ASC`);
+}
+
+export async function awardBadge(badge: string): Promise<void> {
+  const d = await db();
+  await d.runAsync(`INSERT OR IGNORE INTO badges (badge, at) VALUES (?, ?)`, badge, Date.now());
+}
+
+/** The raw history every XP total is derived from. All of it is small; the
+ *  arithmetic lives in features/progression/xp.ts where a test can reach it. */
+export async function xpLedger(): Promise<{
+  sessions: { filler_rate: number; is_rewrite: number }[];
+  takes: number;
+  lexiconReps: number;
+  drills: number;
+  debriefs: number;
+  valveRuns: number;
+  gameXp: number;
+  questXp: number;
+  badges: number;
+}> {
+  const d = await db();
+  const count = async (sql: string) => (await d.getFirstAsync<{ n: number | null }>(sql))?.n ?? 0;
+  const [sessions, takes, lexiconReps, drills, debriefs, valveRuns, gameXp, questXp, badges] =
+    await Promise.all([
+      d.getAllAsync<{ filler_rate: number; is_rewrite: number }>(
+        `SELECT filler_rate, is_rewrite FROM sessions`
+      ),
+      count(`SELECT COUNT(*) AS n FROM read_takes`),
+      count(`SELECT SUM(reps) AS n FROM lexicon`),
+      count(`SELECT COUNT(*) AS n FROM drills`),
+      count(`SELECT COUNT(*) AS n FROM rooms WHERE debriefed_at IS NOT NULL`),
+      count(`SELECT COUNT(*) AS n FROM valve_sessions`),
+      count(`SELECT SUM(xp) AS n FROM game_scores`),
+      count(`SELECT SUM(xp) AS n FROM quest_claims`),
+      count(`SELECT COUNT(*) AS n FROM badges`),
+    ]);
+  return { sessions, takes, lexiconReps, drills, debriefs, valveRuns, gameXp, questXp, badges };
+}
+
+/** Every moment of practice of any kind, including the kinds activityTimes
+ *  leaves out (it predates them, and the Progress numbers are tuned to its
+ *  narrower definition). The streak counts all of it. */
+export async function streakTimes(): Promise<number[]> {
+  const d = await db();
+  const [base, extra] = await Promise.all([
+    activityTimes(0),
+    d.getAllAsync<{ at: number }>(
+      `SELECT started_at AS at FROM valve_sessions
+       UNION ALL SELECT at FROM game_scores
+       UNION ALL SELECT last_at AS at FROM lexicon WHERE reps > 0`
+    ),
+  ]);
+  return base.concat(extra.map((r) => r.at));
+}
+
+/** Counts behind the daily quests, for one local day [a, b). */
+export async function dayFacts(a: number, b: number): Promise<{
+  arenaTakes: number;
+  bestFiller: number | null;
+  readings: number;
+  lexiconReviews: number;
+  drills: number;
+  valveRuns: number;
+  debriefs: number;
+  gameRuns: number;
+}> {
+  const d = await db();
+  const one = async (sql: string) =>
+    (await d.getFirstAsync<{ n: number | null }>(sql, a, b))?.n ?? null;
+  const [arena, best, reads, lex, drills, valve, rooms, games] = await Promise.all([
+    one(`SELECT COUNT(*) AS n FROM sessions WHERE started_at >= ? AND started_at < ?`),
+    one(
+      `SELECT MIN(filler_rate) AS n FROM sessions
+       WHERE started_at >= ? AND started_at < ? AND duration_s >= 30`
+    ),
+    one(`SELECT COUNT(*) AS n FROM read_takes WHERE started_at >= ? AND started_at < ?`),
+    one(`SELECT COUNT(*) AS n FROM lexicon WHERE last_at >= ? AND last_at < ? AND reps > 0`),
+    one(`SELECT COUNT(*) AS n FROM drills WHERE started_at >= ? AND started_at < ?`),
+    one(`SELECT COUNT(*) AS n FROM valve_sessions WHERE started_at >= ? AND started_at < ?`),
+    one(`SELECT COUNT(*) AS n FROM rooms WHERE debriefed_at >= ? AND debriefed_at < ?`),
+    one(`SELECT COUNT(*) AS n FROM game_scores WHERE at >= ? AND at < ?`),
+  ]);
+  return {
+    arenaTakes: arena ?? 0,
+    bestFiller: best,
+    readings: reads ?? 0,
+    lexiconReviews: lex ?? 0,
+    drills: drills ?? 0,
+    valveRuns: valve ?? 0,
+    debriefs: rooms ?? 0,
+    gameRuns: games ?? 0,
+  };
+}
+
+/** Lifetime counts behind the badges. */
+export async function lifetimeFacts(): Promise<{
+  arenaTakes: number;
+  bestFiller: number | null;
+  readings: number;
+  wordsOwned: number;
+  drills: number;
+  debriefs: number;
+  valveRuns: number;
+  valveClean: number;
+  rubricBest: number | null;
+}> {
+  const d = await db();
+  const one = async (sql: string) => (await d.getFirstAsync<{ n: number | null }>(sql))?.n ?? null;
+  const [arena, best, reads, owned, drills, rooms, valve, clean, rubric] = await Promise.all([
+    one(`SELECT COUNT(*) AS n FROM sessions`),
+    one(`SELECT MIN(filler_rate) AS n FROM sessions WHERE duration_s >= 60`),
+    one(`SELECT COUNT(*) AS n FROM read_takes`),
+    one(`SELECT COUNT(*) AS n FROM lexicon WHERE track = 'production' AND reps >= 2`),
+    one(`SELECT COUNT(*) AS n FROM drills`),
+    one(`SELECT COUNT(*) AS n FROM rooms WHERE debriefed_at IS NOT NULL`),
+    one(`SELECT COUNT(*) AS n FROM valve_sessions`),
+    one(`SELECT COUNT(*) AS n FROM valve_sessions WHERE complete = 1 AND threshold > 5`),
+    one(`SELECT MAX(rubric_total) AS n FROM sessions`),
+  ]);
+  return {
+    arenaTakes: arena ?? 0,
+    bestFiller: best,
+    readings: reads ?? 0,
+    wordsOwned: owned ?? 0,
+    drills: drills ?? 0,
+    debriefs: rooms ?? 0,
+    valveRuns: valve ?? 0,
+    valveClean: clean ?? 0,
+    rubricBest: rubric,
+  };
+}
+
 export async function resetAll(): Promise<void> {
   const d = await db();
   await d.execAsync(
     `DELETE FROM sessions; DELETE FROM read_takes; DELETE FROM lexicon;
      DELETE FROM skill; DELETE FROM drills; DELETE FROM rooms;
-     DELETE FROM baseline; DELETE FROM reports; DELETE FROM valve_sessions;`
+     DELETE FROM baseline; DELETE FROM reports; DELETE FROM valve_sessions;
+     DELETE FROM game_scores; DELETE FROM quest_claims; DELETE FROM badges;`
   );
 }
 
@@ -1037,6 +1254,9 @@ export const BACKUP_TABLES = [
   "baseline",
   "reports",
   "valve_sessions",
+  "game_scores",
+  "quest_claims",
+  "badges",
 ] as const;
 
 export type BackupTable = (typeof BACKUP_TABLES)[number];
@@ -1057,6 +1277,9 @@ const ORDER: Record<BackupTable, string> = {
   baseline: "id ASC",
   reports: "week_key ASC",
   valve_sessions: "started_at ASC, id ASC",
+  game_scores: "at ASC, id ASC",
+  quest_claims: "day ASC, quest_id ASC",
+  badges: "badge ASC",
 };
 
 export async function dumpTable(table: BackupTable): Promise<Record<string, unknown>[]> {

@@ -1,29 +1,41 @@
 import { useEffect, useState } from "react";
-import { Stack } from "expo-router";
+import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
-import { AppState, StyleSheet, View } from "react-native";
-// Deep imports, not the package roots. The root index re-exports all eighteen
-// weights of each family, and Metro bundles every asset it can reach — importing
-// from the root put 3 MB of unused TTFs into the payload.
-import { BricolageGrotesque_700Bold } from "@expo-google-fonts/bricolage-grotesque/700Bold";
-import { BricolageGrotesque_600SemiBold } from "@expo-google-fonts/bricolage-grotesque/600SemiBold";
-import { InstrumentSerif_400Regular_Italic } from "@expo-google-fonts/instrument-serif/400Regular_Italic";
-import { SchibstedGrotesk_400Regular } from "@expo-google-fonts/schibsted-grotesk/400Regular";
-import { SchibstedGrotesk_500Medium } from "@expo-google-fonts/schibsted-grotesk/500Medium";
-import { SchibstedGrotesk_600SemiBold } from "@expo-google-fonts/schibsted-grotesk/600SemiBold";
-import { MartianMono_400Regular } from "@expo-google-fonts/martian-mono/400Regular";
-import { MartianMono_500Medium } from "@expo-google-fonts/martian-mono/500Medium";
+import { AppState, StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+// Deep imports, not the package roots. The root index re-exports every weight
+// of each family, and Metro bundles every asset it can reach — importing from
+// the root put megabytes of unused TTFs into the payload.
+import { Fraunces_800ExtraBold } from "@expo-google-fonts/fraunces/800ExtraBold";
+import { Fraunces_600SemiBold } from "@expo-google-fonts/fraunces/600SemiBold";
+import { Fraunces_400Regular } from "@expo-google-fonts/fraunces/400Regular";
+import { Fraunces_400Regular_Italic } from "@expo-google-fonts/fraunces/400Regular_Italic";
+import { Outfit_400Regular } from "@expo-google-fonts/outfit/400Regular";
+import { Outfit_500Medium } from "@expo-google-fonts/outfit/500Medium";
+import { Outfit_600SemiBold } from "@expo-google-fonts/outfit/600SemiBold";
+import { Outfit_700Bold } from "@expo-google-fonts/outfit/700Bold";
+import { SpaceMono_400Regular } from "@expo-google-fonts/space-mono/400Regular";
+import { SpaceMono_700Bold } from "@expo-google-fonts/space-mono/700Bold";
 
 import { Boot } from "../components/boot";
+import { AuroraBackground } from "../components/kit/Aurora";
+import { RewardHost } from "../components/kit/RewardHost";
 import { CHROME } from "../theme";
 import { seedKeysFromEnv } from "../lib/settings";
 import { autoBackup } from "../features/backup/backup";
 
 /** Shortest time the boot screen stays up. Fonts usually resolve faster than
- *  this on a warm start, and a 120ms flash of wordmark reads as a glitch —
- *  either show the thing properly or do not show it. */
-const BOOT_FLOOR_MS = 700;
+ *  this on a warm start, and a flash of logo reads as a glitch — either show
+ *  the reveal properly or do not show it. */
+const BOOT_FLOOR_MS = 1100;
+
+// Every screen is transparent so the one aurora at the root shows through.
+// The navigator paints its own background unless its theme says otherwise.
+const NAV_THEME = {
+  ...DarkTheme,
+  colors: { ...DarkTheme.colors, background: "transparent", card: "transparent" },
+};
 
 export default function RootLayout() {
   // Dev convenience only, and it never overwrites what is already stored.
@@ -56,19 +68,21 @@ export default function RootLayout() {
   }, []);
 
   const [ready] = useFonts({
-    BricolageGrotesque_700Bold,
-    BricolageGrotesque_600SemiBold,
-    InstrumentSerif_400Regular_Italic,
-    SchibstedGrotesk_400Regular,
-    SchibstedGrotesk_500Medium,
-    SchibstedGrotesk_600SemiBold,
-    MartianMono_400Regular,
-    MartianMono_500Medium,
+    Fraunces_800ExtraBold,
+    Fraunces_600SemiBold,
+    Fraunces_400Regular,
+    Fraunces_400Regular_Italic,
+    Outfit_400Regular,
+    Outfit_500Medium,
+    Outfit_600SemiBold,
+    Outfit_700Bold,
+    SpaceMono_400Regular,
+    SpaceMono_700Bold,
   });
 
   // The boot screen stays mounted through its own fade rather than being cut
-  // away the instant the fonts land — a hard swap makes a 700ms sequence look
-  // like it was interrupted.
+  // away the instant the fonts land — a hard swap makes the reveal look like it
+  // was interrupted.
   const booting = !ready || !floorPassed;
   const [bootMounted, setBootMounted] = useState(true);
   useEffect(() => {
@@ -78,19 +92,23 @@ export default function RootLayout() {
   }, [booting]);
 
   return (
-    <View style={s.root}>
+    <GestureHandlerRootView style={s.root}>
       <StatusBar style="light" />
       {ready ? (
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: CHROME.floor },
-            animation: "fade",
-          }}
-        />
+        <ThemeProvider value={NAV_THEME}>
+          <AuroraBackground />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: "transparent" },
+              animation: "fade",
+            }}
+          />
+          <RewardHost />
+        </ThemeProvider>
       ) : null}
       {bootMounted ? <Boot exiting={!booting} /> : null}
-    </View>
+    </GestureHandlerRootView>
   );
 }
 

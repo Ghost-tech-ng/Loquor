@@ -175,7 +175,7 @@ export default function Rooms() {
           </View>
 
           <Meta>
-            No audio, no attendees, no notes. Loquor never records a real meeting — you tell it
+            No audio, no attendees, no notes. Speek never records a real meeting — you tell it
             what happened afterwards, and only what you said is kept.
           </Meta>
           <Button label={saving ? "SAVING" : "BUILD MY CARD"} onPress={create} disabled={!title.trim() || saving} />

@@ -77,7 +77,7 @@ export default function Read() {
       granted.current = perm.granted;
       if (perm.granted) await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
       else {
-        setError("Loquor needs the microphone. Enable it in iOS Settings → Loquor.");
+        setError("Speek needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
         setStage("error");
       }
     })();

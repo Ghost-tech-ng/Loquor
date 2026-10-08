@@ -1,73 +1,60 @@
 // The tab bar.
 //
-// Five destinations, ordered by how much they matter. Today is the thing you
-// open the app to do. The Arena is the measurement everything else exists to
-// move, and Rooms is where it meets real people — those two are the product, so
-// they sit next to Today. Practice is the drawer of secondary drills, Progress
-// looks backwards. A user who has never seen the app should be able to guess
-// what is behind each one.
+// Home is what you open the app to do. The Arena is the measurement everything
+// else exists to move. Play is the games and the training drills. Rooms is
+// where it meets real people. You is the record: level, badges, the trends.
 //
-// Settings used to be the fifth tab. It gave its slot to the Arena and lives in
-// the masthead of every tab screen instead — still one tap from anywhere, which
-// was the whole reason it was promoted out of a footer link in the first place.
-//
-// It floats. A bar welded to the bottom edge reads as part of the phone; a bar
-// with air under it reads as part of the app, and the gap lets content scroll
-// visibly beneath it so you can tell there is more below. Content clears it via
-// TAB_CLEARANCE rather than by the navigator insetting the scene, because the
-// bar is absolutely positioned.
+// It floats, frosted, over the aurora. A gradient blob slides between tabs on a
+// spring — one moving thing rather than five that fade, because a shared
+// element travelling is what tells you the tabs are one control. Content clears
+// it via TAB_CLEARANCE because the bar is absolutely positioned.
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Tabs } from "expo-router";
-import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import type { BottomTabBarProps } from "expo-router/tabs";
 
-import {
-  GlyphArena,
-  GlyphProgress,
-  GlyphPractice,
-  GlyphRooms,
-  GlyphToday,
-} from "../../components/glyphs";
-import { CHROME, MOTION, RADIUS, SURFACE, TYPE } from "../../theme";
+import { feel } from "../../components/kit/feel";
+import { TabIcon, type IconName } from "../../components/kit/icons";
+import { AURORA, CHROME, GRADIENT, RADIUS, SPRING, TYPE, alpha } from "../../theme";
 
-type Glyph = (p: { tint: string }) => React.ReactElement;
-
-const TABS: { name: string; label: string; Glyph: Glyph }[] = [
-  { name: "index", label: "Today", Glyph: GlyphToday },
+const TABS: { name: string; label: string; icon: IconName }[] = [
+  { name: "index", label: "Home", icon: "home" },
   // Not "arena": that path is the take itself, a stack screen above the tabs.
-  { name: "stage", label: "Arena", Glyph: GlyphArena },
-  { name: "rooms", label: "Rooms", Glyph: GlyphRooms },
-  { name: "practice", label: "Practice", Glyph: GlyphPractice },
-  { name: "progress", label: "Progress", Glyph: GlyphProgress },
+  { name: "stage", label: "Arena", icon: "arena" },
+  { name: "play", label: "Play", icon: "play" },
+  { name: "rooms", label: "Rooms", icon: "rooms" },
+  { name: "you", label: "You", icon: "you" },
 ];
 
-/** One tab. Owns its own selection animation so the bar has no shared state to
- *  keep in sync — the glyph lifts and brightens, the label follows. */
+const BAR_H = 66;
+const INSET = 6;
+
 function Item({
   label,
-  Glyph,
+  icon,
   focused,
   onPress,
   onLongPress,
 }: {
   label: string;
-  Glyph: Glyph;
+  icon: IconName;
   focused: boolean;
   onPress: () => void;
   onLongPress: () => void;
 }) {
-  const on = useRef(new Animated.Value(focused ? 1 : 0)).current;
-
+  const on = useSharedValue(focused ? 1 : 0);
   useEffect(() => {
-    Animated.timing(on, {
-      toValue: focused ? 1 : 0,
-      duration: 220,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
+    on.value = withSpring(focused ? 1 : 0, SPRING.bouncy);
   }, [focused, on]);
+
+  const lift = useAnimatedStyle(() => ({
+    transform: [{ translateY: -on.value * 2 }, { scale: 1 + on.value * 0.12 }],
+  }));
 
   return (
     <Pressable
@@ -78,84 +65,70 @@ function Item({
       accessibilityState={{ selected: focused }}
       accessibilityLabel={label}
     >
-      <Animated.View
-        style={{
-          transform: [
-            { translateY: on.interpolate({ inputRange: [0, 1], outputRange: [0, -2] }) },
-            { scale: on.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) },
-          ],
-        }}
-      >
-        <Glyph tint={focused ? CHROME.chalk : CHROME.dustDim} />
+      <Animated.View style={lift}>
+        <TabIcon name={icon} active={focused} />
       </Animated.View>
-      <Animated.Text style={[s.label, focused && s.labelOn, { opacity: on.interpolate({ inputRange: [0, 1], outputRange: [0.75, 1] }) }]}>
-        {label}
-      </Animated.Text>
+      <Text style={[s.label, focused && s.labelOn]}>{label}</Text>
     </Pressable>
   );
 }
 
 function Bar({ state, emitter, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const count = state.routes.length;
+  const [width, setWidth] = useState(0);
+  const cell = width / Math.max(1, state.routes.length);
+  const x = useSharedValue(0);
 
-  // The marker is one view that slides, not five that fade. A shared element
-  // moving between positions is what tells you the tabs are one control.
-  const x = useRef(new Animated.Value(state.index)).current;
   useEffect(() => {
-    Animated.timing(x, {
-      toValue: state.index,
-      duration: 280,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
-  }, [state.index, x]);
+    if (cell > 0) x.value = withSpring(state.index * cell, SPRING.snappy);
+  }, [state.index, cell, x]);
+
+  const blob = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
 
   return (
-    <View
-      style={[s.dock, { paddingBottom: Math.max(insets.bottom, 10) }]}
-      pointerEvents="box-none"
-    >
-      <View style={s.bar}>
-        <Animated.View
-          style={[
-            s.marker,
-            {
-              width: `${100 / count}%`,
-              left: x.interpolate({
-                inputRange: [0, count - 1],
-                outputRange: ["0%", `${(100 * (count - 1)) / count}%`],
-              }),
-            },
-          ]}
-        >
-          <View style={s.markerPill} />
-        </Animated.View>
+    <View style={[s.dock, { paddingBottom: Math.max(insets.bottom - 6, 10) }]} pointerEvents="box-none">
+      <View style={s.shadow}>
+        <View style={s.bar} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+          <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: alpha(CHROME.raised, 0.55) }]} />
 
-        {state.routes.map((route, i) => {
-          const meta = TABS.find((t) => t.name === route.name);
-          if (!meta) return null;
-          const focused = state.index === i;
-          return (
-            <Item
-              key={route.key}
-              label={meta.label}
-              Glyph={meta.Glyph}
-              focused={focused}
-              onPress={() => {
-                const event = emitter.emit({
-                  type: "tabPress",
-                  target: route.key,
-                  canPreventDefault: true,
-                });
-                if (!focused && !event.defaultPrevented) {
-                  navigateToTab(route.key);
-                }
-              }}
-              onLongPress={() => emitter.emit({ type: "tabLongPress", target: route.key })}
-            />
-          );
-        })}
+          {cell > 0 ? (
+            <Animated.View style={[s.blobCell, { width: cell }, blob]} pointerEvents="none">
+              <LinearGradient
+                colors={[alpha(GRADIENT.primary[0], 0.55), alpha(GRADIENT.primary[1], 0.38)]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={s.blob}
+              />
+            </Animated.View>
+          ) : null}
+
+          {state.routes.map((route, i) => {
+            const meta = TABS.find((t) => t.name === route.name);
+            if (!meta) return null;
+            const focused = state.index === i;
+            return (
+              <Item
+                key={route.key}
+                label={meta.label}
+                icon={meta.icon}
+                focused={focused}
+                onPress={() => {
+                  const event = emitter.emit({
+                    type: "tabPress",
+                    target: route.key,
+                    canPreventDefault: true,
+                  });
+                  if (!focused && !event.defaultPrevented) {
+                    feel.select();
+                    navigateToTab(route.key);
+                  }
+                }}
+                onLongPress={() => emitter.emit({ type: "tabLongPress", target: route.key })}
+              />
+            );
+          })}
+        </View>
       </View>
     </View>
   );
@@ -167,7 +140,7 @@ export default function TabLayout() {
       tabBar={(props) => <Bar {...props} />}
       screenOptions={{
         headerShown: false,
-        sceneStyle: { backgroundColor: CHROME.floor },
+        sceneStyle: { backgroundColor: "transparent" },
         animation: "shift",
       }}
     >
@@ -184,43 +157,26 @@ const s = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    paddingHorizontal: 16,
-    backgroundColor: "transparent",
+    paddingHorizontal: 14,
+  },
+  shadow: {
+    borderRadius: RADIUS.bar,
+    shadowColor: AURORA.violet,
+    shadowOpacity: 0.35,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 10 },
   },
   bar: {
     flexDirection: "row",
-    height: 62,
+    height: BAR_H,
     borderRadius: RADIUS.bar,
-    backgroundColor: CHROME.raised,
     borderWidth: 1,
-    borderColor: SURFACE.edge,
+    borderColor: "rgba(255,255,255,0.12)",
     overflow: "hidden",
-    // The one shadow in the app, and it is here to say "this floats", not to
-    // decorate. Everything else on screen is flat by rule.
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOpacity: 0.5,
-        shadowRadius: 18,
-        shadowOffset: { width: 0, height: 8 },
-      },
-      default: { elevation: 12 },
-    }),
   },
-
-  marker: { position: "absolute", top: 0, bottom: 0 },
-  // The active cell is a capsule of very dilute ember rather than a drawn tick.
-  // Colour is data everywhere else in the app, so navigation gets the weakest
-  // statement of it that still answers "where am I" — a warmth, not a mark.
-  markerPill: {
-    flex: 1,
-    marginVertical: 7,
-    marginHorizontal: 8,
-    borderRadius: RADIUS.pill,
-    backgroundColor: "rgba(224, 85, 63, 0.14)",
-  },
-
-  item: { flex: 1, alignItems: "center", justifyContent: "center", gap: 4, paddingTop: 4 },
-  label: { color: CHROME.dustDim, fontSize: 8, letterSpacing: 0.2, fontFamily: TYPE.monoMedium },
-  labelOn: { color: CHROME.chalk },
+  blobCell: { position: "absolute", top: 0, bottom: 0, left: 0, padding: INSET },
+  blob: { flex: 1, borderRadius: RADIUS.bar - INSET },
+  item: { flex: 1, alignItems: "center", justifyContent: "center", gap: 3 },
+  label: { color: "rgba(244,241,255,0.55)", fontSize: 11, fontFamily: TYPE.uiSemi },
+  labelOn: { color: "#FFFFFF" },
 });

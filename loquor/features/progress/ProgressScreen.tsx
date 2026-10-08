@@ -1,20 +1,20 @@
-// Progress.
+// Progress — the record, embedded under the level and badges on You.
 //
 // The only screen in the app that looks backwards. Everything else asks you to
-// do something; this one only tells you what happened, which is why it is a
-// separate screen rather than a strip on Today — a person deciding whether to
-// practise should not first have to read a report about not having practised.
+// do something; this one only tells you what happened, which is why it is not a
+// strip on Home — a person deciding whether to practise should not first have to
+// read a report about not having practised.
 //
-// It leads with density over 28 days, not with the streak. The streak is here,
-// small, as a second figure. PRD §12 rules out the flame and the confetti, and
-// the reason is not taste: a streak rewards not breaking a chain, so the cheapest
-// way to protect it is a thirty-second take that teaches nothing, and the day it
-// breaks the whole structure has nothing left to say to you.
+// It leads with density over 28 days, not with the streak. The flame lives
+// above it on You, but a streak alone rewards not breaking a chain, so the
+// cheapest way to protect it is a thirty-second take that teaches nothing. The
+// density is the figure that cannot be gamed that way, and freezes mean the day
+// a streak breaks is not the day the whole structure stops talking to you.
 //
 // Two things on this screen cost money, and both are opt-in taps: the weekly
 // synthesis, and regenerating it. Nothing here calls a model on mount.
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
@@ -37,7 +37,7 @@ import { archetypeStats, scaffoldStats } from "../../lib/skillStore";
 import { funnel } from "../../lib/coach";
 import { fillerCountIsApproximate, getKey, loadSettings, resolve } from "../../lib/settings";
 
-export default function Progress() {
+export default function Progress({ header }: { header?: ReactNode } = {}) {
   const router = useRouter();
   const [data, setData] = useState<Overview | null>(null);
   const [approx, setApprox] = useState(true);
@@ -147,7 +147,7 @@ export default function Progress() {
   if (!data) {
     return (
       <Screen>
-        <Masthead right="PROGRESS" setup />
+        {header ?? <Masthead right="PROGRESS" setup />}
         <Meta>Reading the record…</Meta>
       </Screen>
     );
@@ -161,7 +161,7 @@ export default function Progress() {
 
   return (
     <Screen>
-      <Masthead right="PROGRESS" setup />
+      {header ?? <Masthead right="PROGRESS" setup />}
 
       {data.baseline === null ? (
         <Reveal index={0}>

@@ -1,44 +1,62 @@
-// Loquor design tokens. See PRD.md §12.
+// Speek design tokens — Aurora Night.
 //
-// The governing rule: chrome is colourless, colour is data. Nothing in this file
-// outside HEAT should be used to decorate — if a colour appears on screen and
-// isn't encoding a measurement, it comes from CHROME.
+// The old rule was "chrome is colourless, colour is data", and it produced an
+// honest instrument nobody wanted to open. The ground is still dark so a
+// measurement can still glow, but the chrome now has a light of its own: a slow
+// aurora behind everything, glass in front of it, and a gradient on anything you
+// are meant to press. Data keeps its own ramp (HEAT) so a filler rate never
+// borrows a colour that means "tap me".
 //
-// The ground moved from aubergine to petrol ink. The aubergine was a colour, and
-// a coloured ground competes with the only thing on screen allowed to be
-// coloured: the measurements. Ink at the bottom of a well is close enough to
-// black to disappear, and it makes the heat ramp read as the light source it is
-// meant to be. The residual blue-green bias is what keeps it from looking like a
-// terminal.
+// The export names are the old ones on purpose. Every screen reads CHROME,
+// SURFACE and TYPE, so remapping the values here re-skins the whole app at once.
 
-export const CHROME = {
-  floor: "#070C0F",     // page ground — petrol ink, effectively the dark
-  strata: "#0E161A",    // recessed panels and inputs
-  raised: "#141F25",    // the floating tab bar, and only the tab bar
-  carve: "#1E2C33",     // 1px hairlines — the only separator in the app
-  chalk: "#EDF3F2",     // primary text and mastery — cool limestone, never #FFF
-  dust: "#7C9199",      // secondary text — petrol-biased grey
-  dustDim: "#4C5C63",   // tertiary, labels
+export const AURORA = {
+  violet: "#7C5CFF",
+  teal: "#2EE6C5",
+  coral: "#FF7A6B",
+  gold: "#FFC857",
+  pink: "#FF5FA2",
+  sky: "#5CC8FF",
 } as const;
 
-// Vocal energy, silence → peak. Sampled for every accent in the product.
-// Dark and cold at rest, white-hot at the top, so a loud moment genuinely looks
-// like one. Rooted in blue rather than violet now that the ground is petrol —
-// a violet base against an aubergine floor was the reason neither read as light.
+export const CHROME = {
+  floor: "#0B0A1A",     // night indigo
+  strata: "#141230",    // recessed panels and inputs
+  raised: "#1D1A40",    // the tab bar and sheets
+  carve: "#2B2758",     // hairlines
+  chalk: "#F4F1FF",     // primary text
+  dust: "#A7A3C7",      // secondary text
+  dustDim: "#6E6A91",   // labels
+} as const;
+
+// Vocal energy, silence → peak. Still the ramp every live meter samples, now
+// drawn from the aurora so the meters belong to the same sky as the chrome.
 export const HEAT = [
-  "#0F3550",
-  "#2F4A8C",
-  "#8B3E8F",
-  "#E0553F",
-  "#FFA23C",
-  "#FFEBC6",
+  "#1E2266",
+  "#4B3FD1",
+  "#9B5CFF",
+  "#FF5FA2",
+  "#FF9A5C",
+  "#FFE3A3",
 ] as const;
 
 export const SEMANTIC = {
-  ember: HEAT[3],   // live, recording, primary action
-  flaw: "#FF4F6B",  // filler markers, hedges, over-threshold
-  solid: "#33BCA3", // owned, mastered, cleared — the only cool signal
+  ember: AURORA.coral, // live, recording
+  flaw: AURORA.pink,   // filler markers, hedges, over-threshold
+  solid: AURORA.teal,  // owned, mastered, cleared
+  xp: AURORA.gold,
 } as const;
+
+/** Gradient stops, as tuples so they drop straight into LinearGradient. */
+export const GRADIENT = {
+  primary: [AURORA.violet, AURORA.pink] as const,
+  cool: [AURORA.violet, AURORA.teal] as const,
+  warm: [AURORA.coral, AURORA.gold] as const,
+  flame: ["#FF5A36", "#FF9A3C", AURORA.gold] as const,
+  xp: [AURORA.gold, "#FF9A3C"] as const,
+  good: [AURORA.teal, AURORA.sky] as const,
+  brand: [AURORA.violet, AURORA.teal, AURORA.coral] as const,
+};
 
 // Interpolate the heat ramp. `t` clamps to 0..1.
 export function heat(t: number): string {
@@ -64,36 +82,35 @@ function rgbToHex(r: number, g: number, b: number): string {
   return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
 }
 
-/** Translucent chalk, for scrims and pressed states. */
-export function chalkA(alpha: number): string {
-  return `rgba(237, 243, 242, ${alpha})`;
+/** Any hex colour at an alpha, for glows and tints. */
+export function alpha(hex: string, a: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
-// Three voices, deliberately unrelated to each other.
+/** Translucent chalk, for scrims and pressed states. */
+export function chalkA(a: number): string {
+  return alpha(CHROME.chalk, a);
+}
+
+// Three voices.
 //
-// Bricolage Grotesque speaks. It is a grotesk with the proportions slightly
-// wrong on purpose — tight apertures, a flat-sided g, terminals that do not
-// match — which is exactly the register for a headline in an app about not
-// sounding like everybody else. Set large; it is not a body face.
-//
-// Instrument Serif Italic is the aside. High contrast, very fast, and it does
-// the one job a grotesk cannot: sounding like a human voice rather than a label.
-//
-// Schibsted Grotesk does the work — a Norwegian newspaper face built for small
-// sizes on screen, which is the entire body copy of this app.
-//
-// Martian Mono holds every number and every label. Monospace is not a style
-// choice here: a filler rate that changes between sessions must not also change
-// width, and a readout that jitters is a readout you stop trusting.
+// Fraunces is the reading face — a soft, old-style serif with ink traps and a
+// little wobble, so headings feel spoken rather than printed and long passages
+// are something you want to keep reading. Outfit does the UI: round, friendly,
+// geometric, legible small. Space Mono holds every number and timer, because a
+// score that changes width as it counts is a score you stop trusting.
 export const TYPE = {
-  display: "BricolageGrotesque_700Bold",
-  displaySoft: "BricolageGrotesque_600SemiBold",
-  displayItalic: "InstrumentSerif_400Regular_Italic",
-  ui: "SchibstedGrotesk_400Regular",
-  uiMedium: "SchibstedGrotesk_500Medium",
-  uiSemi: "SchibstedGrotesk_600SemiBold",
-  mono: "MartianMono_400Regular",
-  monoMedium: "MartianMono_500Medium",
+  display: "Fraunces_800ExtraBold",
+  displaySoft: "Fraunces_600SemiBold",
+  displayItalic: "Fraunces_400Regular_Italic",
+  passage: "Fraunces_400Regular",
+  ui: "Outfit_400Regular",
+  uiMedium: "Outfit_500Medium",
+  uiSemi: "Outfit_600SemiBold",
+  uiBold: "Outfit_700Bold",
+  mono: "SpaceMono_400Regular",
+  monoMedium: "SpaceMono_700Bold",
 } as const;
 
 /** Applied to any run of digits that sits in a column or updates in place. */
@@ -101,47 +118,37 @@ export const TABULAR = { fontVariant: ["tabular-nums" as const] };
 
 export const SPACE = { xs: 4, sm: 8, md: 16, lg: 24, xl: 40 } as const;
 
-// One radius vocabulary. Nothing in the app rounds to a number that is not here.
-//
-// The first cut of this design drew every container as a 1px rectangle with a
-// 3px radius, on the theory that hard edges read as instrument rather than toy.
-// On a phone they read as neither — they read as boxes, and a screen of boxes
-// is a form. The edge is what got softened, not the discipline: containers are
-// still flat, still unshadowed, still colourless. They just stopped being drawn
-// as outlines and started being drawn as surfaces.
 export const RADIUS = {
-  /** Rows, slots, inline fields — anything the width of the column. */
-  soft: 12,
-  /** Containers. */
-  panel: 18,
+  /** Rows, slots, inline fields. */
+  soft: 14,
+  /** Cards. */
+  panel: 24,
   /** The floating tab bar. */
-  bar: 22,
-  /** Anything whose height is set by its own label: buttons, chips, gates. */
+  bar: 30,
   pill: 999,
 } as const;
 
-/** Container fill and edge, both translucent so they sit on any ground. */
+/** Glass: translucent so it sits on the aurora. */
 export const SURFACE = {
-  /** Panels, inputs, recessed rows. */
-  sunk: "rgba(237, 243, 242, 0.035)",
-  /** The edge of a container — present, but not a drawn line. */
-  edge: "rgba(237, 243, 242, 0.065)",
-  /** The edge of something you can press. */
-  edgeLive: "rgba(237, 243, 242, 0.13)",
+  sunk: "rgba(255, 255, 255, 0.055)",
+  edge: "rgba(255, 255, 255, 0.10)",
+  edgeLive: "rgba(255, 255, 255, 0.18)",
 } as const;
 
 /** Clearance under every scrolling screen so the floating bar never covers the
- *  last line of content. The bar is 62 tall and sits 22 off the safe area. */
-export const TAB_CLEARANCE = 118;
+ *  last line of content. */
+export const TAB_CLEARANCE = 128;
 
-/** One timing vocabulary, so nothing in the app moves at a speed of its own. */
 export const MOTION = {
-  /** Press feedback. Must be under a frame budget you can feel. */
   tap: 110,
-  /** Content arriving. */
-  enter: 380,
-  /** Stagger between siblings in an arriving group. */
-  stagger: 55,
-  /** Ambient loops — breathing, pulsing, the boot ramp. */
+  enter: 420,
+  stagger: 60,
   ambient: 1600,
+} as const;
+
+/** Spring presets for Reanimated's withSpring. */
+export const SPRING = {
+  snappy: { damping: 18, stiffness: 320, mass: 0.7 },
+  bouncy: { damping: 9, stiffness: 180, mass: 0.8 },
+  gentle: { damping: 20, stiffness: 90, mass: 1 },
 } as const;

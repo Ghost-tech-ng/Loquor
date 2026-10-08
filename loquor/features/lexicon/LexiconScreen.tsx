@@ -110,7 +110,7 @@ export default function Lexicon() {
 
   const startSpeaking = async () => {
     if (!granted.current) {
-      setError("Loquor needs the microphone. Enable it in iOS Settings → Loquor.");
+      setError("Speek needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
       setStage("error");
       return;
     }

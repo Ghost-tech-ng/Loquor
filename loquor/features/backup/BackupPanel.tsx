@@ -132,7 +132,7 @@ export function Backup() {
 
           <Toggle
             title="Back up automatically"
-            sub="On launch, and whenever you leave the app. Expo Go cannot run in the background, so nothing happens while Loquor is closed — and nothing can happen, because you are not speaking into it."
+            sub="On launch, and whenever you leave the app. Expo Go cannot run in the background, so nothing happens while Speek is closed — and nothing can happen, because you are not speaking into it."
             on={prefs?.auto ?? true}
             onChange={(v) => setPref({ auto: v })}
           />

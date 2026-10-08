@@ -137,7 +137,7 @@ export default function Onboarding() {
           claims is measured from here.
         </Meta>
 
-        <Button label="SEE PROGRESS" tone="ghost" onPress={() => router.replace("/progress")} />
+        <Button label="SEE YOUR RECORD" tone="ghost" onPress={() => router.replace("/you")} />
         <Button label="BACK" tone="quiet" onPress={() => router.replace("/")} />
       </Screen>
     );
@@ -207,7 +207,7 @@ export default function Onboarding() {
         <Eyebrow>ONE QUESTION, AND IT IS YOURS</Eyebrow>
         <Display>Did you say the thing you wanted to say?</Display>
         <Meta>
-          One is rarely, five is always. This is the only figure in Loquor the app cannot measure,
+          One is rarely, five is always. This is the only figure in Speek the app cannot measure,
           and the one that decides whether the rest of them mattered.
         </Meta>
 
@@ -253,10 +253,10 @@ export default function Onboarding() {
         <Masthead right="BASELINE" />
         <Display>Filed. It will not be asked for again.</Display>
         <Meta>
-          Ninety days from now the table on Progress reads against this take. Nothing else you do in
+          Ninety days from now the record on You reads against this take. Nothing else you do in
           the app can change it.
         </Meta>
-        <Button label="SEE PROGRESS" onPress={() => router.replace("/progress")} />
+        <Button label="SEE YOUR RECORD" onPress={() => router.replace("/you")} />
         <Button label="START TODAY" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
@@ -302,7 +302,7 @@ export default function Onboarding() {
       <Reveal index={3}>
         <Panel>
           <Meta>
-            Speak badly if you speak badly. Every claim Loquor makes about your progress is measured
+            Speak badly if you speak badly. Every claim Speek makes about your progress is measured
             from this recording, so a baseline you performed carefully is a baseline that will make
             three months of real work look like nothing.
           </Meta>

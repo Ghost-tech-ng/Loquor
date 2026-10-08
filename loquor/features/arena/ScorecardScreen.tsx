@@ -35,6 +35,7 @@ import {
 import { RUBRIC_LABELS, type Judgement } from "./judge";
 import { getSession, type SessionRow } from "../../lib/db";
 import { fillerCountIsApproximate } from "../../lib/settings";
+import { celebrate } from "../progression/progressionStore";
 
 export default function Scorecard() {
   const router = useRouter();
@@ -52,6 +53,10 @@ export default function Scorecard() {
       }
       setRow(r);
       if (r.parent_id) setParent(await getSession(r.parent_id));
+      // After the numbers are on screen, so the sheet rises over the result it
+      // is rewarding. Reopening an old scorecard settles nothing new and shows
+      // nothing.
+      void celebrate();
     })();
   }, [id]);
 

@@ -154,7 +154,7 @@ export function nextAction(st: State): Action {
       title: "Read the next section aloud",
       why: `${st.sectionsLeft} ${st.sectionsLeft === 1 ? "section" : "sections"} left in the piece you started. Under two minutes each.`,
       cta: "READ ALOUD",
-      route: "/practice",
+      route: "/play",
       urgent: false,
     };
   }

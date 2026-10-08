@@ -23,7 +23,7 @@ export const KEY_GUIDES: KeyGuide[] = [
     steps: [
       "Open console.groq.com in a browser and sign in with Google or GitHub.",
       "In the left sidebar choose API Keys.",
-      "Press Create API Key, name it Loquor, and press Submit.",
+      "Press Create API Key, name it Speek, and press Submit.",
       "Copy the key immediately — Groq shows it once and never again.",
       "Paste it above. It starts with gsk_.",
     ],
@@ -55,7 +55,7 @@ export const KEY_GUIDES: KeyGuide[] = [
     steps: [
       "Open console.anthropic.com and sign in.",
       "Go to Settings, then API Keys.",
-      "Press Create Key, name it Loquor, and copy it.",
+      "Press Create Key, name it Speek, and copy it.",
       "Add credit under Billing — a new account has none, and the key returns an error until you do.",
       "Paste the key above. It starts with sk-ant-.",
     ],

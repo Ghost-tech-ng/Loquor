@@ -277,7 +277,7 @@ export default function Settings() {
       <Eyebrow>REMINDERS</Eyebrow>
       <Meta>
         Two at most, both off until you turn them on, and neither carries a number. Scheduled on
-        this phone — Loquor has no server to send you anything from.
+        this phone — Speek has no server to send you anything from.
       </Meta>
 
       <Reminder
@@ -314,7 +314,7 @@ export default function Settings() {
 
       {denied ? (
         <Text style={s.denied}>
-          iOS refused notifications for Loquor. Settings → Notifications → Loquor, then try again.
+          iOS refused notifications for Speek. Settings → Notifications → Expo Go, then try again.
         </Text>
       ) : null}
 
