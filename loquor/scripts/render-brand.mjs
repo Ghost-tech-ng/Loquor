@@ -17,8 +17,8 @@ const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" widt
       <stop offset="1" stop-color="#2E4A78" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="g2" cx="92" cy="96" r="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#4E9C6E" stop-opacity="0.28"/>
-      <stop offset="1" stop-color="#4E9C6E" stop-opacity="0"/>
+      <stop offset="0" stop-color="#22C55E" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#22C55E" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="100" height="100" fill="#0B0F17"/>

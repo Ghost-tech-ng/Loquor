@@ -231,8 +231,8 @@ export default function Home() {
           {/* The hero. Re-keyed on the action id so it re-enters when the ladder
               moves on, which is the feedback that completing something counted. */}
           <Rise key={action?.id ?? "none"} index={2}>
-            <Glass glow={action?.urgent ? AURORA.terracotta : AURORA.forest} style={s.hero}>
-              <Text style={[s.kicker, action?.urgent && { color: AURORA.terracotta }]}>
+            <Glass glow={action?.urgent ? AURORA.coral : AURORA.emerald} style={s.hero}>
+              <Text style={[s.kicker, action?.urgent && { color: AURORA.coral }]}>
                 {action?.eyebrow ?? " "}
               </Text>
               <Text style={s.heroTitle}>{action?.title ?? " "}</Text>
@@ -324,8 +324,8 @@ export default function Home() {
           {word ? (
             <Rise index={5}>
               <PressableScale onPress={() => router.push("/lexicon")} scaleTo={0.98} accessibilityLabel="Word of the day">
-                <Glass glow={AURORA.sage} style={s.word}>
-                  <Text style={[s.kicker, { color: AURORA.sage }]}>WORD OF THE DAY</Text>
+                <Glass glow={AURORA.mint} style={s.word}>
+                  <Text style={[s.kicker, { color: AURORA.mint }]}>WORD OF THE DAY</Text>
                   <View style={s.wordHead}>
                     <Text style={s.wordText}>{word.word}</Text>
                     <Text style={s.wordSay}>{word.say}</Text>
@@ -412,9 +412,9 @@ const s = StyleSheet.create({
     paddingRight: 14,
     paddingVertical: 8,
     borderRadius: RADIUS.pill,
-    backgroundColor: alpha(AURORA.terracotta, 0.14),
+    backgroundColor: alpha(AURORA.coral, 0.14),
     borderWidth: 1,
-    borderColor: alpha(AURORA.terracotta, 0.35),
+    borderColor: alpha(AURORA.coral, 0.35),
   },
   streakNum: { color: CHROME.chalk, fontSize: 20, fontFamily: TYPE.monoMedium, ...TABULAR },
 
@@ -427,7 +427,7 @@ const s = StyleSheet.create({
   levelMeta: { color: CHROME.dust, fontSize: 12.5, fontFamily: TYPE.uiMedium },
 
   hero: { gap: 10 },
-  kicker: { color: AURORA.forest, fontSize: 11.5, letterSpacing: 1.8, fontFamily: TYPE.uiBold },
+  kicker: { color: AURORA.emerald, fontSize: 11.5, letterSpacing: 1.8, fontFamily: TYPE.uiBold },
   heroTitle: { color: CHROME.chalk, fontSize: 28, lineHeight: 34, fontFamily: TYPE.display, letterSpacing: -0.5 },
   heroPrompt: {
     color: CHROME.chalk,
@@ -456,7 +456,7 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: SURFACE.edge,
   },
-  questDone: { backgroundColor: alpha(AURORA.sage, 0.08), borderColor: alpha(AURORA.sage, 0.3) },
+  questDone: { backgroundColor: alpha(AURORA.mint, 0.08), borderColor: alpha(AURORA.mint, 0.3) },
   questTick: {
     width: 32,
     height: 32,
@@ -464,9 +464,9 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.5,
-    borderColor: alpha(AURORA.forest, 0.7),
+    borderColor: alpha(AURORA.emerald, 0.7),
   },
-  questTickDone: { backgroundColor: AURORA.sage, borderColor: AURORA.sage },
+  questTickDone: { backgroundColor: AURORA.mint, borderColor: AURORA.mint },
   questTickMark: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.uiBold },
   questTitle: { color: CHROME.chalk, fontSize: 15, lineHeight: 20, fontFamily: TYPE.uiMedium },
   questTitleDone: { color: CHROME.dust, textDecorationLine: "line-through" },
@@ -483,7 +483,7 @@ const s = StyleSheet.create({
   word: { gap: 8 },
   wordHead: { flexDirection: "row", alignItems: "baseline", gap: 10, flexWrap: "wrap" },
   wordText: { color: CHROME.chalk, fontSize: 30, fontFamily: TYPE.display, letterSpacing: -0.5 },
-  wordSay: { color: AURORA.sage, fontSize: 13, fontFamily: TYPE.mono },
+  wordSay: { color: AURORA.mint, fontSize: 13, fontFamily: TYPE.mono },
   wordMeaning: { color: CHROME.chalk, fontSize: 17, lineHeight: 26, fontFamily: TYPE.passage },
   wordUse: { color: CHROME.dust, fontSize: 12.5, fontFamily: TYPE.uiMedium },
 

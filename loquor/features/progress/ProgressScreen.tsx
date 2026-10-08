@@ -412,9 +412,9 @@ const s = StyleSheet.create({
   weekLabel: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.6, fontFamily: TYPE.mono, ...TABULAR },
 
   callout: {
-    backgroundColor: "rgba(78, 156, 110, 0.07)",
+    backgroundColor: "rgba(34, 197, 94, 0.07)",
     borderWidth: 1,
-    borderColor: "rgba(78, 156, 110, 0.4)",
+    borderColor: "rgba(34, 197, 94, 0.4)",
     borderRadius: RADIUS.panel,
     paddingHorizontal: 16,
     paddingVertical: 15,

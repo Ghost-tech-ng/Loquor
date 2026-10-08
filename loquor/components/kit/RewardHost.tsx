@@ -71,7 +71,7 @@ export function RewardHost() {
         style={[s.sheetWrap, { paddingBottom: insets.bottom + 16 }]}
         pointerEvents="box-none"
       >
-        <Glass glow={levelled ? AURORA.gold : AURORA.forest} style={s.sheet}>
+        <Glass glow={levelled ? AURORA.cyan : AURORA.emerald} style={s.sheet}>
           <View style={s.orb}>
             <VoiceOrb size={88} mood="happy" />
           </View>
@@ -132,7 +132,7 @@ export function RewardHost() {
                   entering={ZoomIn.delay(900 + i * 180).springify().damping(8)}
                   style={s.badge}
                 >
-                  <Glyph name={b.icon} size={30} strokeWidth={1.6} color={AURORA.gold} />
+                  <Glyph name={b.icon} size={30} strokeWidth={1.6} color={AURORA.cyan} />
                   <Text style={s.badgeName} numberOfLines={1}>
                     {b.name}
                   </Text>
@@ -159,7 +159,7 @@ const s = StyleSheet.create({
     fontFamily: TYPE.uiBold,
     fontSize: 12,
     letterSpacing: 2.4,
-    color: AURORA.gold,
+    color: AURORA.cyan,
     textAlign: "center",
   },
   title: {
@@ -192,9 +192,9 @@ const s = StyleSheet.create({
     width: 96,
     paddingVertical: 12,
     borderRadius: 18,
-    backgroundColor: alpha(AURORA.gold, 0.1),
+    backgroundColor: alpha(AURORA.cyan, 0.1),
     borderWidth: 1,
-    borderColor: alpha(AURORA.gold, 0.4),
+    borderColor: alpha(AURORA.cyan, 0.4),
   },
   badgeName: { fontFamily: TYPE.uiSemi, fontSize: 12, color: CHROME.chalk, marginTop: 4 },
 });

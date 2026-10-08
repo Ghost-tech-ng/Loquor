@@ -59,7 +59,7 @@ function Header() {
       />
 
       <Rise index={0}>
-        <Glass glow={AURORA.forest} style={s.hero}>
+        <Glass glow={AURORA.emerald} style={s.hero}>
           <ProgressRing progress={p?.level.progress ?? 0} size={128} stroke={10} colors={GRADIENT.xp}>
             <Text style={s.lvlLabel}>LEVEL</Text>
             <Text style={s.lvl}>{p?.level.level ?? 1}</Text>
@@ -74,7 +74,7 @@ function Header() {
           </View>
           {upcoming ? (
             <Text style={s.nextRank}>
-              <Text style={{ color: AURORA.gold }}>{upcoming.name}</Text> at level {upcoming.at}
+              <Text style={{ color: AURORA.cyan }}>{upcoming.name}</Text> at level {upcoming.at}
             </Text>
           ) : null}
         </Glass>
@@ -88,7 +88,7 @@ function Header() {
         </Glass>
         <Glass style={s.stat}>
           <View style={s.statIcon}>
-            <Glyph name="trophy" size={28} strokeWidth={1.7} color={AURORA.gold} />
+            <Glyph name="trophy" size={28} strokeWidth={1.7} color={AURORA.cyan} />
           </View>
           <Text style={s.statNum}>{streak?.best ?? 0}</Text>
           <Text style={s.statLabel}>best run</Text>
@@ -130,7 +130,7 @@ function Header() {
                     name={b.icon}
                     size={28}
                     strokeWidth={1.7}
-                    color={got ? AURORA.gold : CHROME.dustDim}
+                    color={got ? AURORA.cyan : CHROME.dustDim}
                     opacity={got ? 1 : 0.45}
                   />
                   <Text style={[s.badgeName, !got && { color: CHROME.dustDim }]} numberOfLines={2}>
@@ -142,12 +142,12 @@ function Header() {
           })}
         </View>
         {picked ? (
-          <Glass glow={earned.has(picked.id) ? AURORA.gold : undefined} style={s.detail}>
+          <Glass glow={earned.has(picked.id) ? AURORA.cyan : undefined} style={s.detail}>
             <View style={s.detailHead}>
               <Glyph
                 name={picked.icon}
                 size={20}
-                color={earned.has(picked.id) ? AURORA.gold : CHROME.dust}
+                color={earned.has(picked.id) ? AURORA.cyan : CHROME.dust}
               />
               <Text style={s.detailName}>{picked.name}</Text>
             </View>
@@ -213,9 +213,9 @@ const s = StyleSheet.create({
     padding: 6,
     borderWidth: 1,
   },
-  badgeOn: { backgroundColor: alpha(AURORA.gold, 0.12), borderColor: alpha(AURORA.gold, 0.45) },
+  badgeOn: { backgroundColor: alpha(AURORA.cyan, 0.12), borderColor: alpha(AURORA.cyan, 0.45) },
   badgeOff: { backgroundColor: SURFACE.sunk, borderColor: SURFACE.edge },
-  badgePicked: { borderColor: AURORA.forest, borderWidth: 1.5 },
+  badgePicked: { borderColor: AURORA.emerald, borderWidth: 1.5 },
   badgeName: { color: CHROME.chalk, fontSize: 10.5, lineHeight: 13, fontFamily: TYPE.uiSemi, textAlign: "center" },
 
   detail: { gap: 4 },

@@ -60,8 +60,8 @@ export function TabIcon({ name, active, size = 26 }: { name: IconName; active: b
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Defs>
         <LinearGradient id={`tab-${name}`} x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor={AURORA.forest} stopOpacity={0.45} />
-          <Stop offset="1" stopColor={AURORA.sage} stopOpacity={0.2} />
+          <Stop offset="0" stopColor={AURORA.emerald} stopOpacity={0.45} />
+          <Stop offset="1" stopColor={AURORA.mint} stopOpacity={0.2} />
         </LinearGradient>
       </Defs>
       <Shape

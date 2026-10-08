@@ -1,19 +1,20 @@
-// Speek design tokens — Midnight & Forest.
+// Speek design tokens — Midnight & Emerald.
 //
-// A stage at night: a deep navy room, forest green on the things you press,
-// ivory type and gold for anything you earn. The aurora still drifts behind
-// everything, but in quiet colours — a green lamp, a little sage and
-// terracotta — so the screen glows rather than flashes. Data keeps its own
-// ramp (HEAT) so a filler rate never borrows the colour that means "tap me".
+// A stage at night: a deep navy room, a bright emerald on the things you press,
+// ivory type, and an electric cyan for anything you earn — cool against the
+// green, so a reward reads as a reward and never as a button. The aurora still
+// drifts behind everything; the accents are saturated so the screen feels lit
+// rather than dimmed. Data keeps its own ramp (HEAT) so a filler rate never
+// borrows the colour that means "tap me".
 //
 // The export names are the old ones on purpose. Every screen reads CHROME,
 // SURFACE and TYPE, so remapping the values here re-skins the whole app at once.
 
 export const AURORA = {
-  forest: "#4E9C6E",     // primary: buttons, the active tab, the one thing to press
-  sage: "#6FB7A4",       // good, cleared, owned
-  terracotta: "#E07A5F", // alert: fillers, hedges, over the line
-  gold: "#EFC984",       // XP and badges — warm against the green, so a reward reads as a reward
+  emerald: "#22C55E",    // primary: buttons, the active tab, the one thing to press
+  mint: "#7CF2B8",       // good, cleared, owned
+  coral: "#FF6B6B",      // alert: fillers, hedges, over the line
+  cyan: "#38D9F5",       // XP and badges
   plum: "#A0708F",       // a quiet counterweight in gradients and the sky
   steel: "#7FA3C2",      // cool accents: freezes, info
 } as const;
@@ -26,35 +27,35 @@ export const CHROME = {
   chalk: "#F2EEE6",     // primary text, ivory
   dust: "#ABA69A",      // secondary text
   dustDim: "#726E66",   // labels
-  ink: "#141008",       // text on a light fill (gold, terracotta, mint)
+  ink: "#05200F",       // text on a bright fill — every filled button is light enough to need it
 } as const;
 
 // Vocal energy, silence → peak: a cold dial warming to a hot lamp.
 export const HEAT = [
   "#18233A",
-  "#2F4C6B",
-  "#4F8E86",
-  "#D9A85B",
-  "#E07A5F",
-  "#F6E2B6",
+  "#1F4E73",
+  "#1FB89A",
+  "#FF9F45",
+  "#FF6B6B",
+  "#FFE2D6",
 ] as const;
 
 export const SEMANTIC = {
-  ember: AURORA.forest,     // live, recording, the active choice
-  flaw: AURORA.terracotta,  // filler markers, hedges, over-threshold
-  solid: AURORA.sage,       // owned, mastered, cleared
-  xp: AURORA.gold,
+  ember: AURORA.emerald,  // live, recording, the active choice
+  flaw: AURORA.coral,     // filler markers, hedges, over-threshold
+  solid: AURORA.mint,     // owned, mastered, cleared
+  xp: AURORA.cyan,
 } as const;
 
 /** Gradient stops, as tuples so they drop straight into LinearGradient. */
 export const GRADIENT = {
-  primary: ["#46966A", "#25603F"] as const,
-  cool: [AURORA.steel, AURORA.sage] as const,
-  warm: [AURORA.terracotta, AURORA.gold] as const,
-  flame: ["#D9583A", "#E8964A", AURORA.gold] as const,
-  xp: [AURORA.gold, "#C9963F"] as const,
-  good: ["#86C7B5", "#4F9886"] as const,
-  brand: [AURORA.forest, AURORA.gold, AURORA.terracotta] as const,
+  primary: ["#34D77A", "#15A34A"] as const,
+  cool: [AURORA.steel, AURORA.mint] as const,
+  warm: [AURORA.coral, "#FF9F6E"] as const,
+  flame: ["#FF5A3C", "#FF8A3D", "#FFC24B"] as const,
+  xp: ["#5EE6FA", "#1FB6D9"] as const,
+  good: ["#A7F7D0", "#4FDDA0"] as const,
+  brand: [AURORA.emerald, AURORA.cyan, AURORA.coral] as const,
 };
 
 // Interpolate the heat ramp. `t` clamps to 0..1.

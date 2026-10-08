@@ -477,7 +477,7 @@ const s = StyleSheet.create({
 
   segment: { gap: 3 },
   segOpt: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: RADIUS.pill },
-  segOptOn: { backgroundColor: "rgba(78, 156, 110, 0.13)" },
+  segOptOn: { backgroundColor: "rgba(34, 197, 94, 0.13)" },
   segLabel: { color: CHROME.dust, fontSize: 13, fontFamily: TYPE.ui },
 
   keys: { gap: SPACE.md, marginTop: SPACE.xs },

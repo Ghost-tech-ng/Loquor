@@ -105,7 +105,7 @@ export function GlowButton({
                 style={StyleSheet.absoluteFill}
               />
             </Animated.View>
-            <Text style={[s.label, tone !== "primary" && s.labelOnLight, compact && s.labelCompact]}>
+            <Text style={[s.label, s.labelOnLight, compact && s.labelCompact]}>
               {icon ? `${icon}  ` : ""}
               {label}
             </Text>

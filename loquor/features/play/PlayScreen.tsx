@@ -46,7 +46,7 @@ const GAMES: Game[] = [
     name: "Bring It to Life",
     icon: "bot",
     hook: "Start as a robot. Your melody, punch and rhythm turn it back into you.",
-    tint: [AURORA.plum, AURORA.forest],
+    tint: [AURORA.plum, AURORA.emerald],
     tag: "VOICE",
   },
   {
@@ -54,7 +54,7 @@ const GAMES: Game[] = [
     name: "No-Um Gauntlet",
     icon: "shield",
     hook: "Rounds from 20 seconds to 90. Three hearts. Every um costs one.",
-    tint: [AURORA.terracotta, AURORA.gold],
+    tint: [AURORA.coral, AURORA.cyan],
     tag: "FOCUS",
   },
   {
@@ -62,7 +62,7 @@ const GAMES: Game[] = [
     name: "Pause, Don't Um",
     icon: "pause",
     hook: "Talk until the gate flashes, then hold a clean silence. Live, no waiting.",
-    tint: [AURORA.sage, AURORA.steel],
+    tint: [AURORA.mint, AURORA.steel],
     tag: "LIVE",
   },
   {
@@ -70,7 +70,7 @@ const GAMES: Game[] = [
     name: "Word Bomb",
     icon: "bomb",
     hook: "A word drops with a lit fuse. Use it in a sentence out loud before it blows.",
-    tint: [AURORA.gold, AURORA.terracotta],
+    tint: [AURORA.cyan, AURORA.coral],
     tag: "SPEAK",
   },
   {
@@ -78,7 +78,7 @@ const GAMES: Game[] = [
     name: "Lexicon Blitz",
     icon: "zap",
     hook: "Sixty seconds, a definition, four words. Combos stack, and it counts as review.",
-    tint: [AURORA.forest, AURORA.sage],
+    tint: [AURORA.emerald, AURORA.mint],
     tag: "TAP",
   },
 ];
@@ -266,7 +266,7 @@ export default function Play() {
           <PressableScale onPress={d.go} scaleTo={0.97} accessibilityLabel={d.name}>
             <Glass style={s.drill} radius={RADIUS.soft + 6}>
               <View style={s.drillIcon}>
-                <Glyph name={d.icon} size={22} strokeWidth={1.7} color={AURORA.forest} />
+                <Glyph name={d.icon} size={22} strokeWidth={1.7} color={AURORA.emerald} />
               </View>
               <View style={{ flex: 1, gap: 3 }}>
                 <View style={s.gameHead}>
@@ -290,7 +290,7 @@ const s = StyleSheet.create({
 
   sectionHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   sectionTitle: { color: CHROME.chalk, fontSize: 22, fontFamily: TYPE.displaySoft },
-  soon: { color: AURORA.gold, fontSize: 10.5, letterSpacing: 1.4, fontFamily: TYPE.uiBold },
+  soon: { color: AURORA.cyan, fontSize: 10.5, letterSpacing: 1.4, fontFamily: TYPE.uiBold },
 
   game: {
     flexDirection: "row",
@@ -325,9 +325,9 @@ const s = StyleSheet.create({
     borderRadius: 13,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: alpha(AURORA.forest, 0.1),
+    backgroundColor: alpha(AURORA.emerald, 0.1),
   },
   drillName: { color: CHROME.chalk, fontSize: 17, fontFamily: TYPE.displaySoft },
   drillTrains: { color: CHROME.dust, fontSize: 13, lineHeight: 19, fontFamily: TYPE.ui },
-  status: { color: AURORA.sage, fontSize: 11, fontFamily: TYPE.monoMedium, ...TABULAR },
+  status: { color: AURORA.mint, fontSize: 11, fontFamily: TYPE.monoMedium, ...TABULAR },
 });

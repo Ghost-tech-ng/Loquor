@@ -6,7 +6,7 @@
 // behind each other is a battery bill nobody sees the benefit of.
 //
 // Four soft pools of light drifting on a navy ground: a cold stage-blue wash,
-// a forest-green lamp, and faint sage and terracotta underneath. Slow on purpose: it
+// an emerald lamp, and faint mint and coral underneath. Slow on purpose: it
 // should feel like the screen is breathing, not like it is busy.
 //
 // Rendered at a quarter of the screen's size and scaled up. The blobs are pure
@@ -40,14 +40,14 @@ half4 main(float2 xy) {
   float s = t * 0.00011;
   float3 col = float3(0.043, 0.059, 0.090);
   float3 stage = float3(0.180, 0.290, 0.470);
-  float3 forest = float3(0.306, 0.612, 0.431);
-  float3 sage = float3(0.435, 0.718, 0.643);
-  float3 terracotta = float3(0.878, 0.478, 0.373);
+  float3 emerald = float3(0.133, 0.773, 0.369);
+  float3 mint = float3(0.486, 0.949, 0.722);
+  float3 coral = float3(1.0, 0.420, 0.420);
   float e = 1.0 + energy;
   col += stage * 0.34 * e * blob(p, float2(0.12 + 0.16 * sin(s * 1.3), 0.06 * h + 0.07 * cos(s * 1.1)), 0.62);
-  col += forest * 0.16 * e * blob(p, float2(1.0 + 0.10 * cos(s * 0.9), 0.30 * h + 0.10 * sin(s * 1.4)), 0.50);
-  col += sage * 0.07 * e * blob(p, float2(0.18 + 0.18 * sin(s * 0.7 + 2.0), 0.80 * h + 0.08 * cos(s * 1.2)), 0.55);
-  col += terracotta * 0.07 * e * blob(p, float2(0.90 + 0.10 * sin(s), 1.02 * h), 0.45);
+  col += emerald * 0.17 * e * blob(p, float2(1.0 + 0.10 * cos(s * 0.9), 0.30 * h + 0.10 * sin(s * 1.4)), 0.50);
+  col += mint * 0.06 * e * blob(p, float2(0.18 + 0.18 * sin(s * 0.7 + 2.0), 0.80 * h + 0.08 * cos(s * 1.2)), 0.55);
+  col += coral * 0.06 * e * blob(p, float2(0.90 + 0.10 * sin(s), 1.02 * h), 0.45);
   return half4(half3(col), 1.0);
 }`;
 
@@ -106,7 +106,7 @@ function StaticAurora() {
         style={StyleSheet.absoluteFill}
       />
       <LinearGradient
-        colors={["transparent", alpha(AURORA.forest, 0.12)]}
+        colors={["transparent", alpha(AURORA.emerald, 0.12)]}
         start={{ x: 0.6, y: 0.4 }}
         end={{ x: 0.1, y: 1 }}
         style={StyleSheet.absoluteFill}
