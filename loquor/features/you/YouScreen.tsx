@@ -10,7 +10,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import Animated, { ZoomIn } from "react-native-reanimated";
 
-import { Masthead } from "../../components/ui";
+import { Masthead } from "../../components/kit/Screen";
 import { Glass } from "../../components/kit/Glass";
 import { ProgressRing, XPBar } from "../../components/kit/Meters";
 import { PressableScale, Rise } from "../../components/kit/motion";

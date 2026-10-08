@@ -18,7 +18,7 @@ import { Outfit_700Bold } from "@expo-google-fonts/outfit/700Bold";
 import { SpaceMono_400Regular } from "@expo-google-fonts/space-mono/400Regular";
 import { SpaceMono_700Bold } from "@expo-google-fonts/space-mono/700Bold";
 
-import { Boot } from "../components/boot";
+import { Boot } from "../components/kit/Boot";
 import { AuroraBackground } from "../components/kit/Aurora";
 import { RewardHost } from "../components/kit/RewardHost";
 import { CHROME } from "../theme";

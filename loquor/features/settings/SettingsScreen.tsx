@@ -9,18 +9,11 @@ import { useCallback, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import {
-  Body,
-  Button,
-  Display,
-  Eyebrow,
-  Hair,
-  Masthead,
-  Meta,
-  Panel,
-  Reveal,
-  Screen,
-} from "../../components/ui";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal } from "../../components/kit/motion";
 import { Backup } from "../backup/BackupPanel";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TYPE } from "../../theme";
 import { KEY_GUIDES, type KeyGuide } from "./keyGuides";
@@ -343,8 +336,8 @@ export default function Settings() {
         Transcripts and scores live in a database on this phone, and in your own Firebase project
         if you have turned backup on.
       </Meta>
-      <Button
-        label="ERASE EVERYTHING"
+      <GlowButton
+        label="Erase everything"
         tone="ghost"
         onPress={() =>
           Alert.alert(
@@ -365,8 +358,8 @@ export default function Settings() {
         }
       />
 
-      <Button
-        label="BACK"
+      <GlowButton
+        label="Back"
         tone="quiet"
         onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}
       />

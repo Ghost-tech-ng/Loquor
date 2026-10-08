@@ -13,7 +13,11 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen, Tap } from "../../components/ui";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal, Tap } from "../../components/kit/motion";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE } from "../../theme";
 import { contributionRaw, createRoom, pendingDebriefs, recentRooms, type RoomRow } from "../../lib/db";
 import { funnel, ratio } from "../../lib/coach";
@@ -102,15 +106,15 @@ export default function Rooms() {
 
       {pending.length > 0 ? (
         <Reveal index={0}>
-        <Panel style={{ borderColor: SEMANTIC.ember }}>
+        <Panel glow={SEMANTIC.ember}>
           <Eyebrow style={{ color: SEMANTIC.ember }}>
             {pending.length} DEBRIEF{pending.length === 1 ? "" : "S"} WAITING
           </Eyebrow>
           <Body>
             {pending[0]!.title}. Ninety seconds while you still remember what you did not say.
           </Body>
-          <Button
-            label="DEBRIEF NOW"
+          <GlowButton
+            label="Debrief now"
             onPress={() => router.push({ pathname: "/room", params: { id: pending[0]!.id } })}
           />
         </Panel>
@@ -178,11 +182,11 @@ export default function Rooms() {
             No audio, no attendees, no notes. Speek never records a real meeting — you tell it
             what happened afterwards, and only what you said is kept.
           </Meta>
-          <Button label={saving ? "SAVING" : "BUILD MY CARD"} onPress={create} disabled={!title.trim() || saving} />
-          <Button label="CANCEL" tone="quiet" onPress={() => setOpen(false)} />
+          <GlowButton label={saving ? "Saving…" : "Build my card"} onPress={create} disabled={!title.trim() || saving} />
+          <GlowButton label="Cancel" tone="quiet" onPress={() => setOpen(false)} />
         </Panel>
       ) : (
-        <Button label="NEW ROOM" onPress={() => setOpen(true)} />
+        <GlowButton label="New room" onPress={() => setOpen(true)} />
       )}
 
       {rooms.length > 0 ? (
@@ -209,7 +213,7 @@ export default function Rooms() {
         </>
       ) : null}
 
-      <Button label="BACK TO TODAY" tone="quiet" onPress={() => router.replace("/")} />
+      <GlowButton label="Back home" tone="quiet" onPress={() => router.replace("/")} />
     </Screen>
   );
 }

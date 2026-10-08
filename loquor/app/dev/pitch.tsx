@@ -27,7 +27,7 @@ import {
   type AudioStreamBuffer,
 } from "expo-audio";
 
-import { Masthead, Screen } from "../../components/ui";
+import { Masthead, Screen } from "../../components/kit/Screen";
 import { Glass } from "../../components/kit/Glass";
 import { GlowButton } from "../../components/kit/GlowButton";
 import { MelodyLine } from "../../components/kit/MelodyLine";

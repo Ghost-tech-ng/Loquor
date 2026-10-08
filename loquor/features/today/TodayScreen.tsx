@@ -15,8 +15,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import Animated, { FadeIn } from "react-native-reanimated";
 
-import { Masthead, Screen } from "../../components/ui";
-import { StrataWall, fillerStrain, strain } from "../../components/viz";
+import { fillerStrain, strain, StrataWall } from "../../components/kit/Charts";
+import { Masthead, Screen } from "../../components/kit/Screen";
 import { Glass } from "../../components/kit/Glass";
 import { GlowButton } from "../../components/kit/GlowButton";
 import { Glyph } from "../../components/kit/Glyph";

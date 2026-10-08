@@ -21,20 +21,13 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import * as Speech from "expo-speech";
 
-import {
-  Body,
-  Button,
-  Display,
-  Eyebrow,
-  Hair,
-  Masthead,
-  Meta,
-  Panel,
-  Reveal,
-  Screen,
-  Tap,
-} from "../../components/ui";
-import { Aperture, Failed, ScoreBar, Working } from "../../components/recorder";
+import { ScoreBar } from "../../components/kit/Charts";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Aperture, Failed, Working } from "../../components/kit/Recorder";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal, Tap } from "../../components/kit/motion";
 import { useTake } from "../../components/useTake";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE } from "../../theme";
 import { COUNTERPARTS, MOVES, type Counterpart, type Scaffold } from "../../content/scaffolds";
@@ -109,7 +102,7 @@ export default function Lab() {
         ))}
       </View>
 
-      <Button label="BACK TO TODAY" tone="quiet" onPress={() => router.replace("/")} />
+      <GlowButton label="Back home" tone="quiet" onPress={() => router.replace("/")} />
     </Screen>
   );
 }
@@ -256,7 +249,7 @@ function Argue({ onExit }: { onExit: () => void }) {
         </View>
 
         {!verdict.in_order ? (
-          <Panel style={{ borderColor: SEMANTIC.flaw }}>
+          <Panel glow={SEMANTIC.flaw}>
             <Eyebrow style={{ color: SEMANTIC.flaw }}>SEQUENCE</Eyebrow>
             <Body>
               The moves were there but not in the scaffold&rsquo;s order, which changes what they
@@ -265,13 +258,13 @@ function Argue({ onExit }: { onExit: () => void }) {
           </Panel>
         ) : null}
 
-        <Panel style={{ borderColor: SEMANTIC.ember }}>
+        <Panel glow={SEMANTIC.ember}>
           <Eyebrow style={{ color: SEMANTIC.ember }}>ARGUED TO THE SCAFFOLD</Eyebrow>
           <Body style={s.model}>{verdict.model_argument}</Body>
         </Panel>
 
-        <Button label="ANOTHER" onPress={deal} />
-        <Button label="BACK TO THE LAB" tone="ghost" onPress={onExit} />
+        <GlowButton label="Another" onPress={deal} />
+        <GlowButton label="Back to the lab" tone="ghost" onPress={onExit} />
       </Screen>
     );
   }
@@ -321,7 +314,7 @@ function Argue({ onExit }: { onExit: () => void }) {
         ))}
       </View>
 
-      <Panel style={{ borderColor: SEMANTIC.flaw }}>
+      <Panel glow={SEMANTIC.flaw}>
         <Eyebrow style={{ color: SEMANTIC.flaw }}>HOW THIS ONE FAILS</Eyebrow>
         <Body>{scaffold.trap}</Body>
       </Panel>
@@ -332,14 +325,14 @@ function Argue({ onExit }: { onExit: () => void }) {
           <Body style={s.model}>{scaffold.example}</Body>
         </Panel>
       ) : (
-        <Button label="SHOW A WORKED EXAMPLE" tone="ghost" onPress={() => setShowExample(true)} />
+        <GlowButton label="Show a worked example" tone="ghost" onPress={() => setShowExample(true)} />
       )}
 
       <Meta>{topic.primer[0]}</Meta>
 
-      <Button label="ARGUE IT — 90 SECONDS" onPress={begin} disabled={!take.ready} />
-      <Button label="DIFFERENT ONE" tone="ghost" onPress={deal} />
-      <Button label="BACK TO THE LAB" tone="quiet" onPress={onExit} />
+      <GlowButton label="Argue it — 90 seconds" onPress={begin} disabled={!take.ready} />
+      <GlowButton label="Different one" tone="ghost" onPress={deal} />
+      <GlowButton label="Back to the lab" tone="quiet" onPress={onExit} />
     </Screen>
   );
 }
@@ -510,7 +503,7 @@ function Room({ onExit }: { onExit: () => void }) {
           </Panel>
         ) : null}
 
-        <Panel style={{ borderColor: SEMANTIC.ember }}>
+        <Panel glow={SEMANTIC.ember}>
           <Eyebrow style={{ color: SEMANTIC.ember }}>WHAT TO OPEN WITH NEXT TIME</Eyebrow>
           <Body style={s.model}>{result.model_opener}</Body>
         </Panel>
@@ -519,8 +512,8 @@ function Room({ onExit }: { onExit: () => void }) {
         <Eyebrow>WHAT THEY KNEW</Eyebrow>
         <Body>{c.substance}</Body>
 
-        <Button label="ANOTHER STRANGER" onPress={deal} />
-        <Button label="BACK TO THE LAB" tone="ghost" onPress={onExit} />
+        <GlowButton label="Another stranger" onPress={deal} />
+        <GlowButton label="Back to the lab" tone="ghost" onPress={onExit} />
       </Screen>
     );
   }
@@ -544,14 +537,14 @@ function Room({ onExit }: { onExit: () => void }) {
           ))}
         </View>
 
-        <Button label="SAY SOMETHING" onPress={begin} disabled={!take.ready} />
-        <Button
-          label={enough ? "END AND SCORE IT" : `${MIN_EXCHANGES - history.length} MORE BEFORE SCORING`}
+        <GlowButton label="Say something" onPress={begin} disabled={!take.ready} />
+        <GlowButton
+          label={enough ? "End and score it" : `${MIN_EXCHANGES - history.length} more before scoring`}
           tone="ghost"
           onPress={end}
           disabled={!enough}
         />
-        <Button label="LEAVE THE CONVERSATION" tone="quiet" onPress={onExit} />
+        <GlowButton label="Leave the conversation" tone="quiet" onPress={onExit} />
       </Screen>
     );
   }
@@ -578,9 +571,9 @@ function Room({ onExit }: { onExit: () => void }) {
         something you heard rather than something you can reread is the point.
       </Meta>
 
-      <Button label="WALK OVER" onPress={open} disabled={!take.ready} />
-      <Button label="SOMEONE ELSE" tone="ghost" onPress={deal} />
-      <Button label="BACK TO THE LAB" tone="quiet" onPress={onExit} />
+      <GlowButton label="Walk over" onPress={open} disabled={!take.ready} />
+      <GlowButton label="Someone else" tone="ghost" onPress={deal} />
+      <GlowButton label="Back to the lab" tone="quiet" onPress={onExit} />
     </Screen>
   );
 }

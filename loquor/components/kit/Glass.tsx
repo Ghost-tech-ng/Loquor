@@ -14,7 +14,7 @@ import type { ReactNode } from "react";
 import { StyleSheet, View, type ViewProps } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { RADIUS, SURFACE, alpha } from "../../theme";
+import { RADIUS, SPACE, SURFACE, alpha } from "../../theme";
 
 type BoxStyle = ViewProps["style"];
 
@@ -59,7 +59,20 @@ export function Glass({
   );
 }
 
+/**
+ * A Glass card whose children stack with a small gap: the block most of the
+ * training screens are written in. `glow` marks the one live or failing card.
+ */
+export function Panel({ children, style, glow }: { children?: ReactNode; style?: BoxStyle; glow?: string }) {
+  return (
+    <Glass style={style} glow={glow}>
+      <View style={s.stack}>{children}</View>
+    </Glass>
+  );
+}
+
 const s = StyleSheet.create({
+  stack: { gap: SPACE.sm },
   clip: { overflow: "hidden" },
   fill: { backgroundColor: "rgba(20, 26, 38, 0.74)" },
   pad: { padding: 18 },

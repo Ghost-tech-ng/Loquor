@@ -14,19 +14,12 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 
-import {
-  Body,
-  Button,
-  Display,
-  Eyebrow,
-  Hair,
-  Masthead,
-  Meta,
-  Panel,
-  Reveal,
-  Screen,
-} from "../../components/ui";
-import { Aperture, Failed, Working } from "../../components/recorder";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Aperture, Failed, Working } from "../../components/kit/Recorder";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal } from "../../components/kit/motion";
 import { useTake } from "../../components/useTake";
 import { CHROME, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE } from "../../theme";
 import { getRoom, saveDebrief, type RoomRow } from "../../lib/db";
@@ -70,7 +63,7 @@ export default function Room() {
       <Screen>
         <Masthead right="ROOM" />
         <Display>That room no longer exists.</Display>
-        <Button label="BACK" tone="ghost" onPress={() => router.replace("/rooms")} />
+        <GlowButton label="Back" tone="ghost" onPress={() => router.replace("/rooms")} />
       </Screen>
     );
   }
@@ -194,8 +187,8 @@ export default function Room() {
             <Display style={s.smallDisplay}>{suggested.name}</Display>
             <Body>{suggested.form}</Body>
             <Meta>{suggested.cue}</Meta>
-            <Button
-              label="DRILL IT NOW"
+            <GlowButton
+              label="Drill it now"
               onPress={() =>
                 router.push({ pathname: "/playbook", params: { archetypeId: suggested.id } })
               }
@@ -221,7 +214,7 @@ export default function Room() {
         <Eyebrow>THE CARD YOU WALKED IN WITH</Eyebrow>
         <Card prep={prep} muted />
 
-        <Button label="BACK TO ROOMS" tone="ghost" onPress={() => router.replace("/rooms")} />
+        <GlowButton label="Back to rooms" tone="ghost" onPress={() => router.replace("/rooms")} />
       </Screen>
     );
   }
@@ -244,13 +237,13 @@ export default function Room() {
         seconds about what happened.
       </Meta>
 
-      <Button
-        label={happened ? "DEBRIEF — 90 SECONDS" : "DEBRIEF EARLY"}
+      <GlowButton
+        label={happened ? "Debrief — 90 seconds" : "Debrief early"}
         onPress={begin}
         disabled={!take.ready}
         tone={happened ? "primary" : "ghost"}
       />
-      <Button label="BACK TO ROOMS" tone="quiet" onPress={() => router.replace("/rooms")} />
+      <GlowButton label="Back to rooms" tone="quiet" onPress={() => router.replace("/rooms")} />
     </Screen>
   );
 }

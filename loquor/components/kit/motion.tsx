@@ -5,12 +5,16 @@
 // doing it in one component means no screen can forget to.
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Pressable, Text, type TextStyle, type ViewProps } from "react-native";
+import { Pressable, Text, type StyleProp, type TextStyle, type ViewProps } from "react-native";
 import Animated, {
+  Easing,
   FadeInDown,
+  cancelAnimation,
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
   withSpring,
+  withTiming,
 } from "react-native-reanimated";
 
 import { MOTION, SPRING, TABULAR, TYPE, CHROME } from "../../theme";
@@ -148,4 +152,85 @@ export function AnimatedNumber({
       {suffix}
     </Text>
   );
+}
+
+/** Rise, addressed by an absolute `delay` or by stagger `index`; delay wins. */
+export function Reveal({
+  children,
+  index = 0,
+  delay,
+  style,
+}: {
+  children: ReactNode;
+  index?: number;
+  delay?: number;
+  style?: BoxStyle;
+}) {
+  return (
+    <Rise index={delay === undefined ? index : 0} delay={delay ?? 0} style={style}>
+      {children}
+    </Rise>
+  );
+}
+
+/** PressableScale with a gentler squash, for rows and list cards. */
+export function Tap({
+  children,
+  onPress,
+  style,
+  disabled,
+}: {
+  children: ReactNode;
+  onPress: () => void;
+  style?: BoxStyle;
+  disabled?: boolean;
+}) {
+  return (
+    <PressableScale onPress={onPress} disabled={disabled} style={style} scaleTo={0.97}>
+      {children}
+    </PressableScale>
+  );
+}
+
+/**
+ * Slow breathing, for anything live or waiting on the user. One per screen:
+ * a second pulsing thing is a screen with a fault light.
+ */
+export function Pulse({
+  children,
+  active = true,
+  style,
+}: {
+  children: ReactNode;
+  active?: boolean;
+  style?: BoxStyle;
+}) {
+  const t = useSharedValue(0);
+
+  useEffect(() => {
+    if (!active) {
+      cancelAnimation(t);
+      t.value = 0;
+      return;
+    }
+    t.value = withRepeat(withTiming(1, { duration: MOTION.ambient, easing: Easing.inOut(Easing.quad) }), -1, true);
+    return () => cancelAnimation(t);
+  }, [t, active]);
+
+  const breathe = useAnimatedStyle(() => ({ opacity: 1 - t.value * 0.55 }));
+  return <Animated.View style={[style, breathe]}>{children}</Animated.View>;
+}
+
+/** A measurement that counts up from zero, in whatever type the caller sets. */
+export function Counter({
+  value,
+  decimals = 0,
+  style,
+}: {
+  value: number;
+  decimals?: number;
+  style?: StyleProp<TextStyle>;
+}) {
+  const n = useCountUp(value, MOTION.enter + 260, 0);
+  return <Text style={style}>{n.toFixed(decimals)}</Text>;
 }

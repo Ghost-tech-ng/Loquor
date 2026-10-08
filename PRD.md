@@ -1,13 +1,22 @@
-# Loquor — Product Requirements Document
+# Speek (formerly Loquor) — Product Requirements Document
 
-**Version:** 0.1 (pre-build)
+**Version:** 2.0 (Speek)
 **Author:** Eghosa
 **Date:** 2026-08-08
-**Status:** Design complete, not started
+**Status:** v1.0 shipped as Loquor; v2.0 shipped as Speek (see §9 Phases 6–8 and §13)
 
 ---
 
 ## 0. The Name
+
+> **Renamed to Speek in v2.0.** Loquor was right for an instrument and wrong for
+> something you open every day: it read as "liquor", it needed explaining, and it
+> was hard to say out loud. Speek is the verb, spelled so it can be owned. The
+> canon names in §0.1 stay inside the code. The Expo slug, the database file and
+> the SecureStore keys still say `loquor`: the slug is bound to the EAS project,
+> and renaming the other two would orphan existing history and keys.
+>
+> The rest of this section is kept as the original reasoning.
 
 **Loquor** *(LOH-kwor)* — Latin, first person singular, present tense: **"I speak."**
 
@@ -432,7 +441,19 @@ FSRS-5 (Anki's current default; better-calibrated than SM-2) with these modifica
 
 ---
 
-## 7. Screens (v1)
+## 7. Screens
+
+**v2.0 (Speek):** the tabs are **Home · Arena · Play · Rooms · You**.
+
+| Screen | Purpose |
+|---|---|
+| **Home** | Streak flame, level and XP, three daily quests, the one recommended next action, and today's prompt. It still has one primary CTA. |
+| **Arena** | Primer → record → scorecard (now with Liveliness) → Rewrite. |
+| **Play** | Five games (§9 Phase 7), then the training drills: Reading, Lexicon, Playbook, Lab, Valve. The Practice tab is gone. |
+| **Rooms** | Unchanged. |
+| **You** | Rank, streak, focus span, best liveliness, badges, then the whole of Progress. |
+
+**v1.0 (Loquor), kept for the record:**
 
 | Screen | Purpose |
 |---|---|
@@ -517,6 +538,56 @@ Read-aloud drill: 8 passages of 110–150 words, 48 glossed target words, determ
 
 **v1.0 verification:** `tsc --noEmit` clean, 97/97 unit tests, `expo export --platform ios` succeeds (3.49 MB Hermes bundle). **Not yet done:** the Phase 0 filler-recall gate and a hardware smoke test in Expo Go.
 
+**Phase 6 — Speek: the redesign (v2.0)**
+- **Why:** v1.0 worked and was not being opened. The instrument direction in §12
+  was right about honesty and wrong about pull: a flat, colourless app gives you
+  no reason to come back tomorrow, and coming back tomorrow is the whole product.
+- **Rename to Speek**, with a new orb mark and icon. The slug, the database and
+  the key names are unchanged (see §0).
+- **The Emerald & Cyan theme**, on the kit in `components/kit/`: aurora
+  background, glass cards, glow buttons, spring motion, haptics, sound cues and a
+  voice-orb mascot that listens while you record. Lucide icons replace every
+  emoji. See §13.
+- **Progression:**
+  - XP and levels, with eight ranks from Mumbler to Legend.
+  - A day streak with freezes: a week in a row banks one, two at most.
+  - Three daily quests, the first aimed at the weakest skill.
+  - 23 badges.
+  - All of it is **derived from history, never stored as a ledger**, so it cannot
+    disagree with the history, and no backfill was needed.
+- **Tabs:** Home · Arena · Play · Rooms · You.
+
+**Phase 7 — Play (v2.1)**
+- **Lexicon Blitz:** pick the word for a definition, from four in the same themed
+  run. It grades recognition.
+- **Word Bomb:** use the word in a sentence before the fuse burns. It grades
+  production.
+- **Pause, Don't Um:** live pause gates driven by the mic level. It trains you to
+  replace "um" with a confident silence.
+- **No-Um Gauntlet:** three hearts across rounds of 20 to 90 seconds. The score
+  is seconds survived, and the longest clean stretch is **focus span**.
+- **Bring It to Life:** for sounding like you are reading. Liveliness (0–100) is
+  built from melody (YIN pitch range), punch (loudness movement) and rhythm
+  (uneven word lengths and gaps). Its modes are Talk, Deliveries, Read → Retell
+  and Emphasis.
+  - **Melody:** Expo Go has no live PCM, so the take is replayed through the
+    sample tap and the pitch line draws while you listen. The audio is then
+    deleted as before.
+  - **Fallback:** without frames, liveliness falls back to punch plus rhythm.
+- **Arena:** Liveliness (punch plus rhythm) also appears on the Arena
+  scorecard. Arena topics are explained in plain words that give way to the
+  proper terms as your level rises.
+- **Decision:** streak-aware reminder copy ("your 12-day streak ends at
+  midnight") was **not** built. Reminder copy carries no numbers (Phase 5), and
+  guilt is a poor reason to open an app. The existing daily reminder stays.
+
+**Phase 8 — Re-skin (v2.2)**
+- Every remaining screen moved onto the kit: the Arena flow and scorecard, Rooms,
+  Reading, Lexicon, Playbook, Lab, Valve, Onboarding, Settings and Backup.
+- `ui`, `viz`, `glyphs`, `boot` and `recorder` were deleted.
+- Button labels are in sentence case.
+- No logic file changed: judges, stores, queries and `lib/` are as they were.
+
 **Post-v1 (requires dev build, exits Expo Go):** on-device streaming ASR, live latency <800ms, continuous conversation partner, optional Whisper-on-device for privacy.
 
 ---
@@ -547,7 +618,16 @@ Read-aloud drill: 8 passages of 110–150 words, 48 glossed target words, determ
 
 ---
 
-## 12. Design Concept
+## 12. Design Concept (v1.0, superseded by §13)
+
+> Kept as the record of the v1.0 direction. The **honesty rules** still hold:
+> - delivery is arithmetic, never a model's opinion;
+> - numbers show target bands, not grades;
+> - honest nulls;
+> - one primary action per screen.
+>
+> The **aesthetic rules** do not: no mascot, no flame, no confetti, no
+> colourless chrome. See §13 for why.
 
 ### The one-line direction
 
@@ -628,6 +708,61 @@ Editorial and asymmetric, not a stack of rounded cards floating on grey. Content
 5. **Room prep card** — three questions, two words, one scaffold.
 6. **Progress** — trends.
 7. **Settings → AI Providers** — mode selector, three key fields with ⓘ icons, and the tutorial bottom sheet. Not glamorous, but it's the first screen touched on install and it must not feel like a config file.
+
+---
+
+## 13. Design v2 — Speek
+
+### Why it changed
+
+§12 designed for the moment of use, a meeting in twenty minutes, and forgot the
+day you have no meeting. The product only works if it is opened most days.
+Seriousness was never the problem; the problem was an app with no pull. v2
+keeps every honesty rule from §12 and adds the things that bring a person back:
+a streak, levels, quests, games, and a screen that feels alive when you touch it.
+
+### Palette — Emerald & Cyan
+
+| Token | Hex | Use |
+|---|---|---|
+| `floor` | `#0B0F17` | Near-black navy ground |
+| `raised` | `#141A26` | Cards, the tab bar, sheets |
+| `chalk` | `#F2EEE6` | Primary text, ivory |
+| `emerald` | `#22C55E` | The thing to press: buttons, the active tab |
+| `cyan` | `#38D9F5` | Anything earned: XP, badges |
+| `mint` | `#7CF2B8` | Cleared, owned, good |
+| `coral` | `#FF6B6B` | Flaws: fillers, hedges, over the line |
+
+Data ramps are still meaningful: a filler-heavy take burns coral and a clean one
+reads mint. The difference from v1 is that chrome is allowed colour too.
+
+### Type
+
+- **Fraunces** for anything read as a sentence: headings, passages, the prompt.
+- **Outfit** for labels and UI.
+- **Space Mono** for anything that counts, with tabular figures.
+
+### Motion and feel
+
+- **Motion:** springs, not durations. Things settle with a little give.
+- **Haptics and sound:** a haptic on every press, and short synthesised sound
+  cues that can be turned off.
+- **Confetti** is kept for real milestones only: a level, a badge, a new best.
+- **The orb** is the mascot. It listens while you record and swells with your
+  voice. In Bring It to Life it starts as a grey robot and turns into the orb as
+  you sound more alive.
+
+### The kit
+
+Every screen is built from `components/kit/`:
+
+- `Screen`, `Text`, `Glass` and `Panel`, `GlowButton`, `motion`
+- `Charts`: the timeline, the strata wall, rails and score pips
+- `Recorder`: the aperture orb, working and failed states
+- the orb, the robot, the streak flame, confetti, the melody line and the reward
+  sheet
+
+The v1 modules are deleted.
 
 ---
 

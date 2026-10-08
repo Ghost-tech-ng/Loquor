@@ -10,19 +10,12 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import {
-  Body,
-  Button,
-  Display,
-  Eyebrow,
-  Hair,
-  Masthead,
-  Meta,
-  Panel,
-  Reveal,
-  Screen,
-} from "../../components/ui";
-import { Rail, Score, Timeline, fillerStrain, strain } from "../../components/viz";
+import { fillerStrain, Rail, Score, strain, Timeline } from "../../components/kit/Charts";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal } from "../../components/kit/motion";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
 import {
   DEAD_AIR_THRESHOLD_S,
@@ -67,7 +60,7 @@ export default function Scorecard() {
       <Screen>
         <Masthead />
         <Display>That session is gone.</Display>
-        <Button label="BACK TO TODAY" tone="ghost" onPress={() => router.replace("/")} />
+        <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -223,8 +216,8 @@ export default function Scorecard() {
           </Meta>
 
           {!row.is_rewrite ? (
-            <Button
-              label="REWRITE THAT SENTENCE"
+            <GlowButton
+              label="Rewrite that sentence"
               onPress={() =>
                 router.push({ pathname: "/arena", params: { topicId: row.topic_id, rewriteOf: row.id } })
               }
@@ -235,7 +228,7 @@ export default function Scorecard() {
         <Meta>No judgement was recorded for this take.</Meta>
       )}
 
-      <Button label="DONE" tone="ghost" onPress={() => router.replace("/")} />
+      <GlowButton label="Done" tone="ghost" onPress={() => router.replace("/")} />
 
       <Hair style={{ marginTop: SPACE.sm }} />
       <Eyebrow>WHAT YOU ACTUALLY SAID</Eyebrow>

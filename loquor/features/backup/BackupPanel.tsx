@@ -9,7 +9,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { Body, Button, Eyebrow, Hair, Meta, Panel } from "../../components/ui";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Body, Eyebrow, Hair, Meta } from "../../components/kit/Text";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TYPE } from "../../theme";
 import { cloudConfigured, currentSession, signIn, signOut, signUp, type Session } from "./cloud";
 import {
@@ -116,8 +118,8 @@ export function Backup() {
               <Text style={s.stamp}>{state.lastAt ? ago(state.lastAt) : "never"}</Text>
             </View>
             {state.lastError ? <Text style={s.error}>{state.lastError}</Text> : null}
-            <Button
-              label={busy === "BACKING UP" ? "BACKING UP…" : "BACK UP NOW"}
+            <GlowButton
+              label={busy === "BACKING UP" ? "Backing up…" : "Back up now"}
               disabled={busy !== null}
               onPress={() =>
                 run("BACKING UP", async () => {
@@ -150,8 +152,8 @@ export function Backup() {
             Pulls the backup down and merges it in. Nothing local is deleted — a row only changes
             if the backup holds the same one.
           </Meta>
-          <Button
-            label={busy === "RESTORING" ? "RESTORING…" : "RESTORE FROM BACKUP"}
+          <GlowButton
+            label={busy === "RESTORING" ? "Restoring…" : "Restore from backup"}
             tone="ghost"
             disabled={busy !== null}
             onPress={() =>
@@ -173,8 +175,8 @@ export function Backup() {
             }
           />
 
-          <Button
-            label="SIGN OUT"
+          <GlowButton
+            label="Sign out"
             tone="quiet"
             disabled={busy !== null}
             onPress={() =>
@@ -223,13 +225,13 @@ export function Backup() {
             autoCorrect={false}
             secureTextEntry
           />
-          <Button
-            label={busy === "CREATING" ? "CREATING…" : "CREATE ACCOUNT"}
+          <GlowButton
+            label={busy === "CREATING" ? "Creating…" : "Create account"}
             disabled={busy !== null}
             onPress={() => void authenticate("up")}
           />
-          <Button
-            label={busy === "SIGNING IN" ? "SIGNING IN…" : "I ALREADY HAVE ONE"}
+          <GlowButton
+            label={busy === "SIGNING IN" ? "Signing in…" : "I already have one"}
             tone="ghost"
             disabled={busy !== null}
             onPress={() => void authenticate("in")}

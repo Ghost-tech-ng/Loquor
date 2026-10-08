@@ -20,8 +20,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { AURORA, CHROME, HEAT, alpha } from "../theme";
-import { VoiceOrb } from "./kit/VoiceOrb";
+import { AURORA, CHROME, HEAT, alpha } from "../../theme";
+import { VoiceOrb } from "./VoiceOrb";
 
 const WORDMARK = ["S", "p", "e", "e", "k"];
 

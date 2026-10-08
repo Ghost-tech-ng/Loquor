@@ -24,18 +24,11 @@ import { StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 
-import {
-  Body,
-  Button,
-  Display,
-  Eyebrow,
-  Hair,
-  Masthead,
-  Meta,
-  Panel,
-  Reveal,
-  Screen,
-} from "../../components/ui";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal } from "../../components/kit/motion";
 import { useMeter } from "./useMeter";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../../theme";
 import {
@@ -173,8 +166,8 @@ function Brief({ onBegin, onExit }: { onBegin: () => void; onExit: () => void })
       </Reveal>
 
       <Reveal index={4} style={{ gap: SPACE.sm }}>
-        <Button label="BEGIN" onPress={onBegin} />
-        <Button label="NOT NOW" tone="quiet" onPress={onExit} />
+        <GlowButton label="Begin" onPress={onBegin} />
+        <GlowButton label="Not now" tone="quiet" onPress={onExit} />
       </Reveal>
     </Screen>
   );
@@ -226,7 +219,7 @@ function Calibrate({ step, onSet }: { step: RoutineStep; onSet: (c: Calibration)
       <Head step={step} right="1 / 6" />
 
       <Reveal index={1}>
-        <Panel style={meter.running ? { borderColor: SEMANTIC.ember } : null}>
+        <Panel glow={meter.running ? SEMANTIC.ember : undefined}>
           <Eyebrow>{takingQuiet ? "TAKE ONE — AS QUIET AS YOU CAN" : "TAKE TWO — AS LOUD AS IS COMFORTABLE"}</Eyebrow>
           <Text style={s.phrase}>{phrase}</Text>
         </Panel>
@@ -240,7 +233,7 @@ function Calibrate({ step, onSet }: { step: RoutineStep; onSet: (c: Calibration)
 
       {fault ? (
         <Reveal index={2}>
-          <Panel style={{ borderColor: SEMANTIC.flaw }}>
+          <Panel glow={SEMANTIC.flaw}>
             <Eyebrow style={{ color: SEMANTIC.flaw }}>SET IT AGAIN</Eyebrow>
             <Meta>{fault}</Meta>
           </Panel>
@@ -255,9 +248,9 @@ function Calibrate({ step, onSet }: { step: RoutineStep; onSet: (c: Calibration)
 
       <Reveal index={3}>
         {meter.running ? (
-          <Button label="DONE" onPress={finish} />
+          <GlowButton label="Done" onPress={finish} />
         ) : (
-          <Button
+          <GlowButton
             label={takingQuiet ? "SAY IT QUIETLY" : "SAY IT LOUDLY"}
             onPress={() => {
               setFault(null);
@@ -326,9 +319,9 @@ function Timed({ step, onDone }: { step: RoutineStep; onDone: () => void }) {
 
       <Reveal index={2}>
         {running ? (
-          <Button label="THAT'S ENOUGH" tone="ghost" onPress={onDone} />
+          <GlowButton label="That's enough" tone="ghost" onPress={onDone} />
         ) : (
-          <Button label="START" onPress={() => setRunning(true)} />
+          <GlowButton label="Start" onPress={() => setRunning(true)} />
         )}
       </Reveal>
     </Screen>
@@ -390,7 +383,7 @@ function LadderStep({
       </Reveal>
 
       <Reveal index={2}>
-        <Panel style={meter.running ? { borderColor: SEMANTIC.ember } : null}>
+        <Panel glow={meter.running ? SEMANTIC.ember : undefined}>
           <Eyebrow>LEVEL {rung} OF {RUNGS}</Eyebrow>
           <Text style={s.phrase}>{phrase}</Text>
         </Panel>
@@ -398,7 +391,7 @@ function LadderStep({
 
       {pending && !pending.reached ? (
         <Reveal index={3} style={{ gap: SPACE.sm }}>
-          <Panel style={{ borderColor: SEMANTIC.flaw }}>
+          <Panel glow={SEMANTIC.flaw}>
             <Eyebrow style={{ color: SEMANTIC.flaw }}>THAT WASN&rsquo;T LEVEL {rung}</Eyebrow>
             <Meta>
               You landed somewhere else on the ladder, so the mirror tells us
@@ -407,8 +400,8 @@ function LadderStep({
               instead of a limit.
             </Meta>
           </Panel>
-          <Button label="SAY IT AGAIN" onPress={() => setPending(null)} />
-          <Button label="STOP HERE" tone="ghost" onPress={stopShort} />
+          <GlowButton label="Say it again" onPress={() => setPending(null)} />
+          <GlowButton label="Stop here" tone="ghost" onPress={stopShort} />
         </Reveal>
       ) : null}
 
@@ -418,17 +411,17 @@ function LadderStep({
             <Eyebrow>THE MIRROR</Eyebrow>
             <Meta>Did it mist while you were speaking?</Meta>
           </Panel>
-          <Button label="IT STAYED CLEAR" onPress={() => settle(false)} />
-          <Button label="IT FOGGED" tone="ghost" onPress={() => settle(true)} />
+          <GlowButton label="It stayed clear" onPress={() => settle(false)} />
+          <GlowButton label="It fogged" tone="ghost" onPress={() => settle(true)} />
         </Reveal>
       ) : null}
 
       {!pending ? (
         <Reveal index={3}>
           {meter.running ? (
-            <Button label="DONE" onPress={stop} />
+            <GlowButton label="Done" onPress={stop} />
           ) : (
-            <Button label="SAY IT" onPress={() => meter.start()} disabled={!meter.ready} />
+            <GlowButton label="Say it" onPress={() => meter.start()} disabled={!meter.ready} />
           )}
         </Reveal>
       ) : null}
@@ -506,15 +499,15 @@ function Match({ step, rung, onDone }: { step: RoutineStep; rung: Rung; onDone: 
           ))}
         </View>
         {reps < MATCH_REPS ? (
-          <Button
-            label="THAT'S ONE"
+          <GlowButton
+            label="That's one"
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               setReps((r) => r + 1);
             }}
           />
         ) : (
-          <Button label="CARRY IT OVER" onPress={onDone} />
+          <GlowButton label="Carry it over" onPress={onDone} />
         )}
       </Reveal>
     </Screen>
@@ -556,7 +549,7 @@ function Carry({
       </Reveal>
 
       <Reveal index={2}>
-        <Panel style={meter.running ? { borderColor: SEMANTIC.ember } : null}>
+        <Panel glow={meter.running ? SEMANTIC.ember : undefined}>
           <Eyebrow>{passage.title.toUpperCase()}</Eyebrow>
           <Text style={s.passage}>{passage.text}</Text>
           <Hair style={{ marginVertical: SPACE.sm }} />
@@ -566,11 +559,11 @@ function Carry({
 
       <Reveal index={3} style={{ gap: SPACE.sm }}>
         {meter.running ? (
-          <Button label="FINISHED READING" onPress={stop} />
+          <GlowButton label="Finished reading" onPress={stop} />
         ) : (
           <>
-            <Button label="READ IT ALOUD" onPress={() => meter.start()} disabled={!meter.ready} />
-            <Button label="A DIFFERENT PASSAGE" tone="ghost" onPress={() => setPick((p) => p + 1)} />
+            <GlowButton label="Read it aloud" onPress={() => meter.start()} disabled={!meter.ready} />
+            <GlowButton label="A different passage" tone="ghost" onPress={() => setPick((p) => p + 1)} />
           </>
         )}
       </Reveal>
@@ -690,7 +683,7 @@ function Result({
       </Reveal>
 
       <Reveal index={5}>
-        <Button label="DONE" onPress={onExit} />
+        <GlowButton label="Done" onPress={onExit} />
       </Reveal>
     </Screen>
   );

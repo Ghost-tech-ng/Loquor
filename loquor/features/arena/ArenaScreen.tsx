@@ -20,19 +20,12 @@ import {
   useAudioRecorderState,
 } from "expo-audio";
 
-import {
-  Body,
-  Button,
-  Display,
-  Eyebrow,
-  Hair,
-  Masthead,
-  Meta,
-  Panel,
-  Reveal,
-  Screen,
-} from "../../components/ui";
-import { Ignition } from "../../components/boot";
+import { Ignition } from "../../components/kit/Boot";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal } from "../../components/kit/motion";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../../theme";
 import { TOPICS_BY_ID } from "./topics";
 import { ANSWER_SHAPE, EXPLAIN } from "./explain";
@@ -179,7 +172,7 @@ export default function Arena() {
       <Screen>
         <Masthead />
         <Display>That topic no longer exists.</Display>
-        <Button label="BACK" tone="ghost" onPress={() => router.replace("/")} />
+        <GlowButton label="Back" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -298,8 +291,8 @@ export default function Arena() {
         <Masthead right="ARENA" />
         <Eyebrow>THAT DIDN&rsquo;T WORK</Eyebrow>
         <Display>{error}</Display>
-        <Button label="TRY AGAIN" onPress={() => { setStage("primer"); setError(null); }} />
-        <Button label="BACK TO TODAY" tone="ghost" onPress={() => router.replace("/")} />
+        <GlowButton label="Try again" onPress={() => { setStage("primer"); setError(null); }} />
+        <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -492,8 +485,8 @@ export default function Arena() {
         About ninety seconds. Use the facts above as ammunition — don&rsquo;t read them back.
       </Meta>
 
-      <Button label="START" onPress={start} />
-      <Button label="NOT NOW" tone="quiet" onPress={() => router.replace("/")} />
+      <GlowButton label="Start" onPress={start} />
+      <GlowButton label="Not now" tone="quiet" onPress={() => router.replace("/")} />
     </Screen>
   );
 }

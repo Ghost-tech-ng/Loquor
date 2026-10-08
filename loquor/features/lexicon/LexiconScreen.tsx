@@ -22,8 +22,12 @@ import {
   useAudioRecorderState,
 } from "expo-audio";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen } from "../../components/ui";
-import { Ignition } from "../../components/boot";
+import { Ignition } from "../../components/kit/Boot";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal } from "../../components/kit/motion";
 import { Glyph } from "../../components/kit/Glyph";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../../theme";
 import type { Gloss } from "./glossary";
@@ -187,8 +191,8 @@ export default function Lexicon() {
         <Masthead right="LEXICON" />
         <Eyebrow>THAT DIDN&rsquo;T WORK</Eyebrow>
         <Display>{error}</Display>
-        <Button label="TRY AGAIN" onPress={() => { setError(null); setStage("queue"); }} />
-        <Button label="BACK TO TODAY" tone="ghost" onPress={() => router.replace("/")} />
+        <GlowButton label="Try again" onPress={() => { setError(null); setStage("queue"); }} />
+        <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -264,8 +268,8 @@ export default function Lexicon() {
 
         {nextIn ? <Meta>Back in {nextIn}.</Meta> : null}
 
-        <Button label="SAY IT AGAIN" tone="ghost" onPress={startSpeaking} />
-        <Button label={at + 1 >= queue.length ? "FINISH" : "NEXT WORD"} onPress={advance} />
+        <GlowButton label="Say it again" tone="ghost" onPress={startSpeaking} />
+        <GlowButton label={at + 1 >= queue.length ? "FINISH" : "NEXT WORD"} onPress={advance} />
       </Screen>
     );
   }
@@ -306,8 +310,8 @@ export default function Lexicon() {
               style={s.input}
               multiline
             />
-            <Button
-              label={noteSaved ? "LOGGED" : "I USED IT"}
+            <GlowButton
+              label={noteSaved ? "Logged" : "I used it"}
               tone={noteSaved ? "quiet" : "primary"}
               disabled={useNote.trim().length === 0 || noteSaved}
               onPress={async () => {
@@ -320,7 +324,7 @@ export default function Lexicon() {
         ) : null}
 
         <Hair />
-        <Button label="BACK TO TODAY" tone="ghost" onPress={() => router.replace("/")} />
+        <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -330,7 +334,7 @@ export default function Lexicon() {
       <Screen>
         <Masthead right="LEXICON" />
         <Display>Nothing is due.</Display>
-        <Button label="BACK TO TODAY" tone="ghost" onPress={() => router.replace("/")} />
+        <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -359,8 +363,8 @@ export default function Lexicon() {
           <Hair />
           <Text style={s.fieldLabel}>IT SHOULD LAND LIKE</Text>
           <Text style={s.colloc}>{g.collocations.join("  ·  ")}</Text>
-          <Button label="SAY A SENTENCE" onPress={startSpeaking} />
-          <Button label="NOT THIS ONE" tone="quiet" onPress={advance} />
+          <GlowButton label="Say a sentence" onPress={startSpeaking} />
+          <GlowButton label="Not this one" tone="quiet" onPress={advance} />
         </>
       ) : item.fresh || revealed ? (
         <>
@@ -378,7 +382,7 @@ export default function Lexicon() {
           <Hair />
           {nextIn ? <Meta>Back in {nextIn}.</Meta> : null}
           {item.fresh ? (
-            <Button label="GOT IT — NEXT" onPress={() => gradeRecall(3)} />
+            <GlowButton label="Got it — next" onPress={() => gradeRecall(3)} />
           ) : (
             <View style={s.grades}>
               {([
@@ -400,8 +404,8 @@ export default function Lexicon() {
             Before you tap: say the meaning to yourself, then a sentence you would actually use it
             in. Recalling it is the rep. Reading it is not.
           </Meta>
-          <Button label="SHOW THE ENTRY" onPress={() => setStage("revealed")} />
-          <Button label="BACK TO TODAY" tone="quiet" onPress={() => router.replace("/")} />
+          <GlowButton label="Show the entry" onPress={() => setStage("revealed")} />
+          <GlowButton label="Back home" tone="quiet" onPress={() => router.replace("/")} />
         </>
       )}
     </Screen>

@@ -15,8 +15,11 @@ import { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Button, Eyebrow, Hair, Masthead, Meta, Reveal, Screen, Tap } from "../../components/ui";
-import { fillerStrain, strain } from "../../components/viz";
+import { fillerStrain, strain } from "../../components/kit/Charts";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal, Tap } from "../../components/kit/motion";
 import { CHROME, RADIUS, SPACE, SURFACE, TABULAR, TYPE } from "../../theme";
 import { TOPICS_BY_ID, pickTopic, type Topic } from "./topics";
 import { countToday, recentSessions, usedTopicIds, type SessionRow } from "../../lib/db";
@@ -80,7 +83,7 @@ export default function ArenaHome() {
             {topic ? <Text style={s.domain}>{DOMAIN_LABEL[topic.domain]}</Text> : null}
           </View>
           <Text style={s.prompt}>{topic?.title ?? " "}</Text>
-          <Button label={done > 0 ? "GO AGAIN" : "START"} onPress={start} disabled={!topic} />
+          <GlowButton label={done > 0 ? "GO AGAIN" : "START"} onPress={start} disabled={!topic} />
           {done > 0 ? (
             <Meta>
               {done} {done === 1 ? "take" : "takes"} today. The second one is usually the one

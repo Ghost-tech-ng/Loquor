@@ -18,8 +18,12 @@ import { useCallback, useState, type ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen, Tap } from "../../components/ui";
-import { Rail, StrataWall, fillerStrain, strain } from "../../components/viz";
+import { fillerStrain, Rail, strain, StrataWall } from "../../components/kit/Charts";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal, Tap } from "../../components/kit/motion";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE } from "../../theme";
 import { bandPosition, FILLER_TARGET_PER_MIN, PACE_BAND_WPM } from "../../lib/metrics";
 import {
@@ -310,8 +314,8 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
 
       {failed ? <Text style={s.failed}>{failed}</Text> : null}
 
-      <Button
-        label={working ? "READING…" : report ? "REGENERATE" : "READ THE WEEK"}
+      <GlowButton
+        label={working ? "Reading…" : report ? "Regenerate" : "Read the week"}
         tone={report ? "quiet" : "ghost"}
         onPress={generate}
         disabled={working || !target.substantial}
@@ -355,7 +359,7 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
           : "Every row here needs a baseline. Record one and they start meaning something."}
       </Meta>
 
-      <Button label="BACK" tone="quiet" onPress={() => router.replace("/")} />
+      <GlowButton label="Back" tone="quiet" onPress={() => router.replace("/")} />
     </Screen>
   );
 }

@@ -23,19 +23,12 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 
-import {
-  Body,
-  Button,
-  Display,
-  Eyebrow,
-  Hair,
-  Masthead,
-  Meta,
-  Panel,
-  Reveal,
-  Screen,
-} from "../../components/ui";
-import { Ignition } from "../../components/boot";
+import { Ignition } from "../../components/kit/Boot";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal } from "../../components/kit/motion";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../../theme";
 import { useTake, type Take } from "../../components/useTake";
 import { getBaseline, saveBaseline, type BaselineRow } from "../../lib/db";
@@ -137,8 +130,8 @@ export default function Onboarding() {
           claims is measured from here.
         </Meta>
 
-        <Button label="SEE YOUR RECORD" tone="ghost" onPress={() => router.replace("/you")} />
-        <Button label="BACK" tone="quiet" onPress={() => router.replace("/")} />
+        <GlowButton label="See your record" tone="ghost" onPress={() => router.replace("/you")} />
+        <GlowButton label="Back" tone="quiet" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -256,8 +249,8 @@ export default function Onboarding() {
           Ninety days from now the record on You reads against this take. Nothing else you do in
           the app can change it.
         </Meta>
-        <Button label="SEE YOUR RECORD" onPress={() => router.replace("/you")} />
-        <Button label="START TODAY" tone="ghost" onPress={() => router.replace("/")} />
+        <GlowButton label="See your record" onPress={() => router.replace("/you")} />
+        <GlowButton label="Start today" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -311,12 +304,12 @@ export default function Onboarding() {
 
       {take.error ? <Text style={s.failed}>{take.error}</Text> : null}
 
-      <Button
-        label={take.ready ? "RECORD THE BASELINE" : "WAITING FOR THE MIC"}
+      <GlowButton
+        label={take.ready ? "Record the baseline" : "Waiting for the mic…"}
         onPress={begin}
         disabled={!take.ready}
       />
-      <Button label="NOT NOW" tone="quiet" onPress={() => router.replace("/")} />
+      <GlowButton label="Not now" tone="quiet" onPress={() => router.replace("/")} />
     </Screen>
   );
 }

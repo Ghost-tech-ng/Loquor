@@ -19,20 +19,13 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 
-import {
-  Body,
-  Button,
-  Display,
-  Eyebrow,
-  Hair,
-  Masthead,
-  Meta,
-  Panel,
-  Reveal,
-  Screen,
-  Tap,
-} from "../../components/ui";
-import { Aperture, Failed, ScoreBar, Working } from "../../components/recorder";
+import { ScoreBar } from "../../components/kit/Charts";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Aperture, Failed, Working } from "../../components/kit/Recorder";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal, Tap } from "../../components/kit/motion";
 import { useTake } from "../../components/useTake";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE, heat } from "../../theme";
 import { FAMILY_LABELS } from "../../content/archetypes";
@@ -193,7 +186,7 @@ export default function Playbook() {
           </Reveal>
         ))}
 
-        <Button label="BACK TO THE DRILL" tone="ghost" onPress={() => setStage("brief")} />
+        <GlowButton label="Back to the drill" tone="ghost" onPress={() => setStage("brief")} />
       </Screen>
     );
   }
@@ -252,14 +245,14 @@ export default function Playbook() {
           <Body style={{ color: CHROME.dust }}>{verdict.likely_reply}</Body>
         </Panel>
 
-        <Panel style={{ borderColor: SEMANTIC.ember }}>
+        <Panel glow={SEMANTIC.ember}>
           <Eyebrow style={{ color: SEMANTIC.ember }}>ASK IT LIKE THIS</Eyebrow>
           <Body style={s.model}>{verdict.model_question}</Body>
         </Panel>
 
-        <Button label="NEXT DRILL" onPress={deal} />
-        <Button label="THE MAP" tone="ghost" onPress={() => setStage("map")} />
-        <Button label="BACK TO TODAY" tone="quiet" onPress={() => router.replace("/")} />
+        <GlowButton label="Next drill" onPress={deal} />
+        <GlowButton label="The map" tone="ghost" onPress={() => setStage("map")} />
+        <GlowButton label="Back home" tone="quiet" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -287,7 +280,7 @@ export default function Playbook() {
         <Body style={s.transcript}>&ldquo;{scenario.transcript}&rdquo;</Body>
       </Panel>
 
-      <Panel style={{ borderColor: SEMANTIC.flaw }}>
+      <Panel glow={SEMANTIC.flaw}>
         <Eyebrow style={{ color: SEMANTIC.flaw }}>THE TRAP</Eyebrow>
         <Body>{a.trap}</Body>
       </Panel>
@@ -298,9 +291,9 @@ export default function Playbook() {
         the version you would write down.
       </Meta>
 
-      <Button label="ASK IT" onPress={begin} disabled={!take.ready} />
-      <Button label="DIFFERENT DRILL" tone="ghost" onPress={deal} />
-      <Button label="BACK TO TODAY" tone="quiet" onPress={() => router.replace("/")} />
+      <GlowButton label="Ask it" onPress={begin} disabled={!take.ready} />
+      <GlowButton label="Different drill" tone="ghost" onPress={deal} />
+      <GlowButton label="Back home" tone="quiet" onPress={() => router.replace("/")} />
     </Screen>
   );
 }

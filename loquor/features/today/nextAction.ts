@@ -58,7 +58,7 @@ export function nextAction(st: State): Action {
       eyebrow: "ONE THING FIRST",
       title: "Add your Groq API key",
       why: "Every drill ends in a transcription, so nothing here works until a key is in. It is free, and it stays on this phone.",
-      cta: "OPEN SETUP",
+      cta: "Open setup",
       route: "/settings",
       urgent: true,
     };
@@ -73,7 +73,7 @@ export function nextAction(st: State): Action {
       eyebrow: "BEFORE ANYTHING ELSE",
       title: "Record your baseline",
       why: "Ninety seconds, once, before the app coaches you. Nothing can show improvement without it.",
-      cta: "RECORD IT",
+      cta: "Record it",
       route: "/onboarding",
       urgent: true,
     };
@@ -88,7 +88,7 @@ export function nextAction(st: State): Action {
       eyebrow: "WHILE YOU STILL REMEMBER",
       title: n === 1 ? "Debrief the meeting you just had" : `Debrief ${n} meetings`,
       why: "Ninety seconds out loud on what you actually said. Leave it until tomorrow and you will describe the version you wish had happened.",
-      cta: "DEBRIEF",
+      cta: "Debrief",
       route: "/rooms",
       urgent: true,
     };
@@ -102,7 +102,7 @@ export function nextAction(st: State): Action {
       eyebrow: "START HERE",
       title: "Speak for ninety seconds",
       why: "A prompt, a minute to think, then you talk. You get back your filler rate, pace and pauses, and one thing to say better.",
-      cta: "ENTER THE ARENA",
+      cta: "Enter the arena",
       route: "/arena",
       urgent: false,
     };
@@ -114,7 +114,7 @@ export function nextAction(st: State): Action {
       eyebrow: "TODAY",
       title: "Take today's prompt",
       why: "Sixty seconds of primer, ninety of talking. That is the whole thing.",
-      cta: "ENTER THE ARENA",
+      cta: "Enter the arena",
       route: "/arena",
       urgent: false,
     };
@@ -129,7 +129,7 @@ export function nextAction(st: State): Action {
       eyebrow: "THE POINT OF ALL THIS",
       title: "Prep a real meeting",
       why: "Practice alone does not transfer. Put one meeting from this week in, and walk in with three questions ready.",
-      cta: "ADD A ROOM",
+      cta: "Add a room",
       route: "/rooms",
       urgent: false,
     };
@@ -141,7 +141,7 @@ export function nextAction(st: State): Action {
       eyebrow: "DUE NOW",
       title: `${st.lexDue} ${st.lexDue === 1 ? "word" : "words"} to review`,
       why: "A few minutes. Words you have met before, back at the moment you were about to lose them.",
-      cta: "REVIEW",
+      cta: "Review",
       route: "/lexicon",
       urgent: false,
     };
@@ -153,7 +153,7 @@ export function nextAction(st: State): Action {
       eyebrow: "PICK IT BACK UP",
       title: "Read the next section aloud",
       why: `${st.sectionsLeft} ${st.sectionsLeft === 1 ? "section" : "sections"} left in the piece you started. Under two minutes each.`,
-      cta: "READ ALOUD",
+      cta: "Read aloud",
       route: "/play",
       urgent: false,
     };
@@ -166,7 +166,7 @@ export function nextAction(st: State): Action {
     eyebrow: "NOTHING OUTSTANDING",
     title: "Drill a question you are weak at",
     why: "One meeting snippet, one named move, one question out loud — and what the room would most likely say back.",
-    cta: "OPEN THE PLAYBOOK",
+    cta: "Open the playbook",
     route: "/playbook",
     urgent: false,
   };

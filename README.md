@@ -1,12 +1,12 @@
-# Loquor
+# Speek
 
-*Latin, "I speak."*
+*Formerly Loquor, Latin for "I speak."*
 
 An iOS speech-training app for people who want to be a contributor rather than a
 listener — better questions, fewer fillers, a working vocabulary, and something
 to say in the room. Runs inside Expo Go; there is no backend.
 
-- **[PRD.md](PRD.md)** — the product, the five pillars, the design concept, and
+- **[PRD.md](PRD.md)** — the product, the five pillars, the design (v1 and v2), and
   every constraint that decided the architecture.
 - **[loquor/](loquor/)** — the app. See [its README](loquor/README.md) to run it.
 - **[phase0/](phase0/)** — the STT filler-recall gate the whole product rests on.

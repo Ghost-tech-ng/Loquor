@@ -28,9 +28,13 @@ import {
   useAudioRecorderState,
 } from "expo-audio";
 
-import { Body, Button, Display, Eyebrow, Hair, Masthead, Meta, Panel, Reveal, Screen } from "../../components/ui";
-import { Ignition } from "../../components/boot";
-import { Rail, strain } from "../../components/viz";
+import { Ignition } from "../../components/kit/Boot";
+import { Rail, strain } from "../../components/kit/Charts";
+import { Panel } from "../../components/kit/Glass";
+import { GlowButton } from "../../components/kit/GlowButton";
+import { Masthead, Screen } from "../../components/kit/Screen";
+import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
+import { Reveal } from "../../components/kit/motion";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../../theme";
 import {
   READINGS_BY_ID,
@@ -103,7 +107,7 @@ export default function Read() {
       <Screen>
         <Masthead />
         <Display>That reading no longer exists.</Display>
-        <Button label="BACK" tone="ghost" onPress={() => router.replace("/")} />
+        <GlowButton label="Back" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -207,8 +211,8 @@ export default function Read() {
         <Masthead right="READING" />
         <Eyebrow>THAT DIDN&rsquo;T WORK</Eyebrow>
         <Display>{error}</Display>
-        <Button label="TRY AGAIN" onPress={() => { setStage("study"); setError(null); }} />
-        <Button label="BACK TO TODAY" tone="ghost" onPress={() => router.replace("/")} />
+        <GlowButton label="Try again" onPress={() => { setStage("study"); setError(null); }} />
+        <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -350,8 +354,8 @@ export default function Read() {
         </Meta>
 
         {!isLast ? (
-          <Button
-            label={`NEXT — ${reading.sections[sectionN]!.heading.toUpperCase()}`}
+          <GlowButton
+            label={`Next: ${reading.sections[sectionN]!.heading}`}
             onPress={() => {
               setScore(null);
               setOpenWord(null);
@@ -360,12 +364,12 @@ export default function Read() {
             }}
           />
         ) : null}
-        <Button
-          label="READ THIS SECTION AGAIN"
+        <GlowButton
+          label="Read this section again"
           tone={isLast ? "primary" : "ghost"}
           onPress={() => { setScore(null); setStage("study"); }}
         />
-        <Button label="ALL SECTIONS" tone="quiet" onPress={() => { setScore(null); setStage("contents"); }} />
+        <GlowButton label="All sections" tone="quiet" onPress={() => { setScore(null); setStage("contents"); }} />
       </Screen>
     );
   }
@@ -417,7 +421,7 @@ export default function Read() {
           than three sections read once.
         </Meta>
 
-        <Button label="BACK TO TODAY" tone="ghost" onPress={() => router.replace("/")} />
+        <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
@@ -459,8 +463,8 @@ export default function Read() {
         {best !== undefined ? ` Your best on this section so far: ${best.toFixed(1)}%.` : ""}
       </Meta>
 
-      <Button label="READ IT ALOUD" onPress={start} />
-      <Button label="ALL SECTIONS" tone="quiet" onPress={() => setStage("contents")} />
+      <GlowButton label="Read it aloud" onPress={start} />
+      <GlowButton label="All sections" tone="quiet" onPress={() => setStage("contents")} />
     </Screen>
   );
 }
