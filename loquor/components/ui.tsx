@@ -22,6 +22,7 @@ import {
   type ViewStyle,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 import {
   CHROME,
@@ -243,13 +244,51 @@ export function Counter({
 
 // ---------------------------------------------------------------- type
 
-/** The wordmark uses a V because the Latin alphabet Loquor comes from had no U. */
-export function Masthead({ right }: { right?: string }) {
+/** The wordmark uses a V because the Latin alphabet Loquor comes from had no U.
+ *
+ *  `setup` puts the way to Settings in the masthead. The tab screens pass it:
+ *  Settings left the tab bar to make room for the Arena, and the screen
+ *  holding the key the app cannot run without still has to be one tap from
+ *  anywhere you land. Drill screens leave it off — mid-take is not the moment. */
+export function Masthead({
+  right,
+  setup = false,
+  close = false,
+}: {
+  right?: string;
+  setup?: boolean;
+  /** For a screen opened over the tabs: a way back that does not need a scroll. */
+  close?: boolean;
+}) {
+  const router = useRouter();
+  const dismiss = () => (router.canGoBack() ? router.back() : router.replace("/"));
   return (
     <>
       <View style={s.masthead}>
         <Text style={s.wordmark}>LOQVOR</Text>
-        {right ? <Text style={s.mastheadRight}>{right}</Text> : null}
+        <View style={s.mastheadEnd}>
+          {right ? <Text style={s.mastheadRight}>{right}</Text> : null}
+          {setup ? (
+            <Pressable
+              onPress={() => router.push("/settings")}
+              hitSlop={14}
+              accessibilityRole="link"
+              accessibilityLabel="Setup"
+            >
+              <Text style={s.mastheadLink}>SETUP</Text>
+            </Pressable>
+          ) : null}
+          {close ? (
+            <Pressable
+              onPress={dismiss}
+              hitSlop={14}
+              accessibilityRole="button"
+              accessibilityLabel="Close"
+            >
+              <Text style={s.mastheadLink}>CLOSE</Text>
+            </Pressable>
+          ) : null}
+        </View>
       </View>
       <Hair />
     </>
@@ -341,6 +380,8 @@ const s = StyleSheet.create({
 
   masthead: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
   wordmark: { color: CHROME.dust, fontSize: 10, letterSpacing: 4.5, fontFamily: TYPE.monoMedium },
+  mastheadEnd: { flexDirection: "row", alignItems: "baseline", gap: SPACE.md },
+  mastheadLink: { color: CHROME.dust, fontSize: 9, letterSpacing: 1.4, fontFamily: TYPE.monoMedium },
   mastheadRight: {
     color: CHROME.dustDim,
     fontSize: 9,

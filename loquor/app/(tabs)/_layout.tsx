@@ -1,14 +1,15 @@
 // The tab bar.
 //
-// Five destinations, and Settings is one of them. It used to be a 10px link in
-// the footer of a screen you had to scroll to the bottom of, which is not a
-// place to put the screen holding the API key the entire app refuses to work
-// without.
+// Five destinations, ordered by how much they matter. Today is the thing you
+// open the app to do. The Arena is the measurement everything else exists to
+// move, and Rooms is where it meets real people — those two are the product, so
+// they sit next to Today. Practice is the drawer of secondary drills, Progress
+// looks backwards. A user who has never seen the app should be able to guess
+// what is behind each one.
 //
-// The grouping is by *when you use it*, not by feature: Today is the thing you
-// open the app to do, Practice is the drawer of drills, Rooms is the part that
-// touches other people, Progress looks backwards, Settings is setup. A user who
-// has never seen the app should be able to guess what is behind each one.
+// Settings used to be the fifth tab. It gave its slot to the Arena and lives in
+// the masthead of every tab screen instead — still one tap from anywhere, which
+// was the whole reason it was promoted out of a footer link in the first place.
 //
 // It floats. A bar welded to the bottom edge reads as part of the phone; a bar
 // with air under it reads as part of the app, and the gap lets content scroll
@@ -23,10 +24,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { BottomTabBarProps } from "expo-router/tabs";
 
 import {
+  GlyphArena,
   GlyphProgress,
   GlyphPractice,
   GlyphRooms,
-  GlyphSettings,
   GlyphToday,
 } from "../../components/glyphs";
 import { CHROME, MOTION, RADIUS, SURFACE, TYPE } from "../../theme";
@@ -35,10 +36,11 @@ type Glyph = (p: { tint: string }) => React.ReactElement;
 
 const TABS: { name: string; label: string; Glyph: Glyph }[] = [
   { name: "index", label: "Today", Glyph: GlyphToday },
-  { name: "practice", label: "Practice", Glyph: GlyphPractice },
+  // Not "arena": that path is the take itself, a stack screen above the tabs.
+  { name: "stage", label: "Arena", Glyph: GlyphArena },
   { name: "rooms", label: "Rooms", Glyph: GlyphRooms },
+  { name: "practice", label: "Practice", Glyph: GlyphPractice },
   { name: "progress", label: "Progress", Glyph: GlyphProgress },
-  { name: "settings", label: "Setup", Glyph: GlyphSettings },
 ];
 
 /** One tab. Owns its own selection animation so the bar has no shared state to

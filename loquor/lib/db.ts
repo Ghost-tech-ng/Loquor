@@ -8,8 +8,8 @@
 
 import * as SQLite from "expo-sqlite";
 import type { Metrics } from "./metrics.ts";
-import type { Judgement } from "./judge.ts";
-import type { ReadingScore } from "./reading.ts";
+import type { Judgement } from "../features/arena/judge.ts";
+import type { ReadingScore } from "../features/reading/reading.ts";
 
 export type SessionRow = {
   id: string;
@@ -735,7 +735,7 @@ export async function contributionRaw(sinceMs: number, now = Date.now()): Promis
 // ── Progress ──────────────────────────────────────────────────────────────────
 //
 // Every query here returns rows, not conclusions. Bucketing into local days and
-// weeks happens in lib/progress.ts, in JavaScript, where it is testable — SQLite
+// weeks happens in features/progress/progress.ts, in JavaScript, where it is testable — SQLite
 // can do it with strftime('…','localtime') but that pushes the app's definition
 // of "a day" into a string literal nobody will ever unit-test.
 

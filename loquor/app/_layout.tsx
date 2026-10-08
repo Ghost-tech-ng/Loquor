@@ -18,7 +18,7 @@ import { MartianMono_500Medium } from "@expo-google-fonts/martian-mono/500Medium
 import { Boot } from "../components/boot";
 import { CHROME } from "../theme";
 import { seedKeysFromEnv } from "../lib/settings";
-import { autoBackup } from "../lib/backup";
+import { autoBackup } from "../features/backup/backup";
 
 /** Shortest time the boot screen stays up. Fonts usually resolve faster than
  *  this on a warm start, and a 120ms flash of wordmark reads as a glitch —

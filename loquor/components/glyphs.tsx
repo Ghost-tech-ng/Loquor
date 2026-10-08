@@ -12,8 +12,6 @@
 
 import { StyleSheet, View } from "react-native";
 
-import { CHROME } from "../theme";
-
 const BOX = 22;
 
 type P = { tint: string };
@@ -24,6 +22,17 @@ export function GlyphToday({ tint }: P) {
     <View style={s.box}>
       <View style={[s.ring, { borderColor: tint }]} />
       <View style={[s.core, { backgroundColor: tint }]} />
+    </View>
+  );
+}
+
+/** Arena — the clock you speak against: a dial with one hand, at the top. */
+export function GlyphArena({ tint }: P) {
+  return (
+    <View style={s.box}>
+      <View style={[s.dial, { borderColor: tint }]} />
+      <View style={[s.crown, { backgroundColor: tint }]} />
+      <View style={[s.hand, { backgroundColor: tint }]} />
     </View>
   );
 }
@@ -62,44 +71,19 @@ export function GlyphProgress({ tint }: P) {
   );
 }
 
-/** Settings — two rails with their knobs at different stops. */
-export function GlyphSettings({ tint }: P) {
-  return (
-    <View style={[s.box, s.stack]}>
-      <View style={s.rail}>
-        <View style={[s.railLine, { backgroundColor: tint }]} />
-        <View style={[s.knob, { borderColor: tint, left: 5 }]} />
-      </View>
-      <View style={s.rail}>
-        <View style={[s.railLine, { backgroundColor: tint }]} />
-        <View style={[s.knob, { borderColor: tint, right: 5 }]} />
-      </View>
-    </View>
-  );
-}
-
 const s = StyleSheet.create({
   box: { width: BOX, height: BOX, alignItems: "center", justifyContent: "center" },
   rowEnd: { flexDirection: "row", alignItems: "flex-end", justifyContent: "center", gap: 3 },
-  stack: { justifyContent: "center", gap: 7 },
 
   ring: { position: "absolute", width: 18, height: 18, borderRadius: 9, borderWidth: 1.5 },
   core: { width: 7, height: 7, borderRadius: 3.5 },
+
+  dial: { position: "absolute", top: 3, width: 18, height: 18, borderRadius: 9, borderWidth: 1.5 },
+  crown: { position: "absolute", top: 0, width: 5, height: 2, borderRadius: 1 },
+  hand: { position: "absolute", top: 7, width: 1.5, height: 6, borderRadius: 0.75 },
 
   bar: { width: 2.5, borderRadius: 1.25 },
 
   table: { width: 20, height: 13, borderWidth: 1.5, borderRadius: 4 },
   seat: { position: "absolute", width: 5, height: 2.5, top: 1.5, borderRadius: 1 },
-
-  rail: { width: 20, height: 8, alignItems: "center", justifyContent: "center" },
-  railLine: { width: 20, height: 1.5 },
-  knob: {
-    position: "absolute",
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    borderWidth: 1.5,
-    // Knocks the rail out behind the knob, so it must match the bar it sits on.
-    backgroundColor: CHROME.raised,
-  },
 });

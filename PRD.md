@@ -251,7 +251,7 @@ Expo Go runs only the native modules bundled into the Expo Go binary. No custom 
 | Constraint | Impact | Handling |
 |---|---|---|
 | **Remote push notifications do not work in Expo Go** as of SDK 53+ — `expo-notifications` push was removed. **Local/scheduled notifications still work.** | Can't send server-triggered nudges ("your 3pm design review — here's your Prep Card"). | v1 uses **locally scheduled notifications only** — daily drill reminder, and a Room reminder scheduled on-device at the time I create the Room. This covers ~90% of the need. Server-push is a v2 feature and is *the* most likely reason to eventually build. |
-| **Expo Go only runs the SDK version it ships with.** When Expo Go auto-updates to a new SDK, an older-SDK project stops opening until upgraded. Also, App Store Expo Go lags the newest SDK — SDK 55 currently isn't supported by the store build of Expo Go on iOS. | "Permanent" is really "permanent until the next SDK bump." | **Pin to SDK 54** (current App Store Expo Go support). Budget a half-day SDK upgrade roughly every ~6 months. Do not chase the newest SDK. |
+| **Expo Go only runs the SDK version it ships with.** When Expo Go auto-updates to a new SDK, an older-SDK project stops opening until upgraded. Also, App Store Expo Go lags the newest SDK — SDK 55 currently isn't supported by the store build of Expo Go on iOS. | "Permanent" is really "permanent until the next SDK bump." | **Track the SDK the App Store Expo Go runs** (SDK 57 as of October 2026 — the SDK 54 build stopped opening when Expo Go moved on). Budget a half-day SDK upgrade roughly every ~6 months. Do not chase an SDK newer than Expo Go supports. |
 
 **When I would actually need a native iOS build (TestFlight / dev build):**
 - Server-triggered push notifications *(most likely trigger — v2)*
@@ -264,7 +264,7 @@ None of those are v1. **Build in Expo Go, and treat the first native build as a 
 
 ### 6.2 Stack
 
-**Client** — Expo SDK 54, React Native, TypeScript **strict** (no `any`), expo-router, Zustand, NativeWind, expo-audio, expo-speech, expo-secure-store, expo-notifications.
+**Client** — Expo SDK 57, React Native, TypeScript **strict** (no `any`), expo-router, Zustand, NativeWind, expo-audio, expo-speech, expo-secure-store, expo-notifications.
 
 **Backend** — FastAPI (Python 3.12), Pydantic v2 models on every endpoint, PostgreSQL 16, Redis (session state + job queue), Docker Compose → single VPS or Cloud Run. Type hints on all functions.
 
@@ -479,16 +479,16 @@ Design principle: **one decision per screen.** The app's job is to remove delibe
 Record → transcribe → deterministic delivery metrics → scorecard → Rewrite. 60 seeded topics. No auth (local user). This alone is usable daily and validates the loop.
 
 **Phase 1.5 — The Passage (v0.1.1) — shipped, then superseded**
-Read-aloud drill: 8 passages of 110–150 words, 48 glossed target words, deterministic alignment scoring, phrasing and hesitation metrics. Added because §5.1b was missing from the original pillar set. The scoring engine survived intact; the *material* did not — a minute of authored sentences read as an exercise rather than as something worth reading, so Phase 2 replaced the corpus (see below) without touching `lib/reading.ts`.
+Read-aloud drill: 8 passages of 110–150 words, 48 glossed target words, deterministic alignment scoring, phrasing and hesitation metrics. Added because §5.1b was missing from the original pillar set. The scoring engine survived intact; the *material* did not — a minute of authored sentences read as an exercise rather than as something worth reading, so Phase 2 replaced the corpus (see below) without touching `features/reading/reading.ts`.
 
 **Phase 2 — The Lexicon (v0.2) — shipped**
 - Four ~1,400-word readings (≥10 minutes aloud), each in six ~230-word recorded sections, carrying 96 targets. Today prefers an unfinished reading over the daily rotation, so a piece gets completed rather than abandoned.
 - 98-entry glossary; readings and Lexicon entries share one four-field shape, so a word read aloud enters the recognition track without being re-authored.
-- Stock FSRS-5 (`lib/fsrs.ts`, published weights, unmodified) on two independent cards per word — recognition and production.
+- Stock FSRS-5 (`features/lexicon/fsrs.ts`, published weights, unmodified) on two independent cards per word — recognition and production.
 - Speak-to-unlock: three independent boolean gates (sense, collocation, register) rather than a blended score, because the three failures need three different repairs.
 - Word of the Day with hand-logged real-world use, credited as a stability multiplier with a floor.
 - Track separation is structural, not conventional: the Reading can only call `gradeRecognition`; only `gradeProduction` and `confirmRealUse` can move production.
-- Content tests ship with the corpus (`lib/reading.test.mjs`) because authored material fails silently: every target must resolve in its section, have a glossary entry, and every reading must clear ten minutes.
+- Content tests ship with the corpus (`features/reading/reading.test.mjs`) because authored material fails silently: every target must resolve in its section, have a glossary entry, and every reading must clear ten minutes.
 
 **Deferred out of Phase 2:** the corpus is 98 words, not 600. Authoring the remaining ~500 is content work, not engineering — the scheduler, the gates and the queue do not change when it grows.
 
@@ -509,7 +509,7 @@ Read-aloud drill: 8 passages of 110–150 words, 48 glossed target words, determ
 
 **Phase 5 — Polish (v1.0) — shipped**
 - **Progress** is the only screen that looks backwards, and it leads with density over 28 days — "19 of 28 days" — not with the streak. A streak rewards not breaking a chain, and the cheapest way to protect a chain is a thirty-second take that teaches nothing. The current run is a secondary line; PRD §12 forbids the flame and it is not there.
-- **The baseline** (`app/onboarding.tsx`) is ninety seconds on a fixed, unrerollable prompt, recorded exactly once — enforced in the screen and by `id = 1` in the table. It stores delivery only: no model reads it, because there is nothing to score before the app has taught anything. Every row of the ninety-day table is measured from it.
+- **The baseline** (`features/onboarding/OnboardingScreen.tsx`) is ninety seconds on a fixed, unrerollable prompt, recorded exactly once — enforced in the screen and by `id = 1` in the table. It stores delivery only: no model reads it, because there is nothing to score before the app has taught anything. Every row of the ninety-day table is measured from it.
 - **The weekly read** is the only model call on Progress, and it is an opt-in tap — nothing on this screen calls a model on mount. The synthesis is given already-computed figures, never transcripts. It reads the week that *ended*, so the cache key is last week's; a brand-new user gets a "week in progress" report that is deliberately **not** filed, because cached it would be read next Monday as a report on a week it only saw half of.
 - **Self-rating survives regeneration.** `saveReport` upserts the four report columns via `ON CONFLICT` rather than `INSERT OR REPLACE` — the rating can be given before the report exists, and it is the one figure on the screen the user reported themselves.
 - **Two repeating local reminders** (daily practice, weekly read) from a small fixed set of preset times rather than a wheel picker. The exact minute does not decide whether a habit sticks, and a free picker is one more decision on a screen whose job is to have as few as possible (§7). No new dependency was added for it.
@@ -531,7 +531,7 @@ Read-aloud drill: 8 passages of 110–150 words, 48 glossed target words, determ
 | LLM judge scores are noisy/inconsistent | 🟠 High | Deterministic metrics stay out of the LLM. Fixed rubric + few-shot anchors + temperature 0. Spot-check weekly. |
 | Corpus authoring is a slog (600 words × 4 fields) | 🟡 Medium | LLM-generate, human-review in batches of 50. Ship at 150. |
 | Cost per session | 🟡 Medium | Batch generation offline; STT is the main variable cost (~$0.005/min). Budget ~$4/mo solo use. |
-| Expo Go SDK bump breaks the "permanent" install | 🟡 Medium | Pin SDK 54. Budget a half-day upgrade ~2x/year. Never chase the newest SDK — App Store Expo Go lags it anyway. |
+| Expo Go SDK bump breaks the "permanent" install | 🟡 Medium | Track Expo Go's SDK (57 now). Budget a half-day upgrade ~2x/year. Never chase the newest SDK — App Store Expo Go lags it anyway. |
 | No remote push → reminders are weaker than ideal | 🟡 Medium | Locally scheduled notifications cover daily drills and Room reminders. If adherence data shows this is the binding constraint, that alone justifies the first native build. |
 | Privacy — recordings of work-adjacent content | 🟠 High | Audio deleted after transcription by default. Debriefs are my summary, never a recording of the actual meeting. Never record a real meeting — explicit product rule. |
 

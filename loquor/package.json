@@ -6,7 +6,7 @@
   "scripts": {
     "start": "expo start",
     "ios": "expo start --ios",
-    "test": "node --experimental-strip-types --test lib/*.test.mjs",
+    "test": "node --experimental-strip-types --test lib/*.test.mjs features/*/*.test.mjs",
     "typecheck": "tsc --noEmit",
     "doctor": "npx expo-doctor",
     "check": "npx expo install --check",
