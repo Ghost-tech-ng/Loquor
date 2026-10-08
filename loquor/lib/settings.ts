@@ -16,12 +16,21 @@ export type Settings = {
   /** Only consulted in custom mode. */
   sttProvider: Extract<Provider, "groq" | "deepgram">;
   judgeProvider: Extract<Provider, "groq" | "anthropic">;
+  /**
+   * What the Reading primes Whisper with. "passage" sends the text being read,
+   * which pulls decoding toward the expected words and can paper over a misread;
+   * "disfluency" sends the same primer as the Arena, so what is scored is what
+   * was heard. Default is the honest one; the other stays available so the two
+   * can be compared on the same reading.
+   */
+  readingPrimer: "disfluency" | "passage";
 };
 
 export const DEFAULT_SETTINGS: Settings = {
   mode: "free",
   sttProvider: "groq",
   judgeProvider: "groq",
+  readingPrimer: "disfluency",
 };
 
 const SETTINGS_KEY = "loquor.settings";

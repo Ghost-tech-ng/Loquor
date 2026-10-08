@@ -177,6 +177,24 @@ export default function Settings() {
         </Panel>
       ) : null}
 
+      {active.stt === "groq" ? (
+        <Panel>
+          <Eyebrow>THE READING</Eyebrow>
+          <Segment
+            options={[
+              { value: "disfluency", label: "Score what was heard" },
+              { value: "passage", label: "Prime with the passage" },
+            ]}
+            value={settings.readingPrimer}
+            onChange={(v) => applyCustom({ readingPrimer: v as SettingsShape["readingPrimer"] })}
+          />
+          <Meta>
+            Priming tells the transcriber what you are about to read. It hears the page more
+            reliably, and it also hears the page when you misread it.
+          </Meta>
+        </Panel>
+      ) : null}
+
       <Hair style={{ marginTop: SPACE.sm }} />
       <Eyebrow>API KEYS</Eyebrow>
       <Meta>

@@ -35,10 +35,10 @@ const DISFLUENCY_PRIMER =
 
 export type TranscribeOptions = {
   /**
-   * Overrides the disfluency primer. The Passage drill passes the text being
-   * read, which biases decoding toward those words — the exact opposite of what
-   * the Arena wants, and exactly right there: the question is whether the audio
-   * supports this text, not what the audio might have been.
+   * Overrides the disfluency primer. The Reading can pass the text being read
+   * (Settings → readingPrimer), which biases decoding toward those words. That
+   * is off by default: a decoder told what to expect will hear it, and a
+   * stumble it smooths over is a stumble the score never shows.
    *
    * Groq only. Deepgram has no equivalent parameter and ignores it.
    */

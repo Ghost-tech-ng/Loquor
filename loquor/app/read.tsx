@@ -127,11 +127,8 @@ export default function Read() {
       const { stt } = resolve(settings);
       const key = (await getKey(stt)) ?? "";
 
-      // The section text is sent as the transcription prompt. Whisper conditions
-      // on it, which biases decoding toward the words we expect — the opposite of
-      // what we want for the Arena, and exactly right here: we are asking whether
-      // the audio supports these words, not what the audio might be.
-      const t = await transcribe(uri, stt, key, { prompt: section.text });
+      const primeWithPassage = settings.readingPrimer === "passage";
+      const t = await transcribe(uri, stt, key, primeWithPassage ? { prompt: section.text } : {});
 
       const result = scoreReading(section.text, t.words, {
         targets: targetIndices(section),
@@ -145,7 +142,9 @@ export default function Read() {
         id: `${Date.now().toString(36)}${Math.floor(Math.random() * 1e6).toString(36)}`,
         readingId: reading.id,
         sectionN: section.n,
-        provider: stt,
+        // Recorded so primed and unprimed takes are never averaged together.
+        // Bare "groq" rows predate the setting and were all passage-primed.
+        provider: stt === "groq" ? (primeWithPassage ? "groq+passage" : "groq+plain") : stt,
         score: result,
       });
 

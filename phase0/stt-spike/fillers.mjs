@@ -60,14 +60,34 @@ export function countPhrases(text, phrases) {
 
 // Per-phrase capped overlap. Summing min(hyp, truth) prevents a model that
 // hallucinates twelve "um"s from scoring above one that found the right three.
-export function recall(truthCounts, hypCounts) {
+//
+// That cap is also why recall alone is not enough: it makes over-reporting
+// free. A primer that teaches Whisper to sprinkle "um" everywhere scores the
+// same recall as one that hears them correctly, and inflates every filler rate
+// the app shows. Precision is what catches it -- matched over everything the
+// model emitted, so each invented token costs something.
+export function score(truthCounts, hypCounts) {
   let matched = 0;
   let truth = 0;
+  let hyp = 0;
 
   for (const [phrase, t] of Object.entries(truthCounts)) {
     truth += t;
     matched += Math.min(t, hypCounts[phrase] || 0);
   }
+  for (const n of Object.values(hypCounts)) hyp += n;
 
-  return { matched, truth, rate: truth === 0 ? null : matched / truth };
+  return {
+    matched,
+    truth,
+    hyp,
+    falsePositives: hyp - matched,
+    rate: truth === 0 ? null : matched / truth,
+    precision: hyp === 0 ? null : matched / hyp,
+  };
+}
+
+export function recall(truthCounts, hypCounts) {
+  const { matched, truth, rate } = score(truthCounts, hypCounts);
+  return { matched, truth, rate };
 }

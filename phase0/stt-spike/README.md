@@ -77,6 +77,18 @@ cheapest mitigation there is (mitigation ladder step 1, PRD §6.2a). It's measur
 alongside the baseline rather than after a failure, because if it's free points we
 want them either way.
 
+**Precision — both variants.** Recall caps each phrase at the true count, so it
+cannot see a model that over-reports. A primer full of "um" can teach Whisper to
+emit "um" where none was said, and every invented one inflates the filler rate the
+app shows exactly as much as a dropped one deflates it. Precision is matched over
+everything emitted; the `invented` figure beside it is the raw false-positive count.
+
+The gate is **recall ≥ 0.80 and precision ≥ 0.90**, applied to each variant. If both
+pass, the primer ships only when it buys more than two points of recall over the
+baseline — otherwise the script tells you to drop it from `loquor/lib/stt.ts`. Include
+a few takes with **no** fillers in your 20: they are where invented ones show up most
+plainly.
+
 **Lexical hedge recall — the control.** `like`, `you know`, `basically`. Real words;
 Whisper has no reason to strip them. If this isn't near 100%, **the harness is wrong,
 not the model** — suspect the labels first. The script says so explicitly rather than
