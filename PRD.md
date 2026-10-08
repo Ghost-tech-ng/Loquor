@@ -251,7 +251,7 @@ Expo Go runs only the native modules bundled into the Expo Go binary. No custom 
 | Constraint | Impact | Handling |
 |---|---|---|
 | **Remote push notifications do not work in Expo Go** as of SDK 53+ — `expo-notifications` push was removed. **Local/scheduled notifications still work.** | Can't send server-triggered nudges ("your 3pm design review — here's your Prep Card"). | v1 uses **locally scheduled notifications only** — daily drill reminder, and a Room reminder scheduled on-device at the time I create the Room. This covers ~90% of the need. Server-push is a v2 feature and is *the* most likely reason to eventually build. |
-| **Expo Go only runs the SDK version it ships with.** When Expo Go auto-updates to a new SDK, an older-SDK project stops opening until upgraded. Also, App Store Expo Go lags the newest SDK — SDK 55 currently isn't supported by the store build of Expo Go on iOS. | "Permanent" is really "permanent until the next SDK bump." | **Track the SDK the App Store Expo Go runs** (SDK 57 as of October 2026 — the SDK 54 build stopped opening when Expo Go moved on). Budget a half-day SDK upgrade roughly every ~6 months. Do not chase an SDK newer than Expo Go supports. |
+| **Expo Go only runs the SDK version it ships with.** When Expo Go auto-updates to a new SDK, an older-SDK project stops opening until upgraded. Also, App Store Expo Go lags the newest SDK — SDK 55 currently isn't supported by the store build of Expo Go on iOS. | "Permanent" is really "permanent until the next SDK bump." | **Track the SDK the App Store Expo Go runs** (SDK 58 as of October 2026 — the SDK 54 build stopped opening when Expo Go moved on). Budget a half-day SDK upgrade roughly every ~6 months. Do not chase an SDK newer than Expo Go supports. |
 
 **When I would actually need a native iOS build (TestFlight / dev build):**
 - Server-triggered push notifications *(most likely trigger — v2)*
@@ -264,7 +264,7 @@ None of those are v1. **Build in Expo Go, and treat the first native build as a 
 
 ### 6.2 Stack
 
-**Client** — Expo SDK 57, React Native, TypeScript **strict** (no `any`), expo-router, Zustand, NativeWind, expo-audio, expo-speech, expo-secure-store, expo-notifications.
+**Client** — Expo SDK 58, React Native, TypeScript **strict** (no `any`), expo-router, Zustand, NativeWind, expo-audio, expo-speech, expo-secure-store, expo-notifications.
 
 **Backend** — FastAPI (Python 3.12), Pydantic v2 models on every endpoint, PostgreSQL 16, Redis (session state + job queue), Docker Compose → single VPS or Cloud Run. Type hints on all functions.
 

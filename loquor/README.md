@@ -1,6 +1,6 @@
 # Loquor — v1.0
 
-Seven drills, one corpus, no backend. Runs inside Expo Go on iOS (SDK 57).
+Seven drills, one corpus, no backend. Runs inside Expo Go on iOS (SDK 58).
 
 The tab bar is **Today · Arena · Rooms · Practice · Progress**. The Arena and
 Rooms are the product and get tabs of their own; the other drills live under
@@ -208,9 +208,14 @@ provider — switching modes can never masquerade as an improvement in your spee
 ## Constraints that hold
 
 - **Expo Go only.** If a feature needs a config plugin or a custom native module,
-  it does not go in v1. On SDK 57, the version the App Store build of Expo Go
+  it does not go in v1. On SDK 58, the version the App Store build of Expo Go
   runs. When Expo Go moves to a new SDK the published update stops opening until
   the project follows it — that is what a sudden crash on launch usually means.
+- **The `overrides` entry in package.json is load-bearing.** SDK 58 ships React
+  Native `0.88.0-rc.3`, and npm never lets a prerelease satisfy a range like
+  `>=0.65 <1.0`, so async-storage and reanimated refuse to install against it.
+  The override points every package at the project's own react-native. Drop it
+  once Expo moves to a final 0.88.
 - **Keys live in `expo-secure-store`.** Never AsyncStorage, never logged, never
   sent anywhere but the vendor they belong to.
 - **Audio is deleted** as soon as the transcript exists.

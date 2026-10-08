@@ -95,7 +95,7 @@ function Item({
   );
 }
 
-function Bar({ state, navigation }: BottomTabBarProps) {
+function Bar({ state, emitter, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const count = state.routes.length;
 
@@ -143,16 +143,16 @@ function Bar({ state, navigation }: BottomTabBarProps) {
               Glyph={meta.Glyph}
               focused={focused}
               onPress={() => {
-                const event = navigation.emit({
+                const event = emitter.emit({
                   type: "tabPress",
                   target: route.key,
                   canPreventDefault: true,
                 });
                 if (!focused && !event.defaultPrevented) {
-                  navigation.navigate(route.name, route.params);
+                  navigateToTab(route.key);
                 }
               }}
-              onLongPress={() => navigation.emit({ type: "tabLongPress", target: route.key })}
+              onLongPress={() => emitter.emit({ type: "tabLongPress", target: route.key })}
             />
           );
         })}

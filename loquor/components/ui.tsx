@@ -19,7 +19,7 @@ import {
   View,
   type StyleProp,
   type TextStyle,
-  type ViewStyle,
+  type ViewProps,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -35,6 +35,11 @@ import {
   TAB_CLEARANCE,
   TYPE,
 } from "../theme";
+
+// What <View> actually accepts. Not StyleProp<ViewStyle>: Expo's web typings
+// widen ViewStyle with position "fixed" | "sticky", which RN 0.88's native
+// View props no longer accept, so the exported interface stopped fitting.
+type BoxStyle = ViewProps["style"];
 
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
   return (
@@ -72,7 +77,7 @@ export function Reveal({
   children: ReactNode;
   index?: number;
   delay?: number;
-  style?: StyleProp<ViewStyle>;
+  style?: BoxStyle;
 }) {
   const t = useRef(new Animated.Value(0)).current;
   const wait = delay ?? index * MOTION.stagger;
@@ -117,7 +122,7 @@ export function Tap({
 }: {
   children: ReactNode;
   onPress: () => void;
-  style?: StyleProp<ViewStyle>;
+  style?: BoxStyle;
   disabled?: boolean;
 }) {
   const p = useRef(new Animated.Value(0)).current;
@@ -161,7 +166,7 @@ export function Pulse({
 }: {
   children: ReactNode;
   active?: boolean;
-  style?: StyleProp<ViewStyle>;
+  style?: BoxStyle;
 }) {
   const t = useRef(new Animated.Value(0)).current;
 
@@ -323,7 +328,7 @@ export function Meta({ children, style }: { children: ReactNode; style?: StylePr
   return <Text style={[s.meta, style]}>{children}</Text>;
 }
 
-export function Hair({ style }: { style?: StyleProp<ViewStyle> }) {
+export function Hair({ style }: { style?: BoxStyle }) {
   return <View style={[s.hair, style]} />;
 }
 
@@ -365,7 +370,7 @@ export function Button({
 
 /** The only container in the app. A recessed surface, not an outlined box —
  *  no shadow, no fill of its own colour, nothing that reads as a card. */
-export function Panel({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
+export function Panel({ children, style }: { children: ReactNode; style?: BoxStyle }) {
   return <View style={[s.panel, style]}>{children}</View>;
 }
 
