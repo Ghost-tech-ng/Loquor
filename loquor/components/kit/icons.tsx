@@ -1,5 +1,5 @@
 // Tab icons. Drawn rather than borrowed from an icon font, so the stroke weight
-// matches Outfit and the active state can fill with a brass wash.
+// matches Outfit and the active state can fill with a green wash.
 
 import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
 
@@ -60,13 +60,13 @@ export function TabIcon({ name, active, size = 26 }: { name: IconName; active: b
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Defs>
         <LinearGradient id={`tab-${name}`} x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor={AURORA.brass} stopOpacity={0.45} />
-          <Stop offset="1" stopColor={AURORA.gold} stopOpacity={0.2} />
+          <Stop offset="0" stopColor={AURORA.forest} stopOpacity={0.45} />
+          <Stop offset="1" stopColor={AURORA.sage} stopOpacity={0.2} />
         </LinearGradient>
       </Defs>
       <Shape
         name={name}
-        stroke={active ? AURORA.gold : alpha(CHROME.chalk, 0.5)}
+        stroke={active ? CHROME.chalk : alpha(CHROME.chalk, 0.5)}
         fill={active ? `url(#tab-${name})` : "none"}
       />
     </Svg>

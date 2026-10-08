@@ -46,7 +46,7 @@ const GAMES: Game[] = [
     name: "Bring It to Life",
     icon: "bot",
     hook: "Start as a robot. Your melody, punch and rhythm turn it back into you.",
-    tint: [AURORA.plum, AURORA.brass],
+    tint: [AURORA.plum, AURORA.forest],
     tag: "VOICE",
   },
   {
@@ -78,7 +78,7 @@ const GAMES: Game[] = [
     name: "Lexicon Blitz",
     icon: "zap",
     hook: "Sixty seconds, a definition, four words. Combos stack, and it counts as review.",
-    tint: [AURORA.brass, AURORA.sage],
+    tint: [AURORA.forest, AURORA.sage],
     tag: "TAP",
   },
 ];
@@ -266,7 +266,7 @@ export default function Play() {
           <PressableScale onPress={d.go} scaleTo={0.97} accessibilityLabel={d.name}>
             <Glass style={s.drill} radius={RADIUS.soft + 6}>
               <View style={s.drillIcon}>
-                <Glyph name={d.icon} size={22} strokeWidth={1.7} color={AURORA.brass} />
+                <Glyph name={d.icon} size={22} strokeWidth={1.7} color={AURORA.forest} />
               </View>
               <View style={{ flex: 1, gap: 3 }}>
                 <View style={s.gameHead}>
@@ -325,7 +325,7 @@ const s = StyleSheet.create({
     borderRadius: 13,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: alpha(AURORA.brass, 0.1),
+    backgroundColor: alpha(AURORA.forest, 0.1),
   },
   drillName: { color: CHROME.chalk, fontSize: 17, fontFamily: TYPE.displaySoft },
   drillTrains: { color: CHROME.dust, fontSize: 13, lineHeight: 19, fontFamily: TYPE.ui },

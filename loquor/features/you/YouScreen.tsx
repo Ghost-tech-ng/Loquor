@@ -59,7 +59,7 @@ function Header() {
       />
 
       <Rise index={0}>
-        <Glass glow={AURORA.brass} style={s.hero}>
+        <Glass glow={AURORA.forest} style={s.hero}>
           <ProgressRing progress={p?.level.progress ?? 0} size={128} stroke={10} colors={GRADIENT.xp}>
             <Text style={s.lvlLabel}>LEVEL</Text>
             <Text style={s.lvl}>{p?.level.level ?? 1}</Text>
@@ -215,7 +215,7 @@ const s = StyleSheet.create({
   },
   badgeOn: { backgroundColor: alpha(AURORA.gold, 0.12), borderColor: alpha(AURORA.gold, 0.45) },
   badgeOff: { backgroundColor: SURFACE.sunk, borderColor: SURFACE.edge },
-  badgePicked: { borderColor: AURORA.brass, borderWidth: 1.5 },
+  badgePicked: { borderColor: AURORA.forest, borderWidth: 1.5 },
   badgeName: { color: CHROME.chalk, fontSize: 10.5, lineHeight: 13, fontFamily: TYPE.uiSemi, textAlign: "center" },
 
   detail: { gap: 4 },

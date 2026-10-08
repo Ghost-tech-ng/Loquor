@@ -1,19 +1,19 @@
-// Speek design tokens — Midnight & Brass.
+// Speek design tokens — Midnight & Forest.
 //
-// A stage at night, or an old radio studio: a deep navy room, warm brass on the
-// things you press, ivory type. The aurora still drifts behind everything, but
-// in lamp colours now — brass, sage, a little terracotta — so the screen glows
-// like a lit dial rather than a light show. Data keeps its own ramp (HEAT) so a
-// filler rate never borrows the colour that means "tap me".
+// A stage at night: a deep navy room, forest green on the things you press,
+// ivory type and gold for anything you earn. The aurora still drifts behind
+// everything, but in quiet colours — a green lamp, a little sage and
+// terracotta — so the screen glows rather than flashes. Data keeps its own
+// ramp (HEAT) so a filler rate never borrows the colour that means "tap me".
 //
 // The export names are the old ones on purpose. Every screen reads CHROME,
 // SURFACE and TYPE, so remapping the values here re-skins the whole app at once.
 
 export const AURORA = {
-  brass: "#D9A85B",      // primary: buttons, the active tab, the one thing to press
+  forest: "#4E9C6E",     // primary: buttons, the active tab, the one thing to press
   sage: "#6FB7A4",       // good, cleared, owned
   terracotta: "#E07A5F", // alert: fillers, hedges, over the line
-  gold: "#EFC984",       // XP — a lighter brass, so a reward reads as a reward
+  gold: "#EFC984",       // XP and badges — warm against the green, so a reward reads as a reward
   plum: "#A0708F",       // a quiet counterweight in gradients and the sky
   steel: "#7FA3C2",      // cool accents: freezes, info
 } as const;
@@ -26,7 +26,7 @@ export const CHROME = {
   chalk: "#F2EEE6",     // primary text, ivory
   dust: "#ABA69A",      // secondary text
   dustDim: "#726E66",   // labels
-  ink: "#141008",       // text on a brass fill
+  ink: "#141008",       // text on a light fill (gold, terracotta, mint)
 } as const;
 
 // Vocal energy, silence → peak: a cold dial warming to a hot lamp.
@@ -40,7 +40,7 @@ export const HEAT = [
 ] as const;
 
 export const SEMANTIC = {
-  ember: AURORA.brass,      // live, recording, the active choice
+  ember: AURORA.forest,     // live, recording, the active choice
   flaw: AURORA.terracotta,  // filler markers, hedges, over-threshold
   solid: AURORA.sage,       // owned, mastered, cleared
   xp: AURORA.gold,
@@ -48,13 +48,13 @@ export const SEMANTIC = {
 
 /** Gradient stops, as tuples so they drop straight into LinearGradient. */
 export const GRADIENT = {
-  primary: ["#E8BE74", "#C08A45"] as const,
+  primary: ["#46966A", "#25603F"] as const,
   cool: [AURORA.steel, AURORA.sage] as const,
-  warm: [AURORA.terracotta, AURORA.brass] as const,
+  warm: [AURORA.terracotta, AURORA.gold] as const,
   flame: ["#D9583A", "#E8964A", AURORA.gold] as const,
-  xp: [AURORA.gold, AURORA.brass] as const,
+  xp: [AURORA.gold, "#C9963F"] as const,
   good: ["#86C7B5", "#4F9886"] as const,
-  brand: [AURORA.brass, AURORA.sage, AURORA.terracotta] as const,
+  brand: [AURORA.forest, AURORA.gold, AURORA.terracotta] as const,
 };
 
 // Interpolate the heat ramp. `t` clamps to 0..1.

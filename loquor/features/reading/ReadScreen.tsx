@@ -505,7 +505,7 @@ const s = StyleSheet.create({
     paddingVertical: 7,
     gap: 1,
   },
-  chipOpen: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(217, 168, 91, 0.1)" },
+  chipOpen: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(78, 156, 110, 0.1)" },
   chipWord: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.displayItalic },
   chipSay: { color: CHROME.dustDim, fontSize: 10, fontFamily: TYPE.ui, letterSpacing: 0.4 },
 

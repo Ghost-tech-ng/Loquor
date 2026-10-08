@@ -264,7 +264,7 @@ const s = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: RADIUS.pill,
   },
-  chipOn: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(217, 168, 91, 0.1)" },
+  chipOn: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(78, 156, 110, 0.1)" },
   chipText: { color: CHROME.dust, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
   chipTextOn: { color: SEMANTIC.ember },
 

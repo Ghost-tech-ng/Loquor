@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="1024" height="1024">
   <defs>
-    <linearGradient id="brass" x1="14" y1="12" x2="86" y2="90" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#F2D193"/>
-      <stop offset="0.55" stop-color="#D9A85B"/>
-      <stop offset="1" stop-color="#A8733A"/>
+    <linearGradient id="forest" x1="14" y1="12" x2="86" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8FD1A6"/>
+      <stop offset="0.55" stop-color="#4E9C6E"/>
+      <stop offset="1" stop-color="#2A6845"/>
     </linearGradient>
     <radialGradient id="gloss" cx="36" cy="28" r="30" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.45"/>
       <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <path d="M50 12 C71 12 86 26 86 45 C86 64 71 78 50 78 C45 78 40.5 77.2 36.4 75.6 L22 86 L25.6 70.2 C18.4 64 14 55.2 14 45 C14 26 29 12 50 12 Z" fill="url(#brass)"/>
+  <path d="M50 12 C71 12 86 26 86 45 C86 64 71 78 50 78 C45 78 40.5 77.2 36.4 75.6 L22 86 L25.6 70.2 C18.4 64 14 55.2 14 45 C14 26 29 12 50 12 Z" fill="url(#forest)"/>
   <path d="M50 12 C71 12 86 26 86 45 C86 64 71 78 50 78 C45 78 40.5 77.2 36.4 75.6 L22 86 L25.6 70.2 C18.4 64 14 55.2 14 45 C14 26 29 12 50 12 Z" fill="url(#gloss)"/>
   <ellipse cx="39.5" cy="38" rx="4.4" ry="6.2" fill="#0B0F17"/>
   <ellipse cx="60.5" cy="38" rx="4.4" ry="6.2" fill="#0B0F17"/>

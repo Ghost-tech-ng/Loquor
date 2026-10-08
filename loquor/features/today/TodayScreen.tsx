@@ -231,7 +231,7 @@ export default function Home() {
           {/* The hero. Re-keyed on the action id so it re-enters when the ladder
               moves on, which is the feedback that completing something counted. */}
           <Rise key={action?.id ?? "none"} index={2}>
-            <Glass glow={action?.urgent ? AURORA.terracotta : AURORA.brass} style={s.hero}>
+            <Glass glow={action?.urgent ? AURORA.terracotta : AURORA.forest} style={s.hero}>
               <Text style={[s.kicker, action?.urgent && { color: AURORA.terracotta }]}>
                 {action?.eyebrow ?? " "}
               </Text>
@@ -427,7 +427,7 @@ const s = StyleSheet.create({
   levelMeta: { color: CHROME.dust, fontSize: 12.5, fontFamily: TYPE.uiMedium },
 
   hero: { gap: 10 },
-  kicker: { color: AURORA.brass, fontSize: 11.5, letterSpacing: 1.8, fontFamily: TYPE.uiBold },
+  kicker: { color: AURORA.forest, fontSize: 11.5, letterSpacing: 1.8, fontFamily: TYPE.uiBold },
   heroTitle: { color: CHROME.chalk, fontSize: 28, lineHeight: 34, fontFamily: TYPE.display, letterSpacing: -0.5 },
   heroPrompt: {
     color: CHROME.chalk,
@@ -464,7 +464,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.5,
-    borderColor: alpha(AURORA.brass, 0.7),
+    borderColor: alpha(AURORA.forest, 0.7),
   },
   questTickDone: { backgroundColor: AURORA.sage, borderColor: AURORA.sage },
   questTickMark: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.uiBold },

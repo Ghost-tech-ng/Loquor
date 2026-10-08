@@ -71,7 +71,7 @@ export function RewardHost() {
         style={[s.sheetWrap, { paddingBottom: insets.bottom + 16 }]}
         pointerEvents="box-none"
       >
-        <Glass glow={levelled ? AURORA.gold : AURORA.brass} style={s.sheet}>
+        <Glass glow={levelled ? AURORA.gold : AURORA.forest} style={s.sheet}>
           <View style={s.orb}>
             <VoiceOrb size={88} mood="happy" />
           </View>
