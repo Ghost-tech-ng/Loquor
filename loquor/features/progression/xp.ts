@@ -55,3 +55,24 @@ export function totalXp(l: Ledger): number {
   xp += l.badges * XP.badge;
   return xp;
 }
+
+export type GameId = "blitz" | "bomb" | "pause" | "gauntlet" | "alive";
+
+// Each game's score lives on its own scale (points, defuses, seconds), so XP
+// maps each to roughly what a good run of the equivalent drill is worth. The
+// caps stop a farmed game from out-earning real practice.
+export function gameXp(game: GameId, score: number): number {
+  const s = Math.max(0, score);
+  switch (game) {
+    case "blitz":
+      return Math.min(80, Math.round(s / 40));
+    case "bomb":
+      return Math.min(75, Math.round(s) * 15);
+    case "pause":
+      return Math.min(80, Math.round(s / 125) * 8);
+    case "gauntlet":
+      return Math.min(80, Math.round(s / 4));
+    case "alive":
+      return Math.min(70, 20 + Math.round(s / 2));
+  }
+}

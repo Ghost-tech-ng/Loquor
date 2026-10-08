@@ -220,6 +220,25 @@ export default function Play() {
         {!GAMES_LIVE ? <Text style={s.soon}>ARRIVING NEXT UPDATE</Text> : null}
       </Rise>
 
+      {!GAMES_LIVE ? (
+        <Rise index={2}>
+          <PressableScale onPress={() => router.push("/dev/pitch")} scaleTo={0.97} accessibilityLabel="Pitch test">
+            <Glass style={s.drill} radius={RADIUS.soft + 6} glow={AURORA.cyan}>
+              <View style={[s.drillIcon, { backgroundColor: alpha(AURORA.cyan, 0.12) }]}>
+                <Glyph name="waveform" size={22} strokeWidth={1.7} color={AURORA.cyan} />
+              </View>
+              <View style={{ flex: 1, gap: 3 }}>
+                <Text style={s.drillName}>Pitch test</Text>
+                <Text style={s.drillTrains}>
+                  Two minutes on your phone decides how the voice game gets built.
+                </Text>
+              </View>
+              <Glyph name="chevron" size={18} color={CHROME.dust} />
+            </Glass>
+          </PressableScale>
+        </Rise>
+      ) : null}
+
       {GAMES.map((g, i) => (
         <Rise key={g.key} index={i + 2}>
           <PressableScale
