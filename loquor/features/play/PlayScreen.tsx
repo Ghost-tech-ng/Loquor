@@ -226,7 +226,7 @@ export default function Play() {
             scaleTo={0.97}
             accessibilityLabel={`${g.name}, coming next`}
           >
-            <View style={[s.game, { shadowColor: g.tint[0] }]}>
+            <View style={s.game}>
               <LinearGradient
                 colors={[alpha(g.tint[0], 0.42), alpha(g.tint[1], 0.16)]}
                 start={{ x: 0, y: 0 }}
@@ -298,9 +298,6 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.14)",
     backgroundColor: SURFACE.sunk,
-    shadowOpacity: 0.35,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
   },
   gameEmojiWrap: {
     width: 54,

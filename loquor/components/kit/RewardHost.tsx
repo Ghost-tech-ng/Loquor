@@ -7,7 +7,6 @@
 
 import { useEffect, useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
-import { BlurView } from "expo-blur";
 import Animated, {
   FadeIn,
   FadeOut,
@@ -61,18 +60,17 @@ export function RewardHost() {
     <Modal transparent visible animationType="none" onRequestClose={close} statusBarTranslucent>
       <Animated.View entering={FadeIn.duration(220)} exiting={FadeOut.duration(200)} style={StyleSheet.absoluteFill}>
         <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel="Close">
-          <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(6,5,16,0.55)" }]} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(6,5,16,0.78)" }]} />
         </Pressable>
       </Animated.View>
 
       <Animated.View
-        entering={SlideInDown.springify().damping(17).stiffness(150)}
+        entering={SlideInDown.springify().damping(24).stiffness(170)}
         exiting={SlideOutDown.duration(220)}
         style={[s.sheetWrap, { paddingBottom: insets.bottom + 16 }]}
         pointerEvents="box-none"
       >
-        <Glass glow={levelled ? AURORA.gold : AURORA.violet} intensity={50} style={s.sheet}>
+        <Glass glow={levelled ? AURORA.gold : AURORA.violet} style={s.sheet}>
           <View style={s.orb}>
             <VoiceOrb size={88} mood="happy" />
           </View>

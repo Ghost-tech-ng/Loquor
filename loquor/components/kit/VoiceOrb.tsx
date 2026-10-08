@@ -21,6 +21,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { CHROME, SPRING } from "../../theme";
+import { Halo } from "./Halo";
 
 type BoxStyle = ViewProps["style"];
 
@@ -188,18 +189,9 @@ export function VoiceOrb({
 
   return (
     <Animated.View
-      style={[
-        { width: size, height: size },
-        glow && {
-          shadowColor: "#FF5FA2",
-          shadowOpacity: 0.55,
-          shadowRadius: size * 0.22,
-          shadowOffset: { width: 0, height: size * 0.06 },
-        },
-        body,
-        style,
-      ]}
+      style={[{ width: size, height: size }, body, style]}
     >
+      {glow ? <Halo color="#FF5FA2" opacity={0.45} spread={size * 0.22} style={{ top: -size * 0.16, bottom: -size * 0.28 }} /> : null}
       <Svg width={size} height={size} viewBox="0 0 100 100" style={StyleSheet.absoluteFill}>
         <Defs>
           <LinearGradient id="orbFill" x1="14" y1="12" x2="86" y2="90" gradientUnits="userSpaceOnUse">

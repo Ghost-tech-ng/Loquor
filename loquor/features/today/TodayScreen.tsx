@@ -73,72 +73,84 @@ export default function Home() {
   const [approx, setApprox] = useState(true);
   const [ever, setEver] = useState<number | null>(null);
   const [progress, setProgress] = useState<Progress | null>(null);
+  const [ready, setReady] = useState(false);
 
   // Refetch on focus rather than on mount: coming back from a scorecard should
   // move the ladder on, not show the instruction you have just completed.
+  //
+  // Everything loads first and lands in one render. Drawing it in stages —
+  // level, then quests, then the hero swapping its placeholder for the real
+  // instruction — shifted the layout under sections that were still rising,
+  // which read as the whole screen shaking.
   useFocusEffect(
     useCallback(() => {
       let live = true;
       (async () => {
         // Settle first so the quests and level drawn below already include
-        // whatever was just earned; the sheet slides up over the screen.
+        // whatever was just earned. The sheet waits until the screen has
+        // finished rising.
+        let p: Progress | null = null;
         try {
-          await celebrate();
-          const p = await snapshot();
-          if (live) setProgress(p);
+          await celebrate({ holdMs: 900 });
+          p = await snapshot();
         } catch {
           // Progression is decoration on top of the record. A failure here must
           // not take the instruction or the record down with it.
         }
 
-        const settings = await loadSettings();
-        const { stt } = resolve(settings);
-        const [key, used, todayCount, rows, takes, stats, due, roomRows, base, total] =
-          await Promise.all([
-            getKey(stt),
-            usedTopicIds(),
-            countToday(),
-            recentSessions(5),
-            recentTakes(1),
-            lexiconStats(),
-            pendingDebriefs(),
-            recentRooms(50),
-            getBaseline(),
-            countSessions(),
-          ]);
+        try {
+          const settings = await loadSettings();
+          const { stt } = resolve(settings);
+          const [key, used, todayCount, rows, takes, stats, due, roomRows, base, total] =
+            await Promise.all([
+              getKey(stt),
+              usedTopicIds(),
+              countToday(),
+              recentSessions(5),
+              recentTakes(1),
+              lexiconStats(),
+              pendingDebriefs(),
+              recentRooms(50),
+              getBaseline(),
+              countSessions(),
+            ]);
 
-        // Sections left in the piece already in progress — zero if the last one
-        // was finished, which reads as "nothing to pick back up" on the ladder.
-        const inProgress = takes[0] ? READINGS_BY_ID.get(takes[0].reading_id) : undefined;
-        const bests = inProgress ? await sectionBests(inProgress.id) : null;
-        const sectionsLeft =
-          inProgress && bests ? Math.max(0, inProgress.sections.length - bests.size) : 0;
+          // Sections left in the piece already in progress — zero if the last one
+          // was finished, which reads as "nothing to pick back up" on the ladder.
+          const inProgress = takes[0] ? READINGS_BY_ID.get(takes[0].reading_id) : undefined;
+          const bests = inProgress ? await sectionBests(inProgress.id) : null;
+          const sectionsLeft =
+            inProgress && bests ? Math.max(0, inProgress.sections.length - bests.size) : 0;
 
-        const now = Date.now();
-        const rates = await fillerTrend(stt, 30);
-        if (!live) return;
+          const now = Date.now();
+          const rates = await fillerTrend(stt, 30);
+          if (!live) return;
 
-        setAction(
-          nextAction({
-            hasKey: key !== null,
-            hasBaseline: base !== null,
-            dueDebriefs: due.length,
-            takesToday: todayCount,
-            lexDue: stats.dueNow,
-            sectionsLeft,
-            roomsLogged: roomRows.filter((r) => r.debriefed_at !== null).length,
-            roomsUpcoming: roomRows.filter((r) => r.debriefed_at === null && r.at > now).length,
-            sessionsEver: total,
-          })
-        );
+          if (p) setProgress(p);
+          setAction(
+            nextAction({
+              hasKey: key !== null,
+              hasBaseline: base !== null,
+              dueDebriefs: due.length,
+              takesToday: todayCount,
+              lexDue: stats.dueNow,
+              sectionsLeft,
+              roomsLogged: roomRows.filter((r) => r.debriefed_at !== null).length,
+              roomsUpcoming: roomRows.filter((r) => r.debriefed_at === null && r.at > now).length,
+              sessionsEver: total,
+            })
+          );
 
-        const lastDomain = rows[0] ? TOPICS_BY_ID.get(rows[0].topic_id)?.domain : undefined;
-        setTopic(pickTopic({ usedIds: used, lastDomain }));
-        setApprox(fillerCountIsApproximate(stt));
-        setEver(total);
-        setDone(todayCount);
-        setRecent(rows);
-        setTrend(rates);
+          const lastDomain = rows[0] ? TOPICS_BY_ID.get(rows[0].topic_id)?.domain : undefined;
+          setTopic(pickTopic({ usedIds: used, lastDomain }));
+          setApprox(fillerCountIsApproximate(stt));
+          setEver(total);
+          setDone(todayCount);
+          setRecent(rows);
+          setTrend(rates);
+        } finally {
+          if (live) setReady(true);
+        }
       })();
       return () => {
         live = false;
@@ -169,214 +181,218 @@ export default function Home() {
     <Screen>
       <Masthead setup />
 
-      <Rise index={0} style={s.hello}>
-        <View style={{ flex: 1 }}>
-          <Text style={s.helloSmall}>
-            {now.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" })}
-          </Text>
-          <Text style={s.helloBig}>{greeting(now.getHours())}</Text>
-        </View>
-        <PressableScale onPress={() => router.push("/you")} style={s.streakPill} accessibilityLabel="Streak">
-          <StreakFlame size={26} alive={(streak?.current ?? 0) > 0} hot={streak?.activeToday ?? false} />
-          <Text style={[s.streakNum, !streak?.current && { color: CHROME.dust }]}>
-            {streak?.current ?? 0}
-          </Text>
-        </PressableScale>
-      </Rise>
-
-      {/* Level. Tapping through to You is where the badges and the full record live. */}
-      <Rise index={1}>
-        <PressableScale onPress={() => router.push("/you")} scaleTo={0.98} accessibilityLabel="Your level">
-          <Glass style={s.level}>
-            <View style={s.levelRow}>
-              <ProgressRing progress={progress?.level.progress ?? 0} size={64} stroke={6} colors={GRADIENT.xp}>
-                <Text style={s.levelNum}>{progress?.level.level ?? 1}</Text>
-              </ProgressRing>
-              <View style={{ flex: 1, gap: 6 }}>
-                <View style={s.levelHead}>
-                  <Text style={s.rank}>{progress?.level.rank ?? " "}</Text>
-                  <Text style={s.levelXp}>
-                    {progress ? `${progress.level.into}/${progress.level.span} XP` : " "}
-                  </Text>
-                </View>
-                <XPBar progress={progress?.level.progress ?? 0} height={10} delay={200} />
-                <Text style={s.levelMeta}>
-                  {streak && streak.freezes > 0
-                    ? `${streak.freezes} streak ${streak.freezes === 1 ? "freeze" : "freezes"} banked`
-                    : streak && !streak.activeToday && streak.current > 0
-                      ? "Practise today to keep the streak"
-                      : `${progress?.xp ?? 0} XP all time`}
-                </Text>
-              </View>
-            </View>
-          </Glass>
-        </PressableScale>
-      </Rise>
-
-      {/* The hero. Re-keyed on the action id so it re-enters when the ladder
-          moves on, which is the feedback that completing something counted. */}
-      <Rise key={action?.id ?? "loading"} index={2}>
-        <Glass glow={action?.urgent ? AURORA.coral : AURORA.violet} style={s.hero}>
-          <Text style={[s.kicker, action?.urgent && { color: AURORA.coral }]}>
-            {action?.eyebrow ?? " "}
-          </Text>
-          <Text style={s.heroTitle}>{action?.title ?? " "}</Text>
-          {arena && topic ? <Text style={s.heroPrompt}>“{topic.title}”</Text> : null}
-          <Text style={s.heroWhy}>{action?.why ?? " "}</Text>
-          <GlowButton
-            label={action?.cta ?? " "}
-            onPress={go}
-            disabled={!action || (arena && !topic)}
-            style={{ marginTop: 6 }}
-          />
-          {done > 0 && !arena ? (
-            <Text style={s.again}>
-              {done} {done === 1 ? "take" : "takes"} today. Going again is free — the second one is
-              usually the one worth keeping.
-            </Text>
-          ) : null}
-        </Glass>
-      </Rise>
-
-      {/* Quests. */}
-      {progress && progress.quests.length > 0 ? (
-        <Rise index={3} style={s.section}>
-          <View style={s.sectionHead}>
-            <Text style={s.sectionTitle}>Today's quests</Text>
-            <Text style={s.sectionMeta}>
-              {questsDone}/{progress.quests.length}
-            </Text>
-          </View>
-          {progress.quests.map((q, i) => (
-            <Animated.View key={q.quest.id} entering={FadeIn.delay(300 + i * 90)}>
-              <PressableScale
-                onPress={() => router.push(q.quest.route as never)}
-                scaleTo={0.97}
-                style={[s.quest, q.done && s.questDone]}
-                accessibilityLabel={q.quest.title}
-              >
-                <View style={[s.questTick, q.done && s.questTickDone]}>
-                  <Text style={[s.questTickMark, q.done && { color: CHROME.floor }]}>
-                    {q.done ? "✓" : `${i + 1}`}
-                  </Text>
-                </View>
-                <View style={{ flex: 1, gap: 6 }}>
-                  <Text style={[s.questTitle, q.done && s.questTitleDone]} numberOfLines={2}>
-                    {q.quest.title}
-                  </Text>
-                  {q.quest.goal > 1 && !q.done ? (
-                    <View style={s.questTrack}>
-                      <View style={s.questTrackRow}>
-                        <XPBar progress={q.value / q.quest.goal} height={6} colors={GRADIENT.cool} style={{ flex: 1 }} />
-                        <Text style={s.questCount}>
-                          {q.value}/{q.quest.goal}
-                        </Text>
-                      </View>
-                    </View>
-                  ) : null}
-                </View>
-                <Text style={[s.questXp, q.done && { color: SEMANTIC.solid }]}>+{q.quest.xp}</Text>
-              </PressableScale>
-            </Animated.View>
-          ))}
-        </Rise>
-      ) : null}
-
-      {/* Shown once, to the person who has never recorded anything. */}
-      {ever === 0 ? (
-        <Rise index={4}>
-          <Glass style={s.explain}>
-            <Text style={s.explainTitle}>What this actually is</Text>
-            <Text style={s.explainBody}>
-              You speak for ninety seconds. Speek transcribes it, counts the fillers, the pace and
-              the dead air, and judges the substance separately. Do that most days and the wall
-              below fills in.
-            </Text>
-            <Text style={s.explainBody}>
-              <Text style={s.explainKey}>Arena</Text> is those ninety seconds.{" "}
-              <Text style={s.explainKey}>Play</Text> is the games and the drills.{" "}
-              <Text style={s.explainKey}>Rooms</Text> is for real meetings — nothing is recorded in
-              one. <Text style={s.explainKey}>You</Text> is your level, badges and the evidence.{" "}
-              <Text style={s.explainKey}>Setup</Text>, top right, is your API key.
-            </Text>
-          </Glass>
-        </Rise>
-      ) : null}
-
-      {/* Word of the day. One per day from the glossary, and a way into the Lexicon. */}
-      {word ? (
-        <Rise index={5}>
-          <PressableScale onPress={() => router.push("/lexicon")} scaleTo={0.98} accessibilityLabel="Word of the day">
-            <Glass glow={AURORA.teal} style={s.word}>
-              <Text style={[s.kicker, { color: AURORA.teal }]}>WORD OF THE DAY</Text>
-              <View style={s.wordHead}>
-                <Text style={s.wordText}>{word.word}</Text>
-                <Text style={s.wordSay}>{word.say}</Text>
-              </View>
-              <Text style={s.wordMeaning}>{word.meaning}</Text>
-              <Text style={s.wordUse}>Use it out loud once today.</Text>
-            </Glass>
-          </PressableScale>
-        </Rise>
-      ) : null}
-
-      {/* The record. */}
-      <Rise index={6}>
-        <Glass style={s.trend}>
-          <View style={s.sectionHead}>
-            <Text style={s.sectionTitle}>Filler rate</Text>
-            {last !== undefined ? (
-              <Text style={[s.lastRate, { color: strain(fillerStrain(last)) }]}>
-                {approx ? "≈" : ""}
-                {last.toFixed(1)}/min
+      {ready ? (
+        <>
+          <Rise index={0} style={s.hello}>
+            <View style={{ flex: 1 }}>
+              <Text style={s.helloSmall}>
+                {now.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" })}
               </Text>
-            ) : null}
-          </View>
-          <StrataWall rates={trend} />
-          <Text style={s.trendMeta}>
-            {trend.length < 3
-              ? "Three sessions before this means anything."
-              : "The line is five per minute — below it, listeners stop noticing."}
-          </Text>
-        </Glass>
-      </Rise>
+              <Text style={s.helloBig}>{greeting(now.getHours())}</Text>
+            </View>
+            <PressableScale onPress={() => router.push("/you")} style={s.streakPill} accessibilityLabel="Streak">
+              <StreakFlame size={26} alive={(streak?.current ?? 0) > 0} hot={streak?.activeToday ?? false} />
+              <Text style={[s.streakNum, !streak?.current && { color: CHROME.dust }]}>
+                {streak?.current ?? 0}
+              </Text>
+            </PressableScale>
+          </Rise>
 
-      {recent.length > 0 ? (
-        <Rise index={7} style={s.section}>
-          <Text style={s.sectionTitle}>Recent takes</Text>
-          {recent.map((r) => (
-            <PressableScale
-              key={r.id}
-              onPress={() => router.push({ pathname: "/scorecard", params: { id: r.id } })}
-              scaleTo={0.98}
-              style={s.row}
-              accessibilityLabel={r.topic_title}
-            >
-              <View style={[s.rowDot, { backgroundColor: strain(fillerStrain(r.filler_rate)) }]} />
-              <View style={{ flex: 1, gap: 3 }}>
-                <Text style={s.rowTitle} numberOfLines={1}>
-                  {r.topic_title}
+          {/* Level. Tapping through to You is where the badges and the full record live. */}
+          <Rise index={1}>
+            <PressableScale onPress={() => router.push("/you")} scaleTo={0.98} accessibilityLabel="Your level">
+              <Glass style={s.level}>
+                <View style={s.levelRow}>
+                  <ProgressRing progress={progress?.level.progress ?? 0} size={64} stroke={6} colors={GRADIENT.xp}>
+                    <Text style={s.levelNum}>{progress?.level.level ?? 1}</Text>
+                  </ProgressRing>
+                  <View style={{ flex: 1, gap: 6 }}>
+                    <View style={s.levelHead}>
+                      <Text style={s.rank}>{progress?.level.rank ?? " "}</Text>
+                      <Text style={s.levelXp}>
+                        {progress ? `${progress.level.into}/${progress.level.span} XP` : " "}
+                      </Text>
+                    </View>
+                    <XPBar progress={progress?.level.progress ?? 0} height={10} delay={200} />
+                    <Text style={s.levelMeta}>
+                      {streak && streak.freezes > 0
+                        ? `${streak.freezes} streak ${streak.freezes === 1 ? "freeze" : "freezes"} banked`
+                        : streak && !streak.activeToday && streak.current > 0
+                          ? "Practise today to keep the streak"
+                          : `${progress?.xp ?? 0} XP all time`}
+                    </Text>
+                  </View>
+                </View>
+              </Glass>
+            </PressableScale>
+          </Rise>
+
+          {/* The hero. Re-keyed on the action id so it re-enters when the ladder
+              moves on, which is the feedback that completing something counted. */}
+          <Rise key={action?.id ?? "none"} index={2}>
+            <Glass glow={action?.urgent ? AURORA.coral : AURORA.violet} style={s.hero}>
+              <Text style={[s.kicker, action?.urgent && { color: AURORA.coral }]}>
+                {action?.eyebrow ?? " "}
+              </Text>
+              <Text style={s.heroTitle}>{action?.title ?? " "}</Text>
+              {arena && topic ? <Text style={s.heroPrompt}>“{topic.title}”</Text> : null}
+              <Text style={s.heroWhy}>{action?.why ?? " "}</Text>
+              <GlowButton
+                label={action?.cta ?? " "}
+                onPress={go}
+                disabled={!action || (arena && !topic)}
+                style={{ marginTop: 6 }}
+              />
+              {done > 0 && !arena ? (
+                <Text style={s.again}>
+                  {done} {done === 1 ? "take" : "takes"} today. Going again is free — the second one is
+                  usually the one worth keeping.
                 </Text>
-                <Text style={s.rowMeta}>
-                  {new Date(r.started_at).toLocaleDateString(undefined, {
-                    day: "numeric",
-                    month: "short",
-                  })}
-                  {"  ·  "}
-                  {Math.round(r.duration_s)}s{"  ·  "}
-                  {r.wpm} wpm
-                  {r.rubric_total !== null ? `  ·  ${r.rubric_total}/20` : ""}
+              ) : null}
+            </Glass>
+          </Rise>
+
+          {/* Quests. */}
+          {progress && progress.quests.length > 0 ? (
+            <Rise index={3} style={s.section}>
+              <View style={s.sectionHead}>
+                <Text style={s.sectionTitle}>Today's quests</Text>
+                <Text style={s.sectionMeta}>
+                  {questsDone}/{progress.quests.length}
                 </Text>
               </View>
-              <Text style={s.rowRate}>{r.filler_rate.toFixed(1)}</Text>
-            </PressableScale>
-          ))}
-        </Rise>
-      ) : null}
+              {progress.quests.map((q, i) => (
+                <Animated.View key={q.quest.id} entering={FadeIn.delay(300 + i * 90)}>
+                  <PressableScale
+                    onPress={() => router.push(q.quest.route as never)}
+                    scaleTo={0.97}
+                    style={[s.quest, q.done && s.questDone]}
+                    accessibilityLabel={q.quest.title}
+                  >
+                    <View style={[s.questTick, q.done && s.questTickDone]}>
+                      <Text style={[s.questTickMark, q.done && { color: CHROME.floor }]}>
+                        {q.done ? "✓" : `${i + 1}`}
+                      </Text>
+                    </View>
+                    <View style={{ flex: 1, gap: 6 }}>
+                      <Text style={[s.questTitle, q.done && s.questTitleDone]} numberOfLines={2}>
+                        {q.quest.title}
+                      </Text>
+                      {q.quest.goal > 1 && !q.done ? (
+                        <View style={s.questTrack}>
+                          <View style={s.questTrackRow}>
+                            <XPBar progress={q.value / q.quest.goal} height={6} colors={GRADIENT.cool} style={{ flex: 1 }} />
+                            <Text style={s.questCount}>
+                              {q.value}/{q.quest.goal}
+                            </Text>
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                    <Text style={[s.questXp, q.done && { color: SEMANTIC.solid }]}>+{q.quest.xp}</Text>
+                  </PressableScale>
+                </Animated.View>
+              ))}
+            </Rise>
+          ) : null}
 
-      <Text style={s.credo}>
-        Speek — <Text style={s.credoIt}>say it like you mean it.</Text>
-      </Text>
+          {/* Shown once, to the person who has never recorded anything. */}
+          {ever === 0 ? (
+            <Rise index={4}>
+              <Glass style={s.explain}>
+                <Text style={s.explainTitle}>What this actually is</Text>
+                <Text style={s.explainBody}>
+                  You speak for ninety seconds. Speek transcribes it, counts the fillers, the pace and
+                  the dead air, and judges the substance separately. Do that most days and the wall
+                  below fills in.
+                </Text>
+                <Text style={s.explainBody}>
+                  <Text style={s.explainKey}>Arena</Text> is those ninety seconds.{" "}
+                  <Text style={s.explainKey}>Play</Text> is the games and the drills.{" "}
+                  <Text style={s.explainKey}>Rooms</Text> is for real meetings — nothing is recorded in
+                  one. <Text style={s.explainKey}>You</Text> is your level, badges and the evidence.{" "}
+                  <Text style={s.explainKey}>Setup</Text>, top right, is your API key.
+                </Text>
+              </Glass>
+            </Rise>
+          ) : null}
+
+          {/* Word of the day. One per day from the glossary, and a way into the Lexicon. */}
+          {word ? (
+            <Rise index={5}>
+              <PressableScale onPress={() => router.push("/lexicon")} scaleTo={0.98} accessibilityLabel="Word of the day">
+                <Glass glow={AURORA.teal} style={s.word}>
+                  <Text style={[s.kicker, { color: AURORA.teal }]}>WORD OF THE DAY</Text>
+                  <View style={s.wordHead}>
+                    <Text style={s.wordText}>{word.word}</Text>
+                    <Text style={s.wordSay}>{word.say}</Text>
+                  </View>
+                  <Text style={s.wordMeaning}>{word.meaning}</Text>
+                  <Text style={s.wordUse}>Use it out loud once today.</Text>
+                </Glass>
+              </PressableScale>
+            </Rise>
+          ) : null}
+
+          {/* The record. */}
+          <Rise index={6}>
+            <Glass style={s.trend}>
+              <View style={s.sectionHead}>
+                <Text style={s.sectionTitle}>Filler rate</Text>
+                {last !== undefined ? (
+                  <Text style={[s.lastRate, { color: strain(fillerStrain(last)) }]}>
+                    {approx ? "≈" : ""}
+                    {last.toFixed(1)}/min
+                  </Text>
+                ) : null}
+              </View>
+              <StrataWall rates={trend} />
+              <Text style={s.trendMeta}>
+                {trend.length < 3
+                  ? "Three sessions before this means anything."
+                  : "The line is five per minute — below it, listeners stop noticing."}
+              </Text>
+            </Glass>
+          </Rise>
+
+          {recent.length > 0 ? (
+            <Rise index={7} style={s.section}>
+              <Text style={s.sectionTitle}>Recent takes</Text>
+              {recent.map((r) => (
+                <PressableScale
+                  key={r.id}
+                  onPress={() => router.push({ pathname: "/scorecard", params: { id: r.id } })}
+                  scaleTo={0.98}
+                  style={s.row}
+                  accessibilityLabel={r.topic_title}
+                >
+                  <View style={[s.rowDot, { backgroundColor: strain(fillerStrain(r.filler_rate)) }]} />
+                  <View style={{ flex: 1, gap: 3 }}>
+                    <Text style={s.rowTitle} numberOfLines={1}>
+                      {r.topic_title}
+                    </Text>
+                    <Text style={s.rowMeta}>
+                      {new Date(r.started_at).toLocaleDateString(undefined, {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                      {"  ·  "}
+                      {Math.round(r.duration_s)}s{"  ·  "}
+                      {r.wpm} wpm
+                      {r.rubric_total !== null ? `  ·  ${r.rubric_total}/20` : ""}
+                    </Text>
+                  </View>
+                  <Text style={s.rowRate}>{r.filler_rate.toFixed(1)}</Text>
+                </PressableScale>
+              ))}
+            </Rise>
+          ) : null}
+
+          <Text style={s.credo}>
+            Speek — <Text style={s.credoIt}>say it like you mean it.</Text>
+          </Text>
+        </>
+      ) : null}
     </Screen>
   );
 }

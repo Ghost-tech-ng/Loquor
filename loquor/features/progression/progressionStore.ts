@@ -185,11 +185,22 @@ export function onReward(fn: Listener): () => void {
   };
 }
 
-export function celebrate(): Promise<Reward | null> {
+/**
+ * `holdMs` settles now but shows the sheet later — for a screen that is about
+ * to draw itself, so the sheet arrives over still content rather than over a
+ * layout that is still moving.
+ */
+export function celebrate({ holdMs = 0 }: { holdMs?: number } = {}): Promise<Reward | null> {
   if (inFlight) return inFlight;
   inFlight = settle()
     .then((r) => {
-      if (r) for (const fn of listeners) fn(r);
+      if (r) {
+        const show = () => {
+          for (const fn of listeners) fn(r);
+        };
+        if (holdMs > 0) setTimeout(show, holdMs);
+        else show();
+      }
       return r;
     })
     .catch(() => null)

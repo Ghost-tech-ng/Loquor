@@ -13,6 +13,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { Halo } from "./Halo";
+
 const OUTER =
   "M12 1.5c.6 3.2 2.6 5 4.4 6.9 1.9 2 3.6 4.2 3.6 7.6A8 8 0 0 1 4 16c0-2.6 1-4.6 2.6-6.3.3 1.7 1.2 3 2.5 3.6C8.5 9 9.8 4.6 12 1.5Z";
 const INNER =
@@ -65,16 +67,8 @@ export function StreakFlame({
   const base = alive ? "#FF4D2E" : "#2B2848";
 
   return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        shadowColor: "#FF7A2E",
-        shadowOpacity: alive ? (hot ? 0.9 : 0.55) : 0,
-        shadowRadius: size * 0.35,
-        shadowOffset: { width: 0, height: 0 },
-      }}
-    >
+    <View style={{ width: size, height: size }}>
+      {alive ? <Halo color="#FF7A2E" opacity={hot ? 0.6 : 0.38} spread={size * 0.4} /> : null}
       <Animated.View style={[{ position: "absolute", width: size, height: size }, outer]}>
         <Svg width={size} height={size} viewBox="0 0 24 24">
           <Defs>

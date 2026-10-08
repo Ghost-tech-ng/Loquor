@@ -82,8 +82,11 @@ export function Rise({
     <Animated.View
       entering={FadeInDown.delay(delay + index * MOTION.stagger)
         .springify()
-        .damping(16)
-        .stiffness(140)}
+        // Critically damped: sections settle into place without overshooting.
+        // A bounce here made the whole screen wobble whenever content above
+        // shifted while the sections below were still mid-spring.
+        .damping(26)
+        .stiffness(160)}
       style={style}
     >
       {children}

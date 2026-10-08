@@ -54,23 +54,36 @@ export function XPBar({
     );
   }, [shine]);
 
-  const bar = useAnimatedStyle(() => ({ width: Math.max(height, fill.value * width) }));
-  const sweep = useAnimatedStyle(() => ({
-    transform: [{ translateX: -40 + shine.value * (fill.value * width + 40) }],
-  }));
+  // The fill is a full-width pill slid in from the left, and the gradient is
+  // slid back the same distance so it stays pinned to the track. Animating
+  // `width` would re-run layout on every frame of the spring.
+  const offset = useAnimatedStyle(() => {
+    const shown = Math.max(height, fill.value * width);
+    return { opacity: width > 0 ? 1 : 0, transform: [{ translateX: shown - width }] };
+  });
+  const pin = useAnimatedStyle(() => {
+    const shown = Math.max(height, fill.value * width);
+    return { transform: [{ translateX: width - shown }] };
+  });
+  const sweep = useAnimatedStyle(() => {
+    const shown = Math.max(height, fill.value * width);
+    return { transform: [{ translateX: width - shown - 40 + shine.value * (shown + 40) }] };
+  });
 
   return (
     <View
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
       style={[s.track, { height, borderRadius: RADIUS.pill }, style]}
     >
-      <Animated.View style={[s.fill, { borderRadius: RADIUS.pill }, bar]}>
-        <LinearGradient
-          colors={colors}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={StyleSheet.absoluteFill}
-        />
+      <Animated.View style={[s.fill, { borderRadius: RADIUS.pill }, offset]}>
+        <Animated.View style={[StyleSheet.absoluteFill, pin]}>
+          <LinearGradient
+            colors={colors}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={StyleSheet.absoluteFill}
+          />
+        </Animated.View>
         <Animated.View style={[s.shine, sweep]}>
           <LinearGradient
             colors={["rgba(255,255,255,0)", "rgba(255,255,255,0.55)", "rgba(255,255,255,0)"]}
@@ -151,6 +164,6 @@ export function ProgressRing({
 
 const s = StyleSheet.create({
   track: { backgroundColor: "rgba(255,255,255,0.08)", overflow: "hidden" },
-  fill: { height: "100%", overflow: "hidden" },
+  fill: { position: "absolute", top: 0, bottom: 0, left: 0, right: 0, overflow: "hidden" },
   shine: { position: "absolute", top: 0, bottom: 0, width: 40 },
 });

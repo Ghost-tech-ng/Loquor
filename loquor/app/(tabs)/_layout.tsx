@@ -4,7 +4,9 @@
 // else exists to move. Play is the games and the training drills. Rooms is
 // where it meets real people. You is the record: level, badges, the trends.
 //
-// It floats, frosted, over the aurora. A gradient blob slides between tabs on a
+// It floats over the aurora on a near-opaque fill rather than a live blur: the
+// aurora moves every frame, so a blur over it is re-rendered every frame too.
+// A gradient blob slides between tabs on a
 // spring — one moving thing rather than five that fade, because a shared
 // element travelling is what tells you the tabs are one control. Content clears
 // it via TAB_CLEARANCE because the bar is absolutely positioned.
@@ -12,7 +14,6 @@
 import { useEffect, useState } from "react";
 import { Tabs } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
@@ -87,48 +88,45 @@ function Bar({ state, navigation }: BottomTabBarProps) {
 
   return (
     <View style={[s.dock, { paddingBottom: Math.max(insets.bottom - 6, 10) }]} pointerEvents="box-none">
-      <View style={s.shadow}>
-        <View style={s.bar} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
-          <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: alpha(CHROME.raised, 0.55) }]} />
+      <View style={s.bar} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: alpha(CHROME.raised, 0.94) }]} />
 
-          {cell > 0 ? (
-            <Animated.View style={[s.blobCell, { width: cell }, blob]} pointerEvents="none">
-              <LinearGradient
-                colors={[alpha(GRADIENT.primary[0], 0.55), alpha(GRADIENT.primary[1], 0.38)]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={s.blob}
-              />
-            </Animated.View>
-          ) : null}
+        {cell > 0 ? (
+          <Animated.View style={[s.blobCell, { width: cell }, blob]} pointerEvents="none">
+            <LinearGradient
+              colors={[alpha(GRADIENT.primary[0], 0.55), alpha(GRADIENT.primary[1], 0.38)]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={s.blob}
+            />
+          </Animated.View>
+        ) : null}
 
-          {state.routes.map((route, i) => {
-            const meta = TABS.find((t) => t.name === route.name);
-            if (!meta) return null;
-            const focused = state.index === i;
-            return (
-              <Item
-                key={route.key}
-                label={meta.label}
-                icon={meta.icon}
-                focused={focused}
-                onPress={() => {
-                  const event = navigation.emit({
-                    type: "tabPress",
-                    target: route.key,
-                    canPreventDefault: true,
-                  });
-                  if (!focused && !event.defaultPrevented) {
-                    feel.select();
-                    navigation.navigate(route.name, route.params);
-                  }
-                }}
-                onLongPress={() => navigation.emit({ type: "tabLongPress", target: route.key })}
-              />
-            );
-          })}
-        </View>
+        {state.routes.map((route, i) => {
+          const meta = TABS.find((t) => t.name === route.name);
+          if (!meta) return null;
+          const focused = state.index === i;
+          return (
+            <Item
+              key={route.key}
+              label={meta.label}
+              icon={meta.icon}
+              focused={focused}
+              onPress={() => {
+                const event = navigation.emit({
+                  type: "tabPress",
+                  target: route.key,
+                  canPreventDefault: true,
+                });
+                if (!focused && !event.defaultPrevented) {
+                  feel.select();
+                  navigation.navigate(route.name, route.params);
+                }
+              }}
+              onLongPress={() => navigation.emit({ type: "tabLongPress", target: route.key })}
+            />
+          );
+        })}
       </View>
     </View>
   );
@@ -159,19 +157,12 @@ const s = StyleSheet.create({
     bottom: 0,
     paddingHorizontal: 14,
   },
-  shadow: {
-    borderRadius: RADIUS.bar,
-    shadowColor: AURORA.violet,
-    shadowOpacity: 0.35,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 10 },
-  },
   bar: {
     flexDirection: "row",
     height: BAR_H,
     borderRadius: RADIUS.bar,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)",
+    borderColor: alpha(AURORA.violet, 0.35),
     overflow: "hidden",
   },
   blobCell: { position: "absolute", top: 0, bottom: 0, left: 0, padding: INSET },

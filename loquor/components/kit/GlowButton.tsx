@@ -18,6 +18,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { CHROME, GRADIENT, RADIUS, SURFACE, TYPE } from "../../theme";
+import { Halo } from "./Halo";
 import { PressableScale } from "./motion";
 
 type BoxStyle = ViewProps["style"];
@@ -87,16 +88,8 @@ export function GlowButton({
     >
       {filled ? (
         <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
-          <Animated.View
-            pointerEvents="none"
-            style={[s.halo, { borderRadius: RADIUS.pill, shadowColor: STOPS[tone][0] }, halo]}
-          >
-            <LinearGradient
-              colors={STOPS[tone]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[StyleSheet.absoluteFill, { borderRadius: RADIUS.pill }]}
-            />
+          <Animated.View pointerEvents="none" style={[s.halo, halo]}>
+            <Halo color={STOPS[tone][0]} opacity={0.75} spread={16} />
           </Animated.View>
           <LinearGradient
             colors={STOPS[tone]}
@@ -137,9 +130,6 @@ const s = StyleSheet.create({
     bottom: -6,
     left: 10,
     right: 10,
-    shadowOpacity: 0.9,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 6 },
   },
   pill: {
     borderRadius: RADIUS.pill,

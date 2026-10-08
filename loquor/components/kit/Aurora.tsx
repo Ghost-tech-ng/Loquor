@@ -5,9 +5,13 @@
 // tab navigator keeps screens mounted and five full-screen shaders animating
 // behind each other is a battery bill nobody sees the benefit of.
 //
-// Four soft blobs of aurora colour drifting on a night ground, plus a whisper of
-// grain so the gradients never band. Slow on purpose: it should feel like the
-// screen is breathing, not like it is busy.
+// Four soft blobs of aurora colour drifting on a night ground. Slow on purpose:
+// it should feel like the screen is breathing, not like it is busy.
+//
+// Rendered at a quarter of the screen's size and scaled up. The blobs are pure
+// low-frequency colour, so the upscale is invisible, and the shader runs on a
+// sixteenth of the pixels — at full size it was eating the frame budget every
+// other animation needed.
 
 import { useMemo } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
@@ -41,8 +45,6 @@ half4 main(float2 xy) {
   col += teal * 0.20 * e * blob(p, float2(1.0 + 0.10 * cos(s * 0.9), 0.38 * h + 0.10 * sin(s * 1.4)), 0.48);
   col += pink * 0.17 * e * blob(p, float2(0.18 + 0.18 * sin(s * 0.7 + 2.0), 0.78 * h + 0.08 * cos(s * 1.2)), 0.55);
   col += coral * 0.10 * e * blob(p, float2(0.90 + 0.10 * sin(s), 1.02 * h), 0.45);
-  float n = fract(sin(dot(xy, float2(12.9898, 78.233))) * 43758.5453);
-  col += (n - 0.5) * 0.018;
   return half4(half3(col), 1.0);
 }`;
 
@@ -60,17 +62,33 @@ export function AuroraBackground() {
   return <LiveAurora width={width} height={height} />;
 }
 
+const SCALE = 4;
+
 function LiveAurora({ width, height }: { width: number; height: number }) {
   const clock = useClock();
-  const res = useMemo(() => [width, height], [width, height]);
+  const w = Math.ceil(width / SCALE);
+  const h = Math.ceil(height / SCALE);
+  const res = useMemo(() => [w, h], [w, h]);
   const uniforms = useDerivedValue(() => ({ t: clock.value, res, energy: 0 }), [res]);
 
   return (
-    <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Fill>
-        <Shader source={EFFECT!} uniforms={uniforms} />
-      </Fill>
-    </Canvas>
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: CHROME.floor }]} pointerEvents="none">
+      <Canvas
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: w,
+          height: h,
+          transformOrigin: "top left",
+          transform: [{ scale: SCALE }],
+        }}
+      >
+        <Fill>
+          <Shader source={EFFECT!} uniforms={uniforms} />
+        </Fill>
+      </Canvas>
+    </View>
   );
 }
 

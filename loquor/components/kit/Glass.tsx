@@ -1,13 +1,17 @@
 // Glass: the card every screen is made of.
 //
-// A blur of the aurora behind it, a faint fill so text stays legible where the
-// aurora is bright, a hairline edge, and a sheen along the top edge that reads
-// as light catching the rim. `glow` tints the edge for the one card on a screen
-// that wants your attention.
+// A tinted night fill so text stays legible where the aurora is bright, a
+// hairline edge, and a sheen along the top edge that reads as light catching
+// the rim. `glow` tints the rim and sheen for the one card on a screen that
+// wants your attention.
+//
+// No live blur and no layer shadow. Both get recomputed every frame when the
+// thing behind them moves, and the aurora never stops moving — with a dozen
+// cards on screen that was the stutter. The fill is opaque enough that a blur
+// would barely show through it anyway.
 
 import type { ReactNode } from "react";
 import { StyleSheet, View, type ViewProps } from "react-native";
-import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { RADIUS, SURFACE, alpha } from "../../theme";
@@ -19,31 +23,21 @@ export function Glass({
   style,
   glow,
   radius = RADIUS.panel,
-  intensity = 28,
   padded = true,
 }: {
   children?: ReactNode;
   style?: BoxStyle;
-  /** A hex colour to tint the rim and cast a soft halo. */
+  /** A hex colour to tint the rim and sheen. */
   glow?: string;
   radius?: number;
-  intensity?: number;
   padded?: boolean;
 }) {
   return (
-    <View
-      style={[
-        s.shell,
-        { borderRadius: radius },
-        glow ? { shadowColor: glow, shadowOpacity: 0.45, shadowRadius: 22 } : null,
-        style,
-      ]}
-    >
+    <View style={[{ borderRadius: radius }, style]}>
       <View style={[StyleSheet.absoluteFill, s.clip, { borderRadius: radius }]} pointerEvents="none">
-        <BlurView intensity={intensity} tint="dark" style={StyleSheet.absoluteFill} />
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: SURFACE.sunk }]} />
+        <View style={[StyleSheet.absoluteFill, s.fill]} />
         <LinearGradient
-          colors={[glow ? alpha(glow, 0.16) : "rgba(255,255,255,0.07)", "rgba(255,255,255,0)"]}
+          colors={[glow ? alpha(glow, 0.2) : "rgba(255,255,255,0.08)", "rgba(255,255,255,0)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 0.6 }}
           style={StyleSheet.absoluteFill}
@@ -56,7 +50,7 @@ export function Glass({
           {
             borderRadius: radius,
             borderWidth: StyleSheet.hairlineWidth * 2,
-            borderColor: glow ? alpha(glow, 0.5) : SURFACE.edge,
+            borderColor: glow ? alpha(glow, 0.55) : SURFACE.edge,
           },
         ]}
       />
@@ -66,7 +60,7 @@ export function Glass({
 }
 
 const s = StyleSheet.create({
-  shell: { shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0, shadowRadius: 0 },
   clip: { overflow: "hidden" },
+  fill: { backgroundColor: "rgba(16, 13, 38, 0.62)" },
   pad: { padding: 18 },
 });
