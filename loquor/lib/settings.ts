@@ -30,6 +30,8 @@ export type Settings = {
   sfx: boolean;
   /** Pip, the parrot that wanders the screens. */
   pet: boolean;
+  /** Pip chirps and speaks its lines aloud: on taps, hatching, growing, levelling up. */
+  petVoice: boolean;
   /** "My English": which variety's soft fillers count. Standard counts none. */
   english: English;
   /** Soft fillers from that variety the person switched off, one by one. */
@@ -43,6 +45,7 @@ export const DEFAULT_SETTINGS: Settings = {
   readingPrimer: "disfluency",
   sfx: true,
   pet: true,
+  petVoice: true,
   english: "general",
   softOff: [],
 };

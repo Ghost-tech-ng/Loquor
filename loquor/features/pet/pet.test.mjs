@@ -10,7 +10,9 @@ import {
   nextStageOf,
   petLine,
   restMs,
+  spokenText,
   stageOf,
+  voiceOf,
 } from "./pet.ts";
 
 /** Deterministic rng for repeatable sweeps. */
@@ -125,4 +127,23 @@ test("lines are never empty, and the egg talks about hatching", () => {
   }
   assert.match(evolveLine(byName("chick")), /hatched/);
   assert.match(evolveLine(byName("macaw")), /Macaw/);
+});
+
+test("spokenText reads the bubble the way Pip would say it", () => {
+  assert.equal(spokenText("*tap tap* …still in here."), "tap tap, still in here.");
+  assert.equal(spokenText("*wobble* +12 XP"), "wobble plus 12 X P");
+  assert.equal(spokenText("+40 XP! Squawk!"), "plus 40 X P! Squawk!");
+  assert.equal(spokenText("Zzz… oh! You're back."), "Zzz, oh! You're back.");
+  assert.equal(spokenText("Level 7! Squawk!"), "Level 7! Squawk!");
+});
+
+test("voiceOf: every stage has a voice in iOS range, and it deepens as Pip grows", () => {
+  let prev = Infinity;
+  for (const stage of STAGES) {
+    const v = voiceOf(stage);
+    assert.ok(v.pitch >= 0.5 && v.pitch <= 2, `${stage.name} pitch ${v.pitch}`);
+    assert.ok(v.rate > 0);
+    assert.ok(v.pitch <= prev, `${stage.name} is higher than the stage before`);
+    prev = v.pitch;
+  }
 });

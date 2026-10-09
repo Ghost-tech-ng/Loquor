@@ -185,3 +185,41 @@ export function evolveLine(stage: Stage): string {
   if (stage.name === "chick") return "Pip hatched! Hi!";
   return `Pip grew into a ${stage.label}!`;
 }
+
+export type Chirp = "pip-peep" | "pip-chirp" | "pip-squawk";
+export type Voice = { chirp: Chirp; pitch: number; rate: number };
+
+/**
+ * How Pip sounds at each stage. The phone's speech voice is pitched up to sound
+ * like a bird, and comes down a little as Pip grows, so the macaw sounds like
+ * the chick's older sibling rather than the same toy. iOS clamps pitch to 0.5–2.
+ */
+const VOICES: Record<StageName, Voice> = {
+  egg: { chirp: "pip-peep", pitch: 2, rate: 0.85 },
+  chick: { chirp: "pip-peep", pitch: 2, rate: 1.05 },
+  fledgling: { chirp: "pip-chirp", pitch: 1.85, rate: 1.05 },
+  parrot: { chirp: "pip-chirp", pitch: 1.7, rate: 1 },
+  macaw: { chirp: "pip-squawk", pitch: 1.55, rate: 0.95 },
+};
+
+export function voiceOf(stage: Stage): Voice {
+  return VOICES[stage.name];
+}
+
+/**
+ * A bubble line as it should be read aloud. The bubble is written for eyes:
+ * stage directions in asterisks, an ellipsis for a beat, "+12 XP". Read
+ * literally those come out as "asterisk" and "ex-pee", so they are rewritten
+ * into what Pip would actually say.
+ */
+export function spokenText(text: string): string {
+  return text
+    .replace(/\*/g, "")
+    .replace(/…/g, ", ")
+    .replace(/\+(\d+)/g, "plus $1")
+    .replace(/\bXP\b/g, "X P")
+    .replace(/\s+([,.!?])/g, "$1")
+    .replace(/^[\s,.]+/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}

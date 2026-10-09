@@ -57,13 +57,17 @@ import {
   onPetPresence,
   setPetEnabled,
 } from "../../features/pet/petPresence";
+import { hushPet, speakAs } from "../../features/pet/voice";
 
 /** Matches the floating tab bar in app/(tabs)/_layout.tsx. */
 const BAR_H = 66;
 const BUBBLE_W = 210;
 
 type PetInfo = { stage: Stage; mood: Mood; streak: number; level: number };
-type Reaction = { kind: "back" | "reward" | "evolve" | "tap"; text: string };
+type Reaction = { kind: "back" | "reward" | "level" | "evolve" | "tap"; text: string };
+
+/** Pip speaks out loud for these; the rest stay in the bubble so it never talks over every result. */
+const SPOKEN: ReadonlySet<Reaction["kind"]> = new Set(["tap", "level", "evolve"]);
 type Bubble = { id: number; text: string; left: number };
 
 async function readPet(): Promise<PetInfo | null> {
@@ -78,6 +82,19 @@ async function readPet(): Promise<PetInfo | null> {
   } catch {
     return null;
   }
+}
+
+/** What Pip says when XP lands: a new stage beats a new level beats the XP itself. */
+function rewardReaction(fromLevel: number, toLevel: number, gained: number): Reaction {
+  const from = stageOf(fromLevel);
+  const to = stageOf(toLevel);
+  if (to.name !== from.name) return { kind: "evolve", text: evolveLine(to) };
+  const egg = to.name === "egg";
+  if (toLevel > fromLevel) {
+    return { kind: "level", text: egg ? `*wobble* Level ${toLevel}!` : `Level ${toLevel}! Squawk!` };
+  }
+  if (egg) return { kind: "reward", text: `*wobble* +${gained} XP` };
+  return { kind: "reward", text: gained > 0 ? `+${gained} XP! Squawk!` : "Squawk!" };
 }
 
 function clamp(v: number, lo: number, hi: number): number {
@@ -251,7 +268,9 @@ export function PetHost() {
       }
     }
     if (r.kind === "evolve") feel.win();
-    say(r.text, r.kind === "evolve" ? 4200 : 2600);
+    const spoken = SPOKEN.has(r.kind);
+    if (spoken) speakAs(p.stage, r.text);
+    say(r.text, r.kind === "evolve" ? 4200 : spoken ? 3200 : 2600);
   };
 
   // ---- presence and progress ---------------------------------------------
@@ -276,21 +295,7 @@ export function PetHost() {
       });
     });
     const unReward = onReward((r) => {
-      const from = stageOf(r.levelFrom.level);
-      const to = stageOf(r.levelTo.level);
-      const gained = r.to - r.from;
-      const reaction: Reaction =
-        to.name !== from.name
-          ? { kind: "evolve", text: evolveLine(to) }
-          : {
-              kind: "reward",
-              text:
-                to.name === "egg"
-                  ? `*wobble* +${gained} XP`
-                  : gained > 0
-                    ? `+${gained} XP! Squawk!`
-                    : "Squawk!",
-            };
+      const reaction = rewardReaction(r.levelFrom.level, r.levelTo.level, r.to - r.from);
       void readPet().then((p) => {
         if (alive && p) setPet(p);
       });
@@ -310,6 +315,7 @@ export function PetHost() {
       unReward();
       sub.remove();
       if (sayTimer.current) clearTimeout(sayTimer.current);
+      hushPet();
     };
     // Mount-only: everything the callbacks read goes through refs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -336,6 +342,7 @@ export function PetHost() {
 
     if (hidden) {
       wasHidden.current = true;
+      hushPet();
       if (sayTimer.current) clearTimeout(sayTimer.current);
       setBubble(null);
       busy.current = false;

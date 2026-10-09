@@ -32,6 +32,7 @@ import {
 } from "../../lib/settings";
 import { play, setSfxEnabled } from "../../components/kit/sfx";
 import { setPetEnabled } from "../pet/petPresence";
+import { setPetVoiceEnabled } from "../pet/voice";
 import { resetAll } from "../../lib/db";
 import {
   clearDaily,
@@ -300,7 +301,10 @@ export default function Settings() {
 
       <Hair style={{ marginTop: SPACE.sm }} />
       <Eyebrow>Pip</Eyebrow>
-      <Meta>The parrot that grows as you level up. It steps aside whenever you record.</Meta>
+      <Meta>
+        The parrot that grows as you level up. It steps aside whenever you record. With its voice on,
+        it speaks when you tap it on Home, when it grows, and when you level up.
+      </Meta>
       <Segment
         options={[
           { value: "on", label: "Show Pip" },
@@ -313,6 +317,20 @@ export default function Settings() {
           void applyCustom({ pet: on });
         }}
       />
+      {settings.pet ? (
+        <Segment
+          options={[
+            { value: "on", label: "Pip talks" },
+            { value: "off", label: "Pip's quiet" },
+          ]}
+          value={settings.petVoice ? "on" : "off"}
+          onChange={(v) => {
+            const on = v === "on";
+            setPetVoiceEnabled(on);
+            void applyCustom({ petVoice: on });
+          }}
+        />
+      ) : null}
 
       <Hair style={{ marginTop: SPACE.sm }} />
       <Eyebrow>Reminders</Eyebrow>

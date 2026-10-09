@@ -117,6 +117,32 @@ const SOUNDS = {
     0.85
   ),
   go: render([{ hz: 880, at: 0, dur: 0.12, gain: 0.45 }], 0.14),
+
+  // Pip's chirps, played just before Pip speaks. Bird calls are fast pitch
+  // sweeps, so every note glides; the bigger the bird, the lower and rougher.
+  "pip-peep": render(
+    [
+      { hz: 2600, to: 3400, at: 0, dur: 0.08, gain: 0.4 },
+      { hz: 2800, to: 3700, at: 0.1, dur: 0.08, gain: 0.4 },
+    ],
+    0.2
+  ),
+  "pip-chirp": render(
+    [
+      { hz: 1800, to: 3200, at: 0, dur: 0.07, gain: 0.45 },
+      { hz: 3000, to: 2200, at: 0.08, dur: 0.09, gain: 0.4 },
+      { hz: 2000, to: 3400, at: 0.19, dur: 0.08, gain: 0.45 },
+    ],
+    0.3
+  ),
+  "pip-squawk": render(
+    [
+      { hz: 700, to: 1150, at: 0, dur: 0.2, wave: "square", gain: 0.6 },
+      { hz: 1400, to: 2300, at: 0, dur: 0.2, wave: "tri", gain: 0.3 },
+    ],
+    0.24,
+    { noise: { dur: 0.16, decay: 6, gain: 0.25, tone: 0.5 } }
+  ),
 };
 
 mkdirSync(OUT, { recursive: true });
