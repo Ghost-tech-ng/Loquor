@@ -45,7 +45,11 @@ export type Metrics = {
   deadAirSpans: [number, number][];
 };
 
-export function computeMetrics(words: Word[], fallbackDurationS?: number): Metrics {
+export function computeMetrics(
+  words: Word[],
+  fallbackDurationS?: number,
+  softFillers?: ReadonlySet<string>
+): Metrics {
   const empty: Metrics = {
     durationS: fallbackDurationS ?? 0,
     wordCount: 0,
@@ -83,7 +87,7 @@ export function computeMetrics(words: Word[], fallbackDurationS?: number): Metri
   const contentWords: Word[] = [];
 
   for (const w of words) {
-    if (isFiller(w.word)) {
+    if (isFiller(w.word, softFillers)) {
       fillerCount++;
       fillerMarks.push(frac(w.start));
     } else {

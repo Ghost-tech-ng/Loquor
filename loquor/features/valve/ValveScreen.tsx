@@ -131,9 +131,9 @@ export default function Valve() {
 function Brief({ onBegin, onExit }: { onBegin: () => void; onExit: () => void }) {
   return (
     <Screen>
-      <Masthead right="THE VALVE" />
+      <Masthead right="The valve" />
       <Reveal index={0}>
-        <Eyebrow>BEFORE YOU START</Eyebrow>
+        <Eyebrow>Before you start</Eyebrow>
         <Display style={{ marginTop: SPACE.xs }}>Get something you can fog.</Display>
       </Reveal>
 
@@ -149,7 +149,7 @@ function Brief({ onBegin, onExit }: { onBegin: () => void; onExit: () => void })
 
       <Reveal index={2}>
         <Panel>
-          <Eyebrow>NO MIRROR</Eyebrow>
+          <Eyebrow>No mirror</Eyebrow>
           <Meta>
             Pinch your nose shut and say the line, then say it again with the
             nose free. If the two sound different, the second one leaked. It is a
@@ -160,7 +160,7 @@ function Brief({ onBegin, onExit }: { onBegin: () => void; onExit: () => void })
 
       <Reveal index={3}>
         <Panel>
-          <Eyebrow>THIS DRILL STAYS ON THE PHONE</Eyebrow>
+          <Eyebrow>This drill stays on the phone</Eyebrow>
           <Meta>{OFFLINE_NOTE}</Meta>
         </Panel>
       </Reveal>
@@ -220,7 +220,7 @@ function Calibrate({ step, onSet }: { step: RoutineStep; onSet: (c: Calibration)
 
       <Reveal index={1}>
         <Panel glow={meter.running ? SEMANTIC.ember : undefined}>
-          <Eyebrow>{takingQuiet ? "TAKE ONE — AS QUIET AS YOU CAN" : "TAKE TWO — AS LOUD AS IS COMFORTABLE"}</Eyebrow>
+          <Eyebrow>{takingQuiet ? "Take one — as quiet as you can" : "Take two — as loud as IS comfortable"}</Eyebrow>
           <Text style={s.phrase}>{phrase}</Text>
         </Panel>
       </Reveal>
@@ -234,7 +234,7 @@ function Calibrate({ step, onSet }: { step: RoutineStep; onSet: (c: Calibration)
       {fault ? (
         <Reveal index={2}>
           <Panel glow={SEMANTIC.flaw}>
-            <Eyebrow style={{ color: SEMANTIC.flaw }}>SET IT AGAIN</Eyebrow>
+            <Eyebrow style={{ color: SEMANTIC.flaw }}>Set it again</Eyebrow>
             <Meta>{fault}</Meta>
           </Panel>
         </Reveal>
@@ -251,7 +251,7 @@ function Calibrate({ step, onSet }: { step: RoutineStep; onSet: (c: Calibration)
           <GlowButton label="Done" onPress={finish} />
         ) : (
           <GlowButton
-            label={takingQuiet ? "SAY IT QUIETLY" : "SAY IT LOUDLY"}
+            label={takingQuiet ? "Say it quietly" : "Say it loudly"}
             onPress={() => {
               setFault(null);
               meter.start();
@@ -408,7 +408,7 @@ function LadderStep({
       {pending && pending.reached ? (
         <Reveal index={3} style={{ gap: SPACE.sm }}>
           <Panel>
-            <Eyebrow>THE MIRROR</Eyebrow>
+            <Eyebrow>The mirror</Eyebrow>
             <Meta>Did it mist while you were speaking?</Meta>
           </Panel>
           <GlowButton label="It stayed clear" onPress={() => settle(false)} />
@@ -482,7 +482,7 @@ function Match({ step, rung, onDone }: { step: RoutineStep; rung: Rung; onDone: 
 
       <Reveal index={2}>
         <Panel>
-          <Eyebrow>WHAT TO LISTEN FOR</Eyebrow>
+          <Eyebrow>What to listen for</Eyebrow>
           <Meta>
             Pinched, the sound has nowhere to go but out of your mouth, so what
             you hear is your own voice with the leak closed. That is the target.
@@ -619,10 +619,10 @@ function Result({
 
   return (
     <Screen>
-      <Masthead right="THE VALVE" />
+      <Masthead right="The valve" />
 
       <Reveal index={0}>
-        <Eyebrow>SEAL HOLDS TO</Eyebrow>
+        <Eyebrow>Seal holds to</Eyebrow>
         <View style={s.figureRow}>
           <Text style={[s.bigFigure, { color: heat(result.topClean / RUNGS) }]}>
             {held ? RUNGS : Math.max(result.topClean, 0)}
@@ -637,7 +637,7 @@ function Result({
 
       <Reveal index={2}>
         <Panel>
-          <Eyebrow>THE LADDER</Eyebrow>
+          <Eyebrow>The ladder</Eyebrow>
           {[...ALL_RUNGS].reverse().map((n) => {
             const o = outcomes.find((x) => x.rung === n);
             const label = !o || !o.reached ? "not reached" : o.leaked ? "leaked" : "clean";
@@ -655,7 +655,7 @@ function Result({
       {trend?.ready ? (
         <Reveal index={3}>
           <Panel>
-            <Eyebrow>ACROSS YOUR LAST SIX</Eyebrow>
+            <Eyebrow>Across your last six</Eyebrow>
             <Meta>
               {trend.direction === "better"
                 ? `The leak is starting ${Math.abs(trend.delta).toFixed(1)} of a level higher than it was. That is the seal holding under more pressure, which is the only thing this drill can move.`
@@ -668,7 +668,7 @@ function Result({
       ) : (
         <Reveal index={3}>
           <Panel>
-            <Eyebrow>NO TREND YET</Eyebrow>
+            <Eyebrow>No trend yet</Eyebrow>
             <Meta>
               A single session moves a rung on mood, hydration and how honestly
               the mirror gets read. Six complete ladders and this panel starts

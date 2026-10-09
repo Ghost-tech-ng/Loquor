@@ -1,13 +1,19 @@
-# Speek (formerly Loquor) — Product Requirements Document
+# PipeUp (formerly Speek, and Loquor before that) — Product Requirements Document
 
-**Version:** 2.0 (Speek)
+**Version:** 2.1 (PipeUp)
 **Author:** Eghosa
 **Date:** 2026-08-08
-**Status:** v1.0 shipped as Loquor; v2.0 shipped as Speek (see §9 Phases 6–8 and §13)
+**Status:** v1.0 shipped as Loquor; v2.0 shipped as Speek (see §9 Phases 6–8 and §13); v2.1 renamed it PipeUp and cleaned up the UI (§7, §13)
 
 ---
 
 ## 0. The Name
+
+> **Renamed to PipeUp in v2.1.** Speek sat one letter from Speeko, an
+> established app in the same category, which made it hard to search for and
+> risky to trademark. "Pipe up" is what the app is for: speaking up when you
+> have something to say. The storage names below stay as they were, for the
+> same reasons.
 
 > **Renamed to Speek in v2.0.** Loquor was right for an instrument and wrong for
 > something you open every day: it read as "liquor", it needed explaining, and it
@@ -443,15 +449,22 @@ FSRS-5 (Anki's current default; better-calibrated than SM-2) with these modifica
 
 ## 7. Screens
 
-**v2.0 (Speek):** the tabs are **Home · Arena · Play · Rooms · You**.
+**v2.1 (PipeUp):** four tabs, **Home · Play · Rooms · You**. Arena is no longer a
+tab: Home's one button starts it, and your past takes moved to You. Home leads
+with the orb, one line and one button; the quests sit behind a single row.
+Two things are new: **Voice note** (record here, send there) and **My English**
+(§13.1).
+
+**v2.0 (Speek):** the tabs were **Home · Arena · Play · Rooms · You**.
 
 | Screen | Purpose |
 |---|---|
-| **Home** | Streak flame, level and XP, three daily quests, the one recommended next action, and today's prompt. It still has one primary CTA. |
-| **Arena** | Primer → record → scorecard (now with Liveliness) → Rewrite. |
-| **Play** | Five games (§9 Phase 7), then the training drills: Reading, Lexicon, Playbook, Lab, Valve. The Practice tab is gone. |
+| **Home** | The orb, one line on where you stand, one button (the recommended next action), a single quests row that opens a sheet, and a Voice note shortcut. |
+| **Arena** | Started from Home. Primer → record → scorecard → Rewrite. The scorecard leads with one sentence; the rest is behind "See details". |
+| **Voice note** | Record a message, see its filler count and pace, re-record or send the audio to any app through the share sheet. |
+| **Play** | Five games, the training drills (Reading, Lexicon, Playbook, Lab, Valve) and a word of the day. |
 | **Rooms** | Unchanged. |
-| **You** | Rank, streak, focus span, best liveliness, badges, then the whole of Progress. |
+| **You** | Rank, streak, focus span, best liveliness, badges, your Arena takes, then the whole of Progress. |
 
 **v1.0 (Loquor), kept for the record:**
 
@@ -763,6 +776,34 @@ Every screen is built from `components/kit/`:
   sheet
 
 The v1 modules are deleted.
+
+### 13.1 v2.1 — PipeUp
+
+**Edges.** Two things no competitor does, both built on what the app already
+measures:
+
+- **Record here, send there.** Voice notes are where most people talk at length
+  with no second take. You record in PipeUp, see the filler count and pace in one
+  sentence ("No fillers. Good to send."), re-record if you want, and send the
+  audio through the iOS share sheet to WhatsApp, Slack or anything else. The
+  audio is kept only until you send or leave, then deleted.
+- **My English.** Some Englishes use real words as filler: "ehn", "abi",
+  "sha" and "o" in Nigerian English; "basically", "actually" and "na" in
+  Indian English. You pick your variety and each word can be switched off on
+  its own. These words are never wrong English; they count only when you say
+  they are a habit of yours. The promise is the opposite of accent reduction:
+  keep how you sound, lose the noise. Whisper keeps these words, so the count
+  is exact.
+
+**UI rules.**
+
+- **One button per screen.** Home is the orb, one line and one button.
+- **Four tabs.** Home, Play, Rooms, You.
+- **Lead with a sentence, not a dashboard.** A scorecard opens with one line
+  that compares the take with your first take or your week; the numbers are
+  behind "See details".
+- **Sentence case everywhere.** No all-caps labels and no wide letter-spacing;
+  only acronyms (XP, WPM) stay in capitals.
 
 ---
 

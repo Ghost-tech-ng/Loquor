@@ -84,7 +84,7 @@ export default function Read() {
       granted.current = perm.granted;
       if (perm.granted) await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
       else {
-        setError("Speek needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
+        setError("PipeUp needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
         setStage("error");
       }
     })();
@@ -193,10 +193,10 @@ export default function Read() {
   if (stage === "working") {
     return (
       <Screen scroll={false}>
-        <Masthead right="READING" />
+        <Masthead right="Reading" />
         <View style={s.center}>
           <Ignition />
-          <Eyebrow style={{ marginTop: SPACE.md }}>ALIGNING</Eyebrow>
+          <Eyebrow style={{ marginTop: SPACE.md }}>Aligning</Eyebrow>
           <Meta style={s.centerText}>
             Comparing what you said against what was on the page. No model is grading this.
           </Meta>
@@ -208,8 +208,8 @@ export default function Read() {
   if (stage === "error") {
     return (
       <Screen>
-        <Masthead right="READING" />
-        <Eyebrow>THAT DIDN&rsquo;T WORK</Eyebrow>
+        <Masthead right="Reading" />
+        <Eyebrow>That didn&rsquo;t work</Eyebrow>
         <Display>{error}</Display>
         <GlowButton label="Try again" onPress={() => { setStage("study"); setError(null); }} />
         <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
@@ -242,7 +242,7 @@ export default function Read() {
                 { backgroundColor: heat(level), opacity: 0.08 + level * 0.45 },
               ]}
             />
-            <Text style={s.stopLabel}>END OF SECTION</Text>
+            <Text style={s.stopLabel}>End of section</Text>
           </Pressable>
         </View>
       </Screen>
@@ -259,7 +259,7 @@ export default function Read() {
       <Screen>
         <Masthead right={`${section.n} OF ${reading.sections.length}`} />
 
-        <Eyebrow>WHAT CAME BACK</Eyebrow>
+        <Eyebrow>What came back</Eyebrow>
         <Marked score={score} />
 
         <Meta>
@@ -270,7 +270,7 @@ export default function Read() {
         <Hair />
 
         <Rail
-          label="TARGET WORDS"
+          label="Target words"
           value={`${cleanTargets}/${verdicts.length}`}
           position={verdicts.length === 0 ? 0.5 : cleanTargets / verdicts.length}
           bandLabel={
@@ -282,7 +282,7 @@ export default function Read() {
         />
 
         <Rail
-          label="ACCURACY"
+          label="Accuracy"
           value={score.accuracy.toFixed(1)}
           unit="%"
           position={score.accuracy / 100}
@@ -294,7 +294,7 @@ export default function Read() {
         />
 
         <Rail
-          label="PACE"
+          label="Pace"
           value={String(score.wpm)}
           unit="wpm"
           position={bandPosition(score.wpm, READ_BAND_WPM.low, READ_BAND_WPM.high)}
@@ -302,7 +302,7 @@ export default function Read() {
         />
 
         <Rail
-          label="PHRASING"
+          label="Phrasing"
           value={`${score.phrasing.honoured}/${score.phrasing.available}`}
           position={
             score.phrasing.available === 0 ? 0.5 : score.phrasing.honoured / score.phrasing.available
@@ -311,7 +311,7 @@ export default function Read() {
         />
 
         <Rail
-          label="HESITATION"
+          label="Hesitation"
           value={String(score.hesitations)}
           position={Math.min(1, score.hesitations / 8)}
           bandLabel="Long stops in the middle of a clause — searching, not phrasing."
@@ -320,7 +320,7 @@ export default function Read() {
 
         {lively ? (
           <Rail
-            label="LIVELINESS"
+            label="Liveliness"
             value={String(lively.score)}
             unit={`/100 · ${lively.label}`}
             position={lively.score / 100}
@@ -331,7 +331,7 @@ export default function Read() {
         {score.stumbles.length > 0 ? (
           <>
             <Hair />
-            <Eyebrow>SAY THESE AGAIN</Eyebrow>
+            <Eyebrow>Say these again</Eyebrow>
             {score.stumbles.slice(0, 8).map((t) => {
               const g = glosses.find((x) => x.word === t.target);
               return (
@@ -379,15 +379,15 @@ export default function Read() {
     const done = [...bests.keys()].length;
     return (
       <Screen>
-        <Masthead right="READING" />
+        <Masthead right="Reading" />
 
-        <Eyebrow>{reading.domain === "field" ? "YOUR FIELD" : "OFF-PISTE"}</Eyebrow>
+        <Eyebrow>{reading.domain === "field" ? "Your field" : "Off-piste"}</Eyebrow>
         <Display>{reading.title}</Display>
         <Meta>{reading.standfirst}</Meta>
 
         <Hair />
         <Eyebrow>
-          {`${reading.sections.length} SECTIONS · ${done} RECORDED`}
+          {`${reading.sections.length} sections · ${done} recorded`}
         </Eyebrow>
 
         {reading.sections.map((sec, i) => {
@@ -436,7 +436,7 @@ export default function Read() {
       <Display>{section.heading}</Display>
 
       <Hair />
-      <Eyebrow>FOUR WORDS — TAP FOR THE FULL ENTRY</Eyebrow>
+      <Eyebrow>Four words — tap for the full entry</Eyebrow>
       <View style={s.chips}>
         {glosses.map((g) => (
           <Pressable
@@ -453,7 +453,7 @@ export default function Read() {
       {openWord ? <Entry gloss={glosses.find((g) => g.word === openWord)!} /> : null}
 
       <Hair />
-      <Eyebrow>THE TEXT</Eyebrow>
+      <Eyebrow>The text</Eyebrow>
       <Body style={s.studyText}>{section.text}</Body>
 
       <Hair />
@@ -479,13 +479,13 @@ function Entry({ gloss }: { gloss: Gloss }) {
       </View>
       <Body>{gloss.meaning}</Body>
 
-      <Text style={s.fieldLabel}>SEEN AS</Text>
+      <Text style={s.fieldLabel}>Seen as</Text>
       <Text style={s.colloc}>{gloss.collocations.join("  ·  ")}</Text>
 
-      <Text style={s.fieldLabel}>USE IT WHEN</Text>
+      <Text style={s.fieldLabel}>Use it when</Text>
       <Meta>{gloss.slot}</Meta>
 
-      <Text style={s.fieldLabel}>NOT THAT</Text>
+      <Text style={s.fieldLabel}>Not that</Text>
       <Meta style={{ color: CHROME.dust }}>{gloss.antiPattern}</Meta>
     </Panel>
   );
@@ -539,8 +539,7 @@ const s = StyleSheet.create({
   entrySay: { color: SEMANTIC.ember, fontSize: 12, fontFamily: TYPE.ui, letterSpacing: 0.6 },
   fieldLabel: {
     color: CHROME.dustDim,
-    fontSize: 9,
-    letterSpacing: 2.2,
+    fontSize: 11.5,
     fontFamily: TYPE.uiMedium,
     marginTop: 2,
   },
@@ -565,7 +564,7 @@ const s = StyleSheet.create({
   studyText: { fontSize: 16, lineHeight: 26 },
 
   readPad: { paddingVertical: SPACE.md, gap: SPACE.sm },
-  readHeading: { color: CHROME.dustDim, fontSize: 12, letterSpacing: 2, fontFamily: TYPE.uiMedium },
+  readHeading: { color: CHROME.dustDim, fontSize: 12, fontFamily: TYPE.uiMedium },
   readText: { color: CHROME.chalk, fontSize: 21, lineHeight: 34, fontFamily: TYPE.ui },
   readFoot: { gap: SPACE.sm, paddingBottom: SPACE.md, alignItems: "center" },
   clockSmall: { color: CHROME.dustDim, fontSize: 14, fontFamily: TYPE.monoMedium, ...TABULAR },
@@ -580,7 +579,7 @@ const s = StyleSheet.create({
     overflow: "hidden",
   },
   stopBloom: { position: "absolute", left: 0, right: 0, top: 0, bottom: 0 },
-  stopLabel: { color: CHROME.chalk, fontSize: 13, letterSpacing: 1.6, fontFamily: TYPE.uiSemi },
+  stopLabel: { color: CHROME.chalk, fontSize: 13, fontFamily: TYPE.uiSemi },
 
   marked: { flexDirection: "row", flexWrap: "wrap" },
   markedWord: {

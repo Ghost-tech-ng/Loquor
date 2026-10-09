@@ -60,14 +60,14 @@ export default function Lab() {
 
   return (
     <Screen>
-      <Masthead right="THE LAB" />
-      <Eyebrow>PERSUASION</Eyebrow>
+      <Masthead right="The lab" />
+      <Eyebrow>Persuasion</Eyebrow>
       <Display>Two ways of being listened to.</Display>
 
       <Reveal index={0}>
       <Tap onPress={() => setMode("argue")}>
         <Panel>
-          <Eyebrow>THE ARGUMENT</Eyebrow>
+          <Eyebrow>The argument</Eyebrow>
           <Display style={s.cardTitle}>Make the case in ninety seconds.</Display>
           <Body>
             A position, a named structure, and one take. Scored step by step, so you find out which
@@ -80,7 +80,7 @@ export default function Lab() {
       <Reveal index={1}>
       <Tap onPress={() => setMode("room")}>
         <Panel>
-          <Eyebrow>THE ROOM</Eyebrow>
+          <Eyebrow>The room</Eyebrow>
           <Display style={s.cardTitle}>Get past the name badge.</Display>
           <Body>
             A stranger with something worth hearing and no intention of volunteering it. Measured on
@@ -91,7 +91,7 @@ export default function Lab() {
       </Reveal>
 
       <Hair />
-      <Eyebrow>FOUR MOVES THAT WORK ANYWHERE</Eyebrow>
+      <Eyebrow>Four moves that work anywhere</Eyebrow>
       <View style={{ gap: SPACE.md }}>
         {MOVES.map((m, i) => (
           <Reveal key={m.id} index={i + 2} style={{ gap: 3 }}>
@@ -140,13 +140,13 @@ function Argue({ onExit }: { onExit: () => void }) {
   if (!scaffold || !topic) {
     return (
       <Screen>
-        <Masthead right="THE ARGUMENT" />
+        <Masthead right="The argument" />
         <Display>Setting the question.</Display>
       </Screen>
     );
   }
 
-  const position = `${side === "for" ? "YES" : "NO"} — ${topic.title}`;
+  const position = `${side === "for" ? "Yes" : "No"} — ${topic.title}`;
 
   const begin = async () => {
     setFailure(null);
@@ -189,12 +189,12 @@ function Argue({ onExit }: { onExit: () => void }) {
     }
   };
 
-  if (stage === "working") return <Working right="THE ARGUMENT" step="Taking it apart" />;
+  if (stage === "working") return <Working right="The argument" step="Taking it apart" />;
 
   if (stage === "error") {
     return (
       <Failed
-        right="THE ARGUMENT"
+        right="The argument"
         error={failure ?? "Something went wrong."}
         onRetry={() => {
           setFailure(null);
@@ -218,7 +218,7 @@ function Argue({ onExit }: { onExit: () => void }) {
           seconds={take.seconds}
           ceilingS={ARGUE_CEILING_S}
           onStop={finish}
-          hint="TAP WHEN YOU HAVE LANDED IT"
+          hint="Tap when you have landed it"
         />
         <View style={s.stepStrip}>
           {scaffold.steps.map((st) => (
@@ -235,7 +235,7 @@ function Argue({ onExit }: { onExit: () => void }) {
     return (
       <Screen>
         <Masthead right={scaffold.name.toUpperCase()} />
-        <Eyebrow>{verdict.in_order ? "IN ORDER" : "OUT OF ORDER"}</Eyebrow>
+        <Eyebrow>{verdict.in_order ? "In order" : "Out of order"}</Eyebrow>
         <Display>{verdict.headline}</Display>
 
         <View style={{ gap: SPACE.lg }}>
@@ -250,7 +250,7 @@ function Argue({ onExit }: { onExit: () => void }) {
 
         {!verdict.in_order ? (
           <Panel glow={SEMANTIC.flaw}>
-            <Eyebrow style={{ color: SEMANTIC.flaw }}>SEQUENCE</Eyebrow>
+            <Eyebrow style={{ color: SEMANTIC.flaw }}>Sequence</Eyebrow>
             <Body>
               The moves were there but not in the scaffold&rsquo;s order, which changes what they
               mean. {scaffold.trap}
@@ -259,7 +259,7 @@ function Argue({ onExit }: { onExit: () => void }) {
         ) : null}
 
         <Panel glow={SEMANTIC.ember}>
-          <Eyebrow style={{ color: SEMANTIC.ember }}>ARGUED TO THE SCAFFOLD</Eyebrow>
+          <Eyebrow style={{ color: SEMANTIC.ember }}>Argued to the scaffold</Eyebrow>
           <Body style={s.model}>{verdict.model_argument}</Body>
         </Panel>
 
@@ -272,20 +272,20 @@ function Argue({ onExit }: { onExit: () => void }) {
   // brief
   return (
     <Screen>
-      <Masthead right="THE ARGUMENT" />
+      <Masthead right="The argument" />
       <Eyebrow>{scaffold.gloss.toUpperCase()}</Eyebrow>
       <Display>{scaffold.name}</Display>
       <Meta>{scaffold.when}</Meta>
 
       <Hair />
 
-      <Eyebrow>THE QUESTION</Eyebrow>
+      <Eyebrow>The question</Eyebrow>
       <Body style={s.question}>{topic.title}</Body>
       <View style={s.sideRow}>
         {(["for", "against"] as const).map((v) => (
           <Pressable key={v} onPress={() => setSide(v)} style={[s.chip, side === v && s.chipOn]}>
             <Text style={[s.chipText, side === v && s.chipTextOn]}>
-              {v === "for" ? "ARGUE YES" : "ARGUE NO"}
+              {v === "for" ? "Argue yes" : "Argue no"}
             </Text>
           </Pressable>
         ))}
@@ -297,7 +297,7 @@ function Argue({ onExit }: { onExit: () => void }) {
 
       <Hair />
 
-      <Eyebrow>THE SHAPE</Eyebrow>
+      <Eyebrow>The shape</Eyebrow>
       <View style={{ gap: SPACE.sm }}>
         {/* The shape arrives in the order you are meant to say it in. */}
         {scaffold.steps.map((st, i) => (
@@ -315,13 +315,13 @@ function Argue({ onExit }: { onExit: () => void }) {
       </View>
 
       <Panel glow={SEMANTIC.flaw}>
-        <Eyebrow style={{ color: SEMANTIC.flaw }}>HOW THIS ONE FAILS</Eyebrow>
+        <Eyebrow style={{ color: SEMANTIC.flaw }}>How this one fails</Eyebrow>
         <Body>{scaffold.trap}</Body>
       </Panel>
 
       {showExample ? (
         <Panel>
-          <Eyebrow>WORKED EXAMPLE</Eyebrow>
+          <Eyebrow>Worked example</Eyebrow>
           <Body style={s.model}>{scaffold.example}</Body>
         </Panel>
       ) : (
@@ -430,13 +430,13 @@ function Room({ onExit }: { onExit: () => void }) {
     }
   };
 
-  if (stage === "thinking") return <Working right="THE ROOM" step={`${c.name} is answering`} />;
-  if (stage === "scoring") return <Working right="THE ROOM" step="Reading the conversation" />;
+  if (stage === "thinking") return <Working right="The room" step={`${c.name} is answering`} />;
+  if (stage === "scoring") return <Working right="The room" step="Reading the conversation" />;
 
   if (stage === "error") {
     return (
       <Failed
-        right="THE ROOM"
+        right="The room"
         error={failure ?? "Something went wrong."}
         onRetry={() => {
           setFailure(null);
@@ -460,7 +460,7 @@ function Room({ onExit }: { onExit: () => void }) {
           seconds={take.seconds}
           ceilingS={TURN_CEILING_S}
           onStop={send}
-          hint="SAY IT — TAP WHEN DONE"
+          hint="Say it — tap when done"
         />
         <Text style={s.hint}>One thing at a time. This is a conversation, not a turn in a game.</Text>
       </Screen>
@@ -470,7 +470,7 @@ function Room({ onExit }: { onExit: () => void }) {
   if (stage === "result" && result) {
     return (
       <Screen>
-        <Masthead right="THE ROOM" />
+        <Masthead right="The room" />
         <Eyebrow>{c.name.toUpperCase()}</Eyebrow>
         <Display>{result.headline}</Display>
 
@@ -498,18 +498,18 @@ function Room({ onExit }: { onExit: () => void }) {
 
         {result.unlocking_question ? (
           <Panel>
-            <Eyebrow>THE QUESTION THAT OPENED IT</Eyebrow>
+            <Eyebrow>The question that opened it</Eyebrow>
             <Body style={s.model}>&ldquo;{result.unlocking_question}&rdquo;</Body>
           </Panel>
         ) : null}
 
         <Panel glow={SEMANTIC.ember}>
-          <Eyebrow style={{ color: SEMANTIC.ember }}>WHAT TO OPEN WITH NEXT TIME</Eyebrow>
+          <Eyebrow style={{ color: SEMANTIC.ember }}>What to open with next time</Eyebrow>
           <Body style={s.model}>{result.model_opener}</Body>
         </Panel>
 
         <Hair />
-        <Eyebrow>WHAT THEY KNEW</Eyebrow>
+        <Eyebrow>What they knew</Eyebrow>
         <Body>{c.substance}</Body>
 
         <GlowButton label="Another stranger" onPress={deal} />
@@ -552,13 +552,13 @@ function Room({ onExit }: { onExit: () => void }) {
   // brief
   return (
     <Screen>
-      <Masthead right="THE ROOM" />
+      <Masthead right="The room" />
       <Eyebrow>{c.role.toUpperCase()}</Eyebrow>
       <Display>{c.name}</Display>
       <Body style={s.question}>{c.setting}</Body>
 
       <Panel>
-        <Eyebrow>THE DRILL</Eyebrow>
+        <Eyebrow>The drill</Eyebrow>
         <Body>
           {c.name} knows one thing genuinely worth hearing and will not offer it. Generic questions
           get generic answers — that is realistic, and it is the whole exercise. Get there in as few
@@ -644,7 +644,7 @@ const s = StyleSheet.create({
     gap: 10,
     paddingBottom: SPACE.lg,
   },
-  stepChip: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.6, fontFamily: TYPE.uiMedium },
+  stepChip: { color: CHROME.dustDim, fontSize: 11.5, fontFamily: TYPE.uiMedium },
 
   sideRow: { flexDirection: "row", gap: 8 },
   chip: {
@@ -656,7 +656,7 @@ const s = StyleSheet.create({
     borderRadius: RADIUS.pill,
   },
   chipOn: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(34, 197, 94, 0.1)" },
-  chipText: { color: CHROME.dust, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
+  chipText: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiMedium },
   chipTextOn: { color: SEMANTIC.ember },
 
   step: { flexDirection: "row", gap: 12 },
@@ -667,11 +667,11 @@ const s = StyleSheet.create({
 
   line: { paddingLeft: 12, borderLeftWidth: 1, borderLeftColor: SURFACE.edgeLive, gap: 3 },
   lineThem: { borderLeftColor: CHROME.dustDim },
-  lineWho: { color: CHROME.dustDim, fontSize: 9, letterSpacing: 1.6, fontFamily: TYPE.uiSemi },
+  lineWho: { color: CHROME.dustDim, fontSize: 11.5, fontFamily: TYPE.uiSemi },
   lineText: { color: CHROME.dust, fontSize: 14, lineHeight: 21, fontFamily: TYPE.ui },
   lineTextThem: { color: CHROME.chalk, fontFamily: TYPE.displayItalic, fontSize: 15 },
 
   tallies: { flexDirection: "row", gap: SPACE.lg, flexWrap: "wrap" },
   tallyValue: { color: CHROME.chalk, fontSize: 20, letterSpacing: -0.8, fontFamily: TYPE.monoMedium, ...TABULAR },
-  tallyLabel: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
+  tallyLabel: { color: CHROME.dustDim, fontSize: 11.5, fontFamily: TYPE.uiMedium },
 });

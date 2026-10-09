@@ -1,10 +1,10 @@
 // Home.
 //
-// The top is the reason to open the app today: your streak, your level, three
-// quests that refill at midnight. Under it, one instruction chosen by
-// nextAction — a list of nine equal cards asks a person to choose before they
-// know what anything is for, so the hero is still a single answer. Everything
-// below that is the record.
+// The orb, one line and one button. The button is whatever nextAction says
+// matters most right now — usually today's prompt, so the line is the prompt
+// itself. Everything else is one tap away: the quests behind a single row, the
+// level and streak behind the top line, the record on You. Home used to stack
+// eight cards; a screen that asks for eight decisions gets none of them.
 //
 // The prompt stays deterministic per day: opening the app twice does not reroll
 // it. A rerollable prompt turns a commitment into a slot machine, and the point
@@ -13,38 +13,22 @@
 import { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
-import Animated, { FadeIn } from "react-native-reanimated";
 
-import { fillerStrain, strain, StrataWall } from "../../components/kit/Charts";
 import { Masthead, Screen } from "../../components/kit/Screen";
-import { Glass } from "../../components/kit/Glass";
 import { GlowButton } from "../../components/kit/GlowButton";
 import { Glyph } from "../../components/kit/Glyph";
-import { ProgressRing, XPBar } from "../../components/kit/Meters";
 import { PressableScale, Rise } from "../../components/kit/motion";
 import { StreakFlame } from "../../components/kit/StreakFlame";
-import {
-  AURORA,
-  CHROME,
-  GRADIENT,
-  RADIUS,
-  SEMANTIC,
-  SPACE,
-  SURFACE,
-  TABULAR,
-  TYPE,
-  alpha,
-} from "../../theme";
+import { VoiceOrb } from "../../components/kit/VoiceOrb";
+import { AURORA, CHROME, RADIUS, SPACE, SURFACE, TABULAR, TYPE, alpha } from "../../theme";
 import { TOPICS_BY_ID, pickTopic, type Topic } from "../arena/topics";
 import { READINGS_BY_ID } from "../reading/readings";
-import { ALL_WORDS, gloss } from "../lexicon/glossary";
-import { dayOf } from "../progress/progress";
 import { celebrate, snapshot, type Progress } from "../progression/progressionStore";
 import { nextAction, type Action } from "./nextAction";
+import { QuestSheet } from "./QuestSheet";
 import {
   countSessions,
   countToday,
-  fillerTrend,
   getBaseline,
   lexiconStats,
   pendingDebriefs,
@@ -53,9 +37,8 @@ import {
   recentTakes,
   sectionBests,
   usedTopicIds,
-  type SessionRow,
 } from "../../lib/db";
-import { fillerCountIsApproximate, getKey, loadSettings, resolve } from "../../lib/settings";
+import { getKey, loadSettings, resolve } from "../../lib/settings";
 
 function greeting(hour: number): string {
   if (hour < 5) return "Still up?";
@@ -69,9 +52,7 @@ export default function Home() {
   const [action, setAction] = useState<Action | null>(null);
   const [topic, setTopic] = useState<Topic | null>(null);
   const [done, setDone] = useState(0);
-  const [trend, setTrend] = useState<number[]>([]);
-  const [recent, setRecent] = useState<SessionRow[]>([]);
-  const [approx, setApprox] = useState(true);
+  const [sheet, setSheet] = useState(false);
   const [ever, setEver] = useState<number | null>(null);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [ready, setReady] = useState(false);
@@ -107,7 +88,7 @@ export default function Home() {
               getKey(stt),
               usedTopicIds(),
               countToday(),
-              recentSessions(5),
+              recentSessions(1),
               recentTakes(1),
               lexiconStats(),
               pendingDebriefs(),
@@ -124,7 +105,6 @@ export default function Home() {
             inProgress && bests ? Math.max(0, inProgress.sections.length - bests.size) : 0;
 
           const now = Date.now();
-          const rates = await fillerTrend(stt, 30);
           if (!live) return;
 
           if (p) setProgress(p);
@@ -144,11 +124,8 @@ export default function Home() {
 
           const lastDomain = rows[0] ? TOPICS_BY_ID.get(rows[0].topic_id)?.domain : undefined;
           setTopic(pickTopic({ usedIds: used, lastDomain }));
-          setApprox(fillerCountIsApproximate(stt));
           setEver(total);
           setDone(todayCount);
-          setRecent(rows);
-          setTrend(rates);
         } finally {
           if (live) setReady(true);
         }
@@ -160,22 +137,24 @@ export default function Home() {
   );
 
   const now = new Date();
-  const today = dayOf(now.getTime());
-  const word = gloss(ALL_WORDS[today % ALL_WORDS.length] ?? "");
-  const last = trend[trend.length - 1];
   // The Arena rungs are the only ones where today's prompt is the thing being
-  // pointed at, so it is the only place the prompt is worth showing up top.
+  // pointed at, so it is the only time the prompt is the headline.
   const arena = action?.route === "/arena";
   const streak = progress?.streak;
-  const questsDone = progress?.quests.filter((q) => q.done).length ?? 0;
+  const quests = progress?.quests ?? [];
+  const questsDone = quests.filter((q) => q.done).length;
 
-  const go = () => {
-    if (!action) return;
-    if (arena && topic) {
-      router.push({ pathname: "/arena", params: { topicId: topic.id } });
+  const open = (route: string) => {
+    if (route === "/arena") {
+      if (topic) router.push({ pathname: "/arena", params: { topicId: topic.id } });
       return;
     }
-    router.push(action.route as never);
+    router.push(route as never);
+  };
+
+  const openQuest = (route: string) => {
+    setSheet(false);
+    open(route);
   };
 
   return (
@@ -184,216 +163,83 @@ export default function Home() {
 
       {ready ? (
         <>
-          <Rise index={0} style={s.hello}>
-            <View style={{ flex: 1 }}>
-              <Text style={s.helloSmall}>
-                {now.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" })}
+          {/* One thin line: who, the streak, the level. All of it taps through
+              to You, where the detail lives. */}
+          <Rise index={0}>
+            <PressableScale onPress={() => router.push("/you")} scaleTo={0.98} style={s.top} accessibilityLabel="Your streak and level">
+              <Text style={s.hello} numberOfLines={1}>
+                {greeting(now.getHours())}
               </Text>
-              <Text style={s.helloBig}>{greeting(now.getHours())}</Text>
-            </View>
-            <PressableScale onPress={() => router.push("/you")} style={s.streakPill} accessibilityLabel="Streak">
-              <StreakFlame size={26} alive={(streak?.current ?? 0) > 0} hot={streak?.activeToday ?? false} />
-              <Text style={[s.streakNum, !streak?.current && { color: CHROME.dust }]}>
-                {streak?.current ?? 0}
-              </Text>
-            </PressableScale>
-          </Rise>
-
-          {/* Level. Tapping through to You is where the badges and the full record live. */}
-          <Rise index={1}>
-            <PressableScale onPress={() => router.push("/you")} scaleTo={0.98} accessibilityLabel="Your level">
-              <Glass style={s.level}>
-                <View style={s.levelRow}>
-                  <ProgressRing progress={progress?.level.progress ?? 0} size={64} stroke={6} colors={GRADIENT.xp}>
-                    <Text style={s.levelNum}>{progress?.level.level ?? 1}</Text>
-                  </ProgressRing>
-                  <View style={{ flex: 1, gap: 6 }}>
-                    <View style={s.levelHead}>
-                      <Text style={s.rank}>{progress?.level.rank ?? " "}</Text>
-                      <Text style={s.levelXp}>
-                        {progress ? `${progress.level.into}/${progress.level.span} XP` : " "}
-                      </Text>
-                    </View>
-                    <XPBar progress={progress?.level.progress ?? 0} height={10} delay={200} />
-                    <Text style={s.levelMeta}>
-                      {streak && streak.freezes > 0
-                        ? `${streak.freezes} streak ${streak.freezes === 1 ? "freeze" : "freezes"} banked`
-                        : streak && !streak.activeToday && streak.current > 0
-                          ? "Practise today to keep the streak"
-                          : `${progress?.xp ?? 0} XP all time`}
-                    </Text>
-                  </View>
+              <View style={s.topRight}>
+                <View style={s.chip}>
+                  <StreakFlame size={18} alive={(streak?.current ?? 0) > 0} hot={streak?.activeToday ?? false} />
+                  <Text style={[s.chipNum, !streak?.current && { color: CHROME.dust }]}>{streak?.current ?? 0}</Text>
                 </View>
-              </Glass>
+                <View style={s.chip}>
+                  <Text style={s.chipText}>
+                    Level {progress?.level.level ?? 1}
+                    {progress ? ` · ${progress.level.rank}` : ""}
+                  </Text>
+                </View>
+              </View>
             </PressableScale>
           </Rise>
 
-          {/* The hero. Re-keyed on the action id so it re-enters when the ladder
-              moves on, which is the feedback that completing something counted. */}
-          <Rise key={action?.id ?? "none"} index={2}>
-            <Glass glow={action?.urgent ? AURORA.coral : AURORA.emerald} style={s.hero}>
-              <Text style={[s.kicker, action?.urgent && { color: AURORA.coral }]}>
-                {action?.eyebrow ?? " "}
+          {/* The orb, one line and one button. Re-keyed on the action id so it
+              re-enters when the ladder moves on, which is the feedback that
+              finishing something counted. */}
+          <Rise key={action?.id ?? "none"} index={1} style={s.stage}>
+            <VoiceOrb size={200} mood={questsDone > 0 && questsDone === quests.length ? "happy" : "idle"} />
+            <Text style={[s.kicker, action?.urgent && { color: AURORA.coral }]}>{action?.eyebrow ?? " "}</Text>
+            <Text style={s.line}>{arena && topic ? topic.title : (action?.title ?? " ")}</Text>
+            {!arena && action ? <Text style={s.why}>{action.why}</Text> : null}
+            <GlowButton
+              label={action?.cta ?? " "}
+              onPress={() => action && open(action.route)}
+              disabled={!action || (arena && !topic)}
+              style={s.cta}
+            />
+            {done > 0 && arena ? (
+              <Text style={s.again}>
+                {done} {done === 1 ? "take" : "takes"} today. The second is usually the keeper.
               </Text>
-              <Text style={s.heroTitle}>{action?.title ?? " "}</Text>
-              {arena && topic ? <Text style={s.heroPrompt}>“{topic.title}”</Text> : null}
-              <Text style={s.heroWhy}>{action?.why ?? " "}</Text>
-              <GlowButton
-                label={action?.cta ?? " "}
-                onPress={go}
-                disabled={!action || (arena && !topic)}
-                style={{ marginTop: 6 }}
-              />
-              {done > 0 && !arena ? (
-                <Text style={s.again}>
-                  {done} {done === 1 ? "take" : "takes"} today. Going again is free — the second one is
-                  usually the one worth keeping.
-                </Text>
-              ) : null}
-            </Glass>
+            ) : null}
           </Rise>
 
-          {/* Quests. */}
-          {progress && progress.quests.length > 0 ? (
-            <Rise index={3} style={s.section}>
-              <View style={s.sectionHead}>
-                <Text style={s.sectionTitle}>Today's quests</Text>
-                <Text style={s.sectionMeta}>
-                  {questsDone}/{progress.quests.length}
+          {quests.length > 0 ? (
+            <Rise index={2}>
+              <PressableScale onPress={() => setSheet(true)} scaleTo={0.98} style={s.questRow} accessibilityLabel="Today's quests">
+                <View style={s.questDots}>
+                  {quests.map((q) => (
+                    <View key={q.quest.id} style={[s.questDot, q.done && s.questDotDone]} />
+                  ))}
+                </View>
+                <Text style={s.questText}>
+                  {questsDone} of {quests.length} quests done
                 </Text>
-              </View>
-              {progress.quests.map((q, i) => (
-                <Animated.View key={q.quest.id} entering={FadeIn.delay(300 + i * 90)}>
-                  <PressableScale
-                    onPress={() => router.push(q.quest.route as never)}
-                    scaleTo={0.97}
-                    style={[s.quest, q.done && s.questDone]}
-                    accessibilityLabel={q.quest.title}
-                  >
-                    <View style={[s.questTick, q.done && s.questTickDone]}>
-                      {q.done ? (
-                        <Glyph name="check" size={15} strokeWidth={2.8} color={CHROME.floor} />
-                      ) : (
-                        <Text style={s.questTickMark}>{i + 1}</Text>
-                      )}
-                    </View>
-                    <View style={{ flex: 1, gap: 6 }}>
-                      <Text style={[s.questTitle, q.done && s.questTitleDone]} numberOfLines={2}>
-                        {q.quest.title}
-                      </Text>
-                      {q.quest.goal > 1 && !q.done ? (
-                        <View style={s.questTrack}>
-                          <View style={s.questTrackRow}>
-                            <XPBar progress={q.value / q.quest.goal} height={6} colors={GRADIENT.cool} style={{ flex: 1 }} />
-                            <Text style={s.questCount}>
-                              {q.value}/{q.quest.goal}
-                            </Text>
-                          </View>
-                        </View>
-                      ) : null}
-                    </View>
-                    <Text style={[s.questXp, q.done && { color: SEMANTIC.solid }]}>+{q.quest.xp}</Text>
-                  </PressableScale>
-                </Animated.View>
-              ))}
-            </Rise>
-          ) : null}
-
-          {/* Shown once, to the person who has never recorded anything. */}
-          {ever === 0 ? (
-            <Rise index={4}>
-              <Glass style={s.explain}>
-                <Text style={s.explainTitle}>What this actually is</Text>
-                <Text style={s.explainBody}>
-                  You speak for ninety seconds. Speek transcribes it, counts the fillers, the pace and
-                  the dead air, and judges the substance separately. Do that most days and the wall
-                  below fills in.
-                </Text>
-                <Text style={s.explainBody}>
-                  <Text style={s.explainKey}>Arena</Text> is those ninety seconds.{" "}
-                  <Text style={s.explainKey}>Play</Text> is the games and the drills.{" "}
-                  <Text style={s.explainKey}>Rooms</Text> is for real meetings — nothing is recorded in
-                  one. <Text style={s.explainKey}>You</Text> is your level, badges and the evidence.{" "}
-                  <Text style={s.explainKey}>Setup</Text>, top right, is your API key.
-                </Text>
-              </Glass>
-            </Rise>
-          ) : null}
-
-          {/* Word of the day. One per day from the glossary, and a way into the Lexicon. */}
-          {word ? (
-            <Rise index={5}>
-              <PressableScale onPress={() => router.push("/lexicon")} scaleTo={0.98} accessibilityLabel="Word of the day">
-                <Glass glow={AURORA.mint} style={s.word}>
-                  <Text style={[s.kicker, { color: AURORA.mint }]}>WORD OF THE DAY</Text>
-                  <View style={s.wordHead}>
-                    <Text style={s.wordText}>{word.word}</Text>
-                    <Text style={s.wordSay}>{word.say}</Text>
-                  </View>
-                  <Text style={s.wordMeaning}>{word.meaning}</Text>
-                  <Text style={s.wordUse}>Use it out loud once today.</Text>
-                </Glass>
+                <Glyph name="chevron" size={16} color={CHROME.dust} />
               </PressableScale>
             </Rise>
           ) : null}
 
-          {/* The record. */}
-          <Rise index={6}>
-            <Glass style={s.trend}>
-              <View style={s.sectionHead}>
-                <Text style={s.sectionTitle}>Filler rate</Text>
-                {last !== undefined ? (
-                  <Text style={[s.lastRate, { color: strain(fillerStrain(last)) }]}>
-                    {approx ? "≈" : ""}
-                    {last.toFixed(1)}/min
-                  </Text>
-                ) : null}
-              </View>
-              <StrataWall rates={trend} />
-              <Text style={s.trendMeta}>
-                {trend.length < 3
-                  ? "Three sessions before this means anything."
-                  : "The line is five per minute — below it, listeners stop noticing."}
-              </Text>
-            </Glass>
+          <Rise index={3}>
+            <PressableScale onPress={() => router.push("/voicenote")} scaleTo={0.97} style={s.voiceNote} accessibilityLabel="Record a voice note">
+              <Glyph name="mic" size={16} color={AURORA.mint} />
+              <Text style={s.voiceNoteText}>Record a voice note, check it, then send it</Text>
+            </PressableScale>
           </Rise>
 
-          {recent.length > 0 ? (
-            <Rise index={7} style={s.section}>
-              <Text style={s.sectionTitle}>Recent takes</Text>
-              {recent.map((r) => (
-                <PressableScale
-                  key={r.id}
-                  onPress={() => router.push({ pathname: "/scorecard", params: { id: r.id } })}
-                  scaleTo={0.98}
-                  style={s.row}
-                  accessibilityLabel={r.topic_title}
-                >
-                  <View style={[s.rowDot, { backgroundColor: strain(fillerStrain(r.filler_rate)) }]} />
-                  <View style={{ flex: 1, gap: 3 }}>
-                    <Text style={s.rowTitle} numberOfLines={1}>
-                      {r.topic_title}
-                    </Text>
-                    <Text style={s.rowMeta}>
-                      {new Date(r.started_at).toLocaleDateString(undefined, {
-                        day: "numeric",
-                        month: "short",
-                      })}
-                      {"  ·  "}
-                      {Math.round(r.duration_s)}s{"  ·  "}
-                      {r.wpm} wpm
-                      {r.rubric_total !== null ? `  ·  ${r.rubric_total}/20` : ""}
-                    </Text>
-                  </View>
-                  <Text style={s.rowRate}>{r.filler_rate.toFixed(1)}</Text>
-                </PressableScale>
-              ))}
+          {/* Shown once, to the person who has never recorded anything. */}
+          {ever === 0 ? (
+            <Rise index={4}>
+              <Text style={s.explain}>
+                You talk for ninety seconds. PipeUp counts your fillers, pace and pauses, and tells
+                you one thing to say better. That is the whole loop.
+              </Text>
             </Rise>
           ) : null}
 
-          <Text style={s.credo}>
-            Speek — <Text style={s.credoIt}>say it like you mean it.</Text>
-          </Text>
+          <QuestSheet quests={quests} visible={sheet} onClose={() => setSheet(false)} onOpen={openQuest} />
         </>
       ) : null}
     </Screen>
@@ -401,109 +247,57 @@ export default function Home() {
 }
 
 const s = StyleSheet.create({
-  hello: { flexDirection: "row", alignItems: "center", gap: SPACE.md, marginTop: SPACE.xs },
-  helloSmall: { color: CHROME.dust, fontSize: 13, fontFamily: TYPE.uiMedium },
-  helloBig: { color: CHROME.chalk, fontSize: 34, lineHeight: 40, fontFamily: TYPE.display, letterSpacing: -0.8 },
-  streakPill: {
+  top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: SPACE.sm, marginTop: SPACE.xs },
+  hello: { flex: 1, color: CHROME.dust, fontSize: 15, fontFamily: TYPE.uiMedium },
+  topRight: { flexDirection: "row", gap: 6 },
+  chip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    paddingLeft: 10,
-    paddingRight: 14,
-    paddingVertical: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: RADIUS.pill,
-    backgroundColor: alpha(AURORA.coral, 0.14),
-    borderWidth: 1,
-    borderColor: alpha(AURORA.coral, 0.35),
-  },
-  streakNum: { color: CHROME.chalk, fontSize: 20, fontFamily: TYPE.monoMedium, ...TABULAR },
-
-  level: { paddingVertical: 16 },
-  levelRow: { flexDirection: "row", alignItems: "center", gap: 16 },
-  levelNum: { color: CHROME.chalk, fontSize: 22, fontFamily: TYPE.monoMedium, ...TABULAR },
-  levelHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
-  rank: { color: CHROME.chalk, fontSize: 20, fontFamily: TYPE.displaySoft },
-  levelXp: { color: SEMANTIC.xp, fontSize: 12, fontFamily: TYPE.monoMedium, ...TABULAR },
-  levelMeta: { color: CHROME.dust, fontSize: 12.5, fontFamily: TYPE.uiMedium },
-
-  hero: { gap: 10 },
-  kicker: { color: AURORA.emerald, fontSize: 11.5, letterSpacing: 1.8, fontFamily: TYPE.uiBold },
-  heroTitle: { color: CHROME.chalk, fontSize: 28, lineHeight: 34, fontFamily: TYPE.display, letterSpacing: -0.5 },
-  heroPrompt: {
-    color: CHROME.chalk,
-    fontSize: 18,
-    lineHeight: 27,
-    fontFamily: TYPE.displayItalic,
-    borderLeftWidth: 3,
-    borderLeftColor: AURORA.plum,
-    paddingLeft: 12,
-  },
-  heroWhy: { color: CHROME.dust, fontSize: 14.5, lineHeight: 22, fontFamily: TYPE.ui },
-  again: { color: CHROME.dust, fontSize: 12.5, lineHeight: 19, fontFamily: TYPE.ui, textAlign: "center" },
-
-  section: { gap: 10 },
-  sectionHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  sectionTitle: { color: CHROME.chalk, fontSize: 20, fontFamily: TYPE.displaySoft },
-  sectionMeta: { color: CHROME.dust, fontSize: 13, fontFamily: TYPE.monoMedium, ...TABULAR },
-
-  quest: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    padding: 14,
-    borderRadius: RADIUS.soft + 4,
     backgroundColor: SURFACE.sunk,
     borderWidth: 1,
     borderColor: SURFACE.edge,
   },
-  questDone: { backgroundColor: alpha(AURORA.mint, 0.08), borderColor: alpha(AURORA.mint, 0.3) },
-  questTick: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1.5,
-    borderColor: alpha(AURORA.emerald, 0.7),
+  chipNum: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.monoMedium, ...TABULAR },
+  chipText: { color: CHROME.chalk, fontSize: 12.5, fontFamily: TYPE.uiSemi },
+
+  stage: { alignItems: "center", gap: 12, marginTop: SPACE.lg },
+  kicker: { color: AURORA.emerald, fontSize: 13, fontFamily: TYPE.uiSemi, marginTop: SPACE.sm },
+  line: {
+    color: CHROME.chalk,
+    fontSize: 26,
+    lineHeight: 33,
+    fontFamily: TYPE.display,
+    letterSpacing: -0.4,
+    textAlign: "center",
+    paddingHorizontal: SPACE.sm,
   },
-  questTickDone: { backgroundColor: AURORA.mint, borderColor: AURORA.mint },
-  questTickMark: { color: CHROME.chalk, fontSize: 14, fontFamily: TYPE.uiBold },
-  questTitle: { color: CHROME.chalk, fontSize: 15, lineHeight: 20, fontFamily: TYPE.uiMedium },
-  questTitleDone: { color: CHROME.dust, textDecorationLine: "line-through" },
-  questTrack: { gap: 4 },
-  questTrackRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  questCount: { color: CHROME.dust, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
-  questXp: { color: SEMANTIC.xp, fontSize: 13, fontFamily: TYPE.monoMedium, ...TABULAR },
+  why: { color: CHROME.dust, fontSize: 14, lineHeight: 21, fontFamily: TYPE.ui, textAlign: "center", paddingHorizontal: SPACE.md },
+  cta: { alignSelf: "stretch", marginTop: SPACE.xs },
+  again: { color: CHROME.dust, fontSize: 12.5, fontFamily: TYPE.ui, textAlign: "center" },
 
-  explain: { gap: 8 },
-  explainTitle: { color: CHROME.chalk, fontSize: 19, fontFamily: TYPE.displaySoft },
-  explainBody: { color: CHROME.dust, fontSize: 14, lineHeight: 22, fontFamily: TYPE.ui },
-  explainKey: { color: CHROME.chalk, fontFamily: TYPE.uiSemi },
-
-  word: { gap: 8 },
-  wordHead: { flexDirection: "row", alignItems: "baseline", gap: 10, flexWrap: "wrap" },
-  wordText: { color: CHROME.chalk, fontSize: 30, fontFamily: TYPE.display, letterSpacing: -0.5 },
-  wordSay: { color: AURORA.mint, fontSize: 13, fontFamily: TYPE.mono },
-  wordMeaning: { color: CHROME.chalk, fontSize: 17, lineHeight: 26, fontFamily: TYPE.passage },
-  wordUse: { color: CHROME.dust, fontSize: 12.5, fontFamily: TYPE.uiMedium },
-
-  trend: { gap: SPACE.md },
-  lastRate: { fontSize: 13, fontFamily: TYPE.monoMedium, color: CHROME.dust, ...TABULAR },
-  trendMeta: { color: CHROME.dust, fontSize: 12.5, lineHeight: 19, fontFamily: TYPE.ui },
-
-  row: {
+  questRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderRadius: RADIUS.soft,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: RADIUS.soft + 4,
     backgroundColor: SURFACE.sunk,
+    borderWidth: 1,
+    borderColor: SURFACE.edge,
+    marginTop: SPACE.sm,
   },
-  rowDot: { width: 10, height: 10, borderRadius: 5 },
-  rowTitle: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.uiMedium },
-  rowMeta: { color: CHROME.dust, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
-  rowRate: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.monoMedium, ...TABULAR },
-  credo: { color: CHROME.dustDim, fontSize: 13, marginTop: SPACE.lg, textAlign: "center", fontFamily: TYPE.ui },
-  credoIt: { fontFamily: TYPE.displayItalic },
+  questDots: { flexDirection: "row", gap: 4 },
+  questDot: { width: 8, height: 8, borderRadius: 4, borderWidth: 1.5, borderColor: alpha(AURORA.emerald, 0.7) },
+  questDotDone: { backgroundColor: AURORA.mint, borderColor: AURORA.mint },
+  questText: { flex: 1, color: CHROME.chalk, fontSize: 14.5, fontFamily: TYPE.uiMedium },
+
+  voiceNote: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, paddingVertical: 10 },
+  voiceNoteText: { color: AURORA.mint, fontSize: 14, fontFamily: TYPE.uiMedium },
+
+  explain: { color: CHROME.dust, fontSize: 13.5, lineHeight: 21, fontFamily: TYPE.ui, textAlign: "center", paddingHorizontal: SPACE.md },
 });

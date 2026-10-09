@@ -60,7 +60,7 @@ export function GameIntro({
       </Rise>
       <Rise index={1}>
         <Glass glow={tint} style={{ gap: SPACE.sm }}>
-          <Text style={s.label}>HOW IT WORKS</Text>
+          <Text style={s.label}>How it works</Text>
           {rules.map((r, i) => (
             <View key={i} style={s.rule}>
               <Text style={[s.ruleN, { color: tint }]}>{i + 1}</Text>
@@ -120,7 +120,7 @@ export function GameResult({
         {best ? (
           <View style={s.bestBadge}>
             <Glyph name="trophy" size={14} color={CHROME.ink} strokeWidth={2.2} />
-            <Text style={s.bestBadgeText}>NEW BEST</Text>
+            <Text style={s.bestBadgeText}>New best</Text>
           </View>
         ) : result?.previousBest !== null && result?.previousBest !== undefined ? (
           <Text style={s.prev}>Best {result.previousBest}</Text>
@@ -243,7 +243,7 @@ const s = StyleSheet.create({
   },
   title: { color: CHROME.chalk, fontSize: 32, fontFamily: TYPE.display, letterSpacing: -0.8, textAlign: "center" },
   tagline: { color: CHROME.dust, fontSize: 15, lineHeight: 22, fontFamily: TYPE.ui, textAlign: "center" },
-  label: { color: CHROME.dust, fontSize: 11, letterSpacing: 1.6, fontFamily: TYPE.uiBold },
+  label: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiBold },
   rule: { flexDirection: "row", gap: 12, alignItems: "flex-start" },
   ruleN: { fontSize: 15, fontFamily: TYPE.monoMedium, width: 14, ...TABULAR },
   ruleText: { flex: 1, color: CHROME.chalk, fontSize: 15, lineHeight: 22, fontFamily: TYPE.ui },
@@ -263,13 +263,13 @@ const s = StyleSheet.create({
     borderRadius: RADIUS.pill,
     marginTop: 8,
   },
-  bestBadgeText: { color: CHROME.ink, fontSize: 11, letterSpacing: 1.4, fontFamily: TYPE.uiBold },
+  bestBadgeText: { color: CHROME.ink, fontSize: 11.5, fontFamily: TYPE.uiBold },
   prev: { color: CHROME.dust, fontSize: 13, fontFamily: TYPE.mono, marginTop: 6, ...TABULAR },
   verdict: { color: CHROME.chalk, fontSize: 17, lineHeight: 25, fontFamily: TYPE.displaySoft, textAlign: "center" },
   stats: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-around", rowGap: SPACE.md },
   stat: { alignItems: "center", gap: 2, minWidth: 72 },
   statValue: { color: CHROME.chalk, fontSize: 22, fontFamily: TYPE.monoMedium, ...TABULAR },
-  statLabel: { color: CHROME.dust, fontSize: 10.5, letterSpacing: 1.2, fontFamily: TYPE.uiBold },
+  statLabel: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiBold },
 
   track: { height: 8, borderRadius: 4, backgroundColor: "rgba(255,255,255,0.08)", overflow: "hidden" },
   fill: { height: 8, borderRadius: 4 },

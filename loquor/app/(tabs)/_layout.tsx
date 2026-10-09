@@ -1,13 +1,14 @@
 // The tab bar.
 //
-// Home is what you open the app to do. The Arena is the measurement everything
-// else exists to move. Play is the games and the training drills. Rooms is
-// where it meets real people. You is the record: level, badges, the trends.
+// Four tabs. Home is what you open the app to do, and its one button starts
+// the Arena, so the Arena no longer needs a tab of its own. Play is the games
+// and the training drills. Rooms is where it meets real people. You is the
+// record: level, badges, your takes, the trends.
 //
 // It floats over the aurora on a near-opaque fill rather than a live blur: the
 // aurora moves every frame, so a blur over it is re-rendered every frame too.
 // A gradient blob slides between tabs on a
-// spring — one moving thing rather than five that fade, because a shared
+// spring — one moving thing rather than four that fade, because a shared
 // element travelling is what tells you the tabs are one control. Content clears
 // it via TAB_CLEARANCE because the bar is absolutely positioned.
 
@@ -25,8 +26,6 @@ import { AURORA, CHROME, GRADIENT, RADIUS, SPRING, TYPE, alpha } from "../../the
 
 const TABS: { name: string; label: string; icon: IconName }[] = [
   { name: "index", label: "Home", icon: "home" },
-  // Not "arena": that path is the take itself, a stack screen above the tabs.
-  { name: "stage", label: "Arena", icon: "arena" },
   { name: "play", label: "Play", icon: "play" },
   { name: "rooms", label: "Rooms", icon: "rooms" },
   { name: "you", label: "You", icon: "you" },

@@ -212,9 +212,9 @@ export default function BlitzScreen() {
                 : "The misses are the useful part. They come back in the Lexicon."
           }
           stats={[
-            { label: "CORRECT", value: `${tally.correct}/${tally.answered}` },
-            { label: "ACCURACY", value: `${acc}%`, tint: acc >= 80 ? SEMANTIC.solid : undefined },
-            { label: "BEST COMBO", value: String(tally.bestCombo) },
+            { label: "Correct", value: `${tally.correct}/${tally.answered}` },
+            { label: "Accuracy", value: `${acc}%`, tint: acc >= 80 ? SEMANTIC.solid : undefined },
+            { label: "Best combo", value: String(tally.bestCombo) },
           ]}
           onAgain={() => void start()}
           onDone={() => router.back()}
@@ -239,7 +239,7 @@ export default function BlitzScreen() {
       {q ? (
         <Animated.View key={q.word} entering={FadeInDown.springify().damping(20)} style={shakeStyle}>
           <Glass glow={TINT} style={s.meaningCard}>
-            <Text style={s.label}>WHICH WORD MEANS</Text>
+            <Text style={s.label}>Which word means</Text>
             <Text style={s.meaning}>{q.meaning}</Text>
           </Glass>
         </Animated.View>
@@ -287,7 +287,7 @@ const s = StyleSheet.create({
   },
   multText: { color: CHROME.dust, fontSize: 18, fontFamily: TYPE.monoMedium, ...TABULAR },
   meaningCard: { gap: SPACE.sm, minHeight: 150, justifyContent: "center" },
-  label: { color: CHROME.dust, fontSize: 11, letterSpacing: 1.6, fontFamily: TYPE.uiBold },
+  label: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiBold },
   meaning: { color: CHROME.chalk, fontSize: 21, lineHeight: 30, fontFamily: TYPE.displaySoft },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
   optionWrap: { width: "47.5%" },

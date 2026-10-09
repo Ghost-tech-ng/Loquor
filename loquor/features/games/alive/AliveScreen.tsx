@@ -294,7 +294,7 @@ export default function AliveScreen() {
           unit="liveliness"
           result={result}
           verdict={final.extra ?? undefined}
-          stats={lives.map((v, i) => ({ label: `TAKE ${i + 1}`, value: String(v), tint: v >= 75 ? SEMANTIC.solid : undefined }))}
+          stats={lives.map((v, i) => ({ label: `Take ${i + 1}`, value: String(v), tint: v >= 75 ? SEMANTIC.solid : undefined }))}
           onAgain={() => begin(mode)}
           onDone={() => router.back()}
         />
@@ -370,7 +370,7 @@ function TaskCard({ step }: { step: Step }) {
     case "talk":
       return (
         <Glass glow={TINT} style={s.task}>
-          <Text style={s.label}>TALK ABOUT</Text>
+          <Text style={s.label}>Talk about</Text>
           <Text style={s.prompt}>{step.prompt}</Text>
           <Text style={s.cue}>Talk the way you would to a friend across the table.</Text>
         </Glass>
@@ -386,7 +386,7 @@ function TaskCard({ step }: { step: Step }) {
     case "read":
       return (
         <Glass glow={TINT} style={s.task}>
-          <Text style={s.label}>READ THIS ALOUD</Text>
+          <Text style={s.label}>Read this aloud</Text>
           <Text style={s.passage}>{step.passage}</Text>
           <Text style={s.cue}>Read it like you're telling it, not reading it.</Text>
         </Glass>
@@ -394,7 +394,7 @@ function TaskCard({ step }: { step: Step }) {
     case "retell":
       return (
         <Glass glow={TINT} style={s.task}>
-          <Text style={s.label}>NOW TELL IT</Text>
+          <Text style={s.label}>Now tell it</Text>
           <Text style={s.prompt}>Put the page away. Tell me what you just read, in your own words.</Text>
           <Text style={s.cue}>This is your talking voice. We'll compare the two.</Text>
         </Glass>
@@ -403,7 +403,7 @@ function TaskCard({ step }: { step: Step }) {
       const words = step.text.split(" ");
       return (
         <Glass glow={TINT} style={s.task}>
-          <Text style={s.label}>LEAN ON THE HIGHLIGHTED WORD</Text>
+          <Text style={s.label}>Lean on the highlighted word</Text>
           <Text style={s.line}>
             {words.map((w, i) => {
               const on = w.replace(/[^a-z']/gi, "").toLowerCase() === step.target.toLowerCase();
@@ -439,9 +439,9 @@ function StepCard({
 }) {
   const live = r.live!;
   const parts: { label: string; value: number | null; hint: string }[] = [
-    { label: "MELODY", value: live.melody?.score ?? null, hint: live.melody ? `${live.melody.rangeSt.toFixed(1)} semitones` : melodyOff ? "off" : "too little" },
-    { label: "PUNCH", value: live.punch?.score ?? null, hint: live.punch ? `${live.punch.spreadDb.toFixed(1)} dB` : "too little" },
-    { label: "RHYTHM", value: live.rhythm?.score ?? null, hint: live.rhythm ? "" : "too few words" },
+    { label: "Melody", value: live.melody?.score ?? null, hint: live.melody ? `${live.melody.rangeSt.toFixed(1)} semitones` : melodyOff ? "off" : "too little" },
+    { label: "Punch", value: live.punch?.score ?? null, hint: live.punch ? `${live.punch.spreadDb.toFixed(1)} dB` : "too little" },
+    { label: "Rhythm", value: live.rhythm?.score ?? null, hint: live.rhythm ? "" : "too few words" },
   ];
   return (
     <Animated.View entering={FadeInDown.springify().damping(20)} style={{ gap: SPACE.md }}>
@@ -472,7 +472,7 @@ function StepCard({
 
       {r.hit && step?.kind === "emphasis" ? (
         <Glass style={{ gap: 6 }}>
-          <Text style={s.label}>{r.hit.said ? (r.hit.hit ? "IT LANDED" : "IT BLENDED IN") : "DIDN'T HEAR IT"}</Text>
+          <Text style={s.label}>{r.hit.said ? (r.hit.hit ? "It landed" : "It blended in") : "Didn't hear it"}</Text>
           <Text style={s.cue}>
             {r.hit.said
               ? [r.hit.louder && "louder", r.hit.longer && "longer", r.hit.higher && "higher"].filter(Boolean).join(", ") ||
@@ -523,7 +523,7 @@ const s = StyleSheet.create({
   fallback: { color: CHROME.dust, fontSize: 13, lineHeight: 19, fontFamily: TYPE.ui, textAlign: "center" },
   center: { alignItems: "center", paddingVertical: SPACE.sm },
   task: { gap: SPACE.sm },
-  label: { color: CHROME.dust, fontSize: 11, letterSpacing: 1.6, fontFamily: TYPE.uiBold },
+  label: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiBold },
   prompt: { color: CHROME.chalk, fontSize: 20, lineHeight: 28, fontFamily: TYPE.displaySoft },
   line: { color: CHROME.chalk, fontSize: 22, lineHeight: 31, fontFamily: TYPE.displaySoft },
   passage: { color: CHROME.chalk, fontSize: 18, lineHeight: 28, fontFamily: TYPE.displaySoft },
@@ -538,6 +538,6 @@ const s = StyleSheet.create({
   parts: { flexDirection: "row", justifyContent: "space-around" },
   part: { alignItems: "center", gap: 2, minWidth: 80 },
   partValue: { color: CHROME.chalk, fontSize: 24, fontFamily: TYPE.monoMedium, ...TABULAR },
-  partLabel: { color: CHROME.dust, fontSize: 10.5, letterSpacing: 1.2, fontFamily: TYPE.uiBold },
+  partLabel: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiBold },
   partHint: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono },
 });

@@ -1,11 +1,19 @@
 // Motion primitives: the press, the entrance, and the count.
 //
-// Every tappable thing in Speek squashes on touch and springs back with a light
+// Every tappable thing in PipeUp squashes on touch and springs back with a light
 // haptic. It is the single cheapest way to make an interface feel physical, and
 // doing it in one component means no screen can forget to.
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Pressable, Text, type StyleProp, type TextStyle, type ViewProps } from "react-native";
+import {
+  Pressable,
+  Text,
+  type AccessibilityRole,
+  type AccessibilityState,
+  type StyleProp,
+  type TextStyle,
+  type ViewProps,
+} from "react-native";
 import Animated, {
   Easing,
   FadeInDown,
@@ -33,6 +41,8 @@ export function PressableScale({
   scaleTo = 0.95,
   haptic = true,
   accessibilityLabel,
+  accessibilityRole = "button",
+  accessibilityState,
 }: {
   children: ReactNode;
   onPress?: () => void;
@@ -42,15 +52,17 @@ export function PressableScale({
   scaleTo?: number;
   haptic?: boolean;
   accessibilityLabel?: string;
+  accessibilityRole?: AccessibilityRole;
+  accessibilityState?: AccessibilityState;
 }) {
   const scale = useSharedValue(1);
   const anim = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   return (
     <AnimatedPressable
-      accessibilityRole="button"
+      accessibilityRole={accessibilityRole}
       accessibilityLabel={accessibilityLabel}
-      accessibilityState={{ disabled }}
+      accessibilityState={{ ...accessibilityState, disabled }}
       disabled={disabled}
       onPressIn={() => {
         scale.value = withSpring(scaleTo, SPRING.snappy);

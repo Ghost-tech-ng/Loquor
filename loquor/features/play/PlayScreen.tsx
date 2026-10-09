@@ -23,6 +23,8 @@ import { READINGS_BY_ID, pickReading, readingMinutes, type Reading } from "../re
 import { bestOf } from "../games/runs";
 import type { GameId } from "../progression/xp";
 import { coverage } from "../../lib/skillStore";
+import { ALL_WORDS, gloss } from "../lexicon/glossary";
+import { dayOf } from "../progress/progress";
 import {
   lexiconStats,
   recentTakes,
@@ -50,7 +52,7 @@ const GAMES: Game[] = [
     icon: "bot",
     hook: "Start as a robot. Your melody, punch and rhythm turn it back into you.",
     tint: [AURORA.plum, AURORA.emerald],
-    tag: "VOICE",
+    tag: "Voice",
     unit: (n) => `${n} liveliness`,
   },
   {
@@ -59,7 +61,7 @@ const GAMES: Game[] = [
     icon: "shield",
     hook: "Rounds from 20 seconds to 90. Three hearts. Every um costs one.",
     tint: [AURORA.coral, AURORA.cyan],
-    tag: "FOCUS",
+    tag: "Focus",
     unit: (n) => `${n}s survived`,
   },
   {
@@ -68,7 +70,7 @@ const GAMES: Game[] = [
     icon: "pause",
     hook: "Talk until the gate flashes, then hold a clean silence. Live, no waiting.",
     tint: [AURORA.mint, AURORA.steel],
-    tag: "LIVE",
+    tag: "Live",
     unit: (n) => `${n.toLocaleString()} pts`,
   },
   {
@@ -77,7 +79,7 @@ const GAMES: Game[] = [
     icon: "bomb",
     hook: "A word drops with a lit fuse. Use it in a sentence out loud before it blows.",
     tint: [AURORA.cyan, AURORA.coral],
-    tag: "SPEAK",
+    tag: "Speak",
     unit: (n) => `${n}/5 defused`,
   },
   {
@@ -86,7 +88,7 @@ const GAMES: Game[] = [
     icon: "zap",
     hook: "Sixty seconds, a definition, four words. Combos stack, and it counts as review.",
     tint: [AURORA.emerald, AURORA.mint],
-    tag: "TAP",
+    tag: "Tap",
     unit: (n) => `${n.toLocaleString()} pts`,
   },
 ];
@@ -219,6 +221,8 @@ export default function Play() {
     },
   ];
 
+  const word = gloss(ALL_WORDS[dayOf(Date.now()) % ALL_WORDS.length] ?? "");
+
   return (
     <Screen>
       <Masthead setup />
@@ -232,7 +236,7 @@ export default function Play() {
 
       <Rise index={1} style={s.sectionHead}>
         <Text style={s.sectionTitle}>Games</Text>
-        <Text style={s.soon}>FIVE GAMES</Text>
+        <Text style={s.soon}>Five games</Text>
       </Rise>
 
       {GAMES.map((g, i) => (
@@ -277,7 +281,7 @@ export default function Play() {
 
       <Rise index={8} style={[s.sectionHead, { marginTop: SPACE.md }]}>
         <Text style={s.sectionTitle}>Training</Text>
-        <Text style={s.soon}>THE SLOW GAINS</Text>
+        <Text style={s.soon}>The slow gains</Text>
       </Rise>
 
       {drills.map((d, i) => (
@@ -298,18 +302,44 @@ export default function Play() {
           </PressableScale>
         </Rise>
       ))}
+
+      {/* One word a day from the glossary, and a way into the Lexicon. It moved
+          here from Home, which now holds only the one thing to do next. */}
+      {word ? (
+        <Rise index={9 + drills.length} style={{ marginTop: SPACE.md }}>
+          <PressableScale onPress={() => router.push("/lexicon")} scaleTo={0.98} accessibilityLabel="Word of the day">
+            <Glass glow={AURORA.mint} style={s.word}>
+              <Text style={s.wordKicker}>Word of the day</Text>
+              <View style={s.wordHead}>
+                <Text style={s.wordText}>{word.word}</Text>
+                <Text style={s.wordSay}>{word.say}</Text>
+              </View>
+              <Text style={s.wordMeaning}>{word.meaning}</Text>
+              <Text style={s.wordUse}>Use it out loud once today.</Text>
+            </Glass>
+          </PressableScale>
+        </Rise>
+      ) : null}
     </Screen>
   );
 }
 
 const s = StyleSheet.create({
+  word: { gap: 8 },
+  wordKicker: { color: AURORA.mint, fontSize: 13, fontFamily: TYPE.uiSemi },
+  wordHead: { flexDirection: "row", alignItems: "baseline", gap: 10, flexWrap: "wrap" },
+  wordText: { color: CHROME.chalk, fontSize: 30, fontFamily: TYPE.display, letterSpacing: -0.5 },
+  wordSay: { color: AURORA.mint, fontSize: 13, fontFamily: TYPE.mono },
+  wordMeaning: { color: CHROME.chalk, fontSize: 17, lineHeight: 26, fontFamily: TYPE.passage },
+  wordUse: { color: CHROME.dust, fontSize: 12.5, fontFamily: TYPE.uiMedium },
+
   intro: { gap: 4, marginTop: SPACE.xs },
   title: { color: CHROME.chalk, fontSize: 40, lineHeight: 46, fontFamily: TYPE.display, letterSpacing: -1 },
   lede: { color: CHROME.dust, fontSize: 15, lineHeight: 22, fontFamily: TYPE.ui },
 
   sectionHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   sectionTitle: { color: CHROME.chalk, fontSize: 22, fontFamily: TYPE.displaySoft },
-  soon: { color: AURORA.cyan, fontSize: 10.5, letterSpacing: 1.4, fontFamily: TYPE.uiBold },
+  soon: { color: AURORA.cyan, fontSize: 12.5, fontFamily: TYPE.uiSemi },
 
   game: {
     flexDirection: "row",
@@ -334,7 +364,7 @@ const s = StyleSheet.create({
   gameName: { color: CHROME.chalk, fontSize: 19, fontFamily: TYPE.display, letterSpacing: -0.3, flexShrink: 1 },
   gameHook: { color: CHROME.chalk, opacity: 0.86, fontSize: 13.5, lineHeight: 19, fontFamily: TYPE.ui },
   tag: { borderWidth: 1, borderRadius: RADIUS.pill, paddingHorizontal: 8, paddingVertical: 2 },
-  tagText: { fontSize: 9.5, letterSpacing: 1.2, fontFamily: TYPE.uiBold },
+  tagText: { fontSize: 11.5, fontFamily: TYPE.uiBold },
   bestRow: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 2 },
   bestText: { color: AURORA.cyan, fontSize: 12, fontFamily: TYPE.monoMedium, ...TABULAR },
 

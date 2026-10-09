@@ -55,7 +55,7 @@ export function nextAction(st: State): Action {
   if (!st.hasKey) {
     return {
       id: "key",
-      eyebrow: "ONE THING FIRST",
+      eyebrow: "One thing first",
       title: "Add your Groq API key",
       why: "Every drill ends in a transcription, so nothing here works until a key is in. It is free, and it stays on this phone.",
       cta: "Open setup",
@@ -70,7 +70,7 @@ export function nextAction(st: State): Action {
   if (!st.hasBaseline) {
     return {
       id: "baseline",
-      eyebrow: "BEFORE ANYTHING ELSE",
+      eyebrow: "Before anything else",
       title: "Record your baseline",
       why: "Ninety seconds, once, before the app coaches you. Nothing can show improvement without it.",
       cta: "Record it",
@@ -85,7 +85,7 @@ export function nextAction(st: State): Action {
     const n = st.dueDebriefs;
     return {
       id: "debrief",
-      eyebrow: "WHILE YOU STILL REMEMBER",
+      eyebrow: "While you still remember",
       title: n === 1 ? "Debrief the meeting you just had" : `Debrief ${n} meetings`,
       why: "Ninety seconds out loud on what you actually said. Leave it until tomorrow and you will describe the version you wish had happened.",
       cta: "Debrief",
@@ -99,10 +99,10 @@ export function nextAction(st: State): Action {
   if (st.sessionsEver === 0) {
     return {
       id: "first",
-      eyebrow: "START HERE",
+      eyebrow: "Start here",
       title: "Speak for ninety seconds",
       why: "A prompt, a minute to think, then you talk. You get back your filler rate, pace and pauses, and one thing to say better.",
-      cta: "Enter the arena",
+      cta: "Start talking",
       route: "/arena",
       urgent: false,
     };
@@ -111,10 +111,10 @@ export function nextAction(st: State): Action {
   if (st.takesToday === 0) {
     return {
       id: "today",
-      eyebrow: "TODAY",
+      eyebrow: "Today's prompt",
       title: "Take today's prompt",
       why: "Sixty seconds of primer, ninety of talking. That is the whole thing.",
-      cta: "Enter the arena",
+      cta: "Start talking",
       route: "/arena",
       urgent: false,
     };
@@ -126,7 +126,7 @@ export function nextAction(st: State): Action {
   if (st.roomsLogged === 0 && st.roomsUpcoming === 0 && st.sessionsEver >= 3) {
     return {
       id: "room",
-      eyebrow: "THE POINT OF ALL THIS",
+      eyebrow: "The point of all this",
       title: "Prep a real meeting",
       why: "Practice alone does not transfer. Put one meeting from this week in, and walk in with three questions ready.",
       cta: "Add a room",
@@ -138,7 +138,7 @@ export function nextAction(st: State): Action {
   if (st.lexDue > 0) {
     return {
       id: "lexicon",
-      eyebrow: "DUE NOW",
+      eyebrow: "Due now",
       title: `${st.lexDue} ${st.lexDue === 1 ? "word" : "words"} to review`,
       why: "A few minutes. Words you have met before, back at the moment you were about to lose them.",
       cta: "Review",
@@ -150,7 +150,7 @@ export function nextAction(st: State): Action {
   if (st.sectionsLeft > 0) {
     return {
       id: "reading",
-      eyebrow: "PICK IT BACK UP",
+      eyebrow: "Pick it back up",
       title: "Read the next section aloud",
       why: `${st.sectionsLeft} ${st.sectionsLeft === 1 ? "section" : "sections"} left in the piece you started. Under two minutes each.`,
       cta: "Read aloud",
@@ -163,7 +163,7 @@ export function nextAction(st: State): Action {
   // attached rather than inventing an obligation.
   return {
     id: "playbook",
-    eyebrow: "NOTHING OUTSTANDING",
+    eyebrow: "Nothing outstanding",
     title: "Drill a question you are weak at",
     why: "One meeting snippet, one named move, one question out loud — and what the room would most likely say back.",
     cta: "Open the playbook",

@@ -115,7 +115,7 @@ export default function Lexicon() {
 
   const startSpeaking = async () => {
     if (!granted.current) {
-      setError("Speek needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
+      setError("PipeUp needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
       setStage("error");
       return;
     }
@@ -169,11 +169,11 @@ export default function Lexicon() {
   if (stage === "loading" || stage === "working") {
     return (
       <Screen scroll={false}>
-        <Masthead right="LEXICON" />
+        <Masthead right="Lexicon" />
         <View style={s.center}>
           <Ignition />
           <Eyebrow style={{ marginTop: SPACE.md }}>
-            {stage === "loading" ? "BUILDING THE QUEUE" : "LISTENING BACK"}
+            {stage === "loading" ? "Building the queue" : "Listening back"}
           </Eyebrow>
           {stage === "working" ? (
             <Meta style={s.centerText}>
@@ -188,8 +188,8 @@ export default function Lexicon() {
   if (stage === "error") {
     return (
       <Screen>
-        <Masthead right="LEXICON" />
-        <Eyebrow>THAT DIDN&rsquo;T WORK</Eyebrow>
+        <Masthead right="Lexicon" />
+        <Eyebrow>That didn&rsquo;t work</Eyebrow>
         <Display>{error}</Display>
         <GlowButton label="Try again" onPress={() => { setError(null); setStage("queue"); }} />
         <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
@@ -205,7 +205,7 @@ export default function Lexicon() {
 
     return (
       <Screen scroll={false}>
-        <Masthead right="SPEAKING" />
+        <Masthead right="Speaking" />
         <View style={s.center}>
           <Text style={s.bigWord}>{item.gloss.word}</Text>
           <Meta style={s.centerText}>One sentence. About your own work, not about the word.</Meta>
@@ -219,7 +219,7 @@ export default function Lexicon() {
             <View
               style={[s.stopBloom, { backgroundColor: heat(level), opacity: 0.08 + level * 0.45 }]}
             />
-            <Text style={s.stopLabel}>THAT&rsquo;S THE SENTENCE</Text>
+            <Text style={s.stopLabel}>That&rsquo;s the sentence</Text>
           </Pressable>
         </View>
       </Screen>
@@ -230,13 +230,13 @@ export default function Lexicon() {
   if (stage === "verdict" && verdict && item) {
     return (
       <Screen>
-        <Masthead right="LEXICON" />
+        <Masthead right="Lexicon" />
 
-        <Eyebrow>{verdict.unlocked ? "UNLOCKED" : "NOT YET"}</Eyebrow>
+        <Eyebrow>{verdict.unlocked ? "Unlocked" : "Not yet"}</Eyebrow>
         <Display>{item.gloss.word}</Display>
 
         <Panel>
-          <Text style={s.fieldLabel}>WHAT YOU SAID</Text>
+          <Text style={s.fieldLabel}>What you said</Text>
           <Body style={s.quote}>&ldquo;{verdict.heard}&rdquo;</Body>
         </Panel>
 
@@ -263,13 +263,13 @@ export default function Lexicon() {
         <Body>{verdict.verdict}</Body>
 
         <Hair />
-        <Eyebrow>SAID THE WAY IT LANDS</Eyebrow>
+        <Eyebrow>Said the way it lands</Eyebrow>
         <Body style={s.model}>{verdict.model_sentence}</Body>
 
         {nextIn ? <Meta>Back in {nextIn}.</Meta> : null}
 
         <GlowButton label="Say it again" tone="ghost" onPress={startSpeaking} />
-        <GlowButton label={at + 1 >= queue.length ? "FINISH" : "NEXT WORD"} onPress={advance} />
+        <GlowButton label={at + 1 >= queue.length ? "Finish" : "Next word"} onPress={advance} />
       </Screen>
     );
   }
@@ -278,8 +278,8 @@ export default function Lexicon() {
   if (stage === "done") {
     return (
       <Screen>
-        <Masthead right="LEXICON" />
-        <Eyebrow>QUEUE CLEAR</Eyebrow>
+        <Masthead right="Lexicon" />
+        <Eyebrow>Queue clear</Eyebrow>
         <Display>
           {queue.length === 0
             ? "Nothing is due. That is the system working, not a gap in it."
@@ -289,15 +289,15 @@ export default function Lexicon() {
         {wotd ? (
           <>
             <Hair />
-            <Eyebrow>CARRY THIS ONE OUT WITH YOU</Eyebrow>
+            <Eyebrow>Carry this one out with you</Eyebrow>
             <Display>{wotd.word}</Display>
             <Meta>{wotd.say}</Meta>
             <Body>{wotd.meaning}</Body>
-            <Text style={s.fieldLabel}>USE IT WHEN</Text>
+            <Text style={s.fieldLabel}>Use it when</Text>
             <Meta>{wotd.slot}</Meta>
 
             <Hair />
-            <Eyebrow>DID YOU ACTUALLY SAY IT TO SOMEONE?</Eyebrow>
+            <Eyebrow>Did you actually say it to someone?</Eyebrow>
             <Meta>
               One line on where and to whom. This is the only evidence the app collects from
               outside itself, and it counts for more than any drill — so it has to be true.
@@ -332,7 +332,7 @@ export default function Lexicon() {
   if (!item) {
     return (
       <Screen>
-        <Masthead right="LEXICON" />
+        <Masthead right="Lexicon" />
         <Display>Nothing is due.</Display>
         <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
       </Screen>
@@ -349,7 +349,7 @@ export default function Lexicon() {
       <Masthead right={`${at + 1} OF ${queue.length}`} />
 
       <Eyebrow>
-        {production ? "PRODUCTION — SAY IT" : item.fresh ? "NEW WORD" : "RECOGNITION"}
+        {production ? "Production — say it" : item.fresh ? "New word" : "Recognition"}
       </Eyebrow>
       <Display>{g.word}</Display>
       <Text style={s.say}>{g.say}</Text>
@@ -361,7 +361,7 @@ export default function Lexicon() {
             something you are actually working on. Do not define it and do not explain it.
           </Meta>
           <Hair />
-          <Text style={s.fieldLabel}>IT SHOULD LAND LIKE</Text>
+          <Text style={s.fieldLabel}>It should land like</Text>
           <Text style={s.colloc}>{g.collocations.join("  ·  ")}</Text>
           <GlowButton label="Say a sentence" onPress={startSpeaking} />
           <GlowButton label="Not this one" tone="quiet" onPress={advance} />
@@ -370,13 +370,13 @@ export default function Lexicon() {
         <>
           <Body>{g.meaning}</Body>
 
-          <Text style={s.fieldLabel}>SEEN AS</Text>
+          <Text style={s.fieldLabel}>Seen as</Text>
           <Text style={s.colloc}>{g.collocations.join("  ·  ")}</Text>
 
-          <Text style={s.fieldLabel}>USE IT WHEN</Text>
+          <Text style={s.fieldLabel}>Use it when</Text>
           <Meta>{g.slot}</Meta>
 
-          <Text style={s.fieldLabel}>NOT THAT</Text>
+          <Text style={s.fieldLabel}>Not that</Text>
           <Meta style={{ color: CHROME.dust }}>{g.antiPattern}</Meta>
 
           <Hair />
@@ -386,10 +386,10 @@ export default function Lexicon() {
           ) : (
             <View style={s.grades}>
               {([
-                { g: 1 as Grade, label: "GONE" },
-                { g: 2 as Grade, label: "HARD" },
-                { g: 3 as Grade, label: "GOOD" },
-                { g: 4 as Grade, label: "EASY" },
+                { g: 1 as Grade, label: "Gone" },
+                { g: 2 as Grade, label: "Hard" },
+                { g: 3 as Grade, label: "Good" },
+                { g: 4 as Grade, label: "Easy" },
               ]).map((b) => (
                 <Pressable key={b.g} onPress={() => gradeRecall(b.g)} style={s.gradeBtn}>
                   <Text style={s.gradeLabel}>{b.label}</Text>
@@ -421,8 +421,7 @@ const s = StyleSheet.create({
 
   fieldLabel: {
     color: CHROME.dustDim,
-    fontSize: 9,
-    letterSpacing: 2.2,
+    fontSize: 11.5,
     fontFamily: TYPE.uiMedium,
     marginTop: 2,
   },
@@ -440,7 +439,7 @@ const s = StyleSheet.create({
     borderColor: SURFACE.edgeLive,
     backgroundColor: SURFACE.sunk,
   },
-  gradeLabel: { color: CHROME.chalk, fontSize: 11, letterSpacing: 1.4, fontFamily: TYPE.uiSemi },
+  gradeLabel: { color: CHROME.chalk, fontSize: 11.5, fontFamily: TYPE.uiSemi },
 
   gates: { flexDirection: "row", gap: 8 },
   gate: {
@@ -454,7 +453,7 @@ const s = StyleSheet.create({
   },
   gatePass: { borderColor: SEMANTIC.ember },
   gateFail: { borderColor: SURFACE.edge },
-  gateLabel: { color: CHROME.dustDim, fontSize: 9, letterSpacing: 1.6, fontFamily: TYPE.uiMedium },
+  gateLabel: { color: CHROME.dustDim, fontSize: 11.5, fontFamily: TYPE.uiMedium },
 
   input: {
     color: CHROME.chalk,
@@ -483,5 +482,5 @@ const s = StyleSheet.create({
     overflow: "hidden",
   },
   stopBloom: { position: "absolute", left: 0, right: 0, top: 0, bottom: 0 },
-  stopLabel: { color: CHROME.chalk, fontSize: 13, letterSpacing: 1.6, fontFamily: TYPE.uiSemi },
+  stopLabel: { color: CHROME.chalk, fontSize: 13, fontFamily: TYPE.uiSemi },
 });

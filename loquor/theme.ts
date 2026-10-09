@@ -1,4 +1,4 @@
-// Speek design tokens — Midnight & Emerald.
+// PipeUp design tokens — Midnight & Emerald.
 //
 // A stage at night: a deep navy room, a bright emerald on the things you press,
 // ivory type, and an electric cyan for anything you earn — cool against the

@@ -53,7 +53,7 @@ export function Masthead({
     <View style={s.masthead}>
       <View style={s.brand}>
         <View style={s.brandDot} />
-        <Text style={s.wordmark}>Speek</Text>
+        <Text style={s.wordmark}>PipeUp</Text>
       </View>
       <View style={s.mastheadEnd}>
         {right ? (
@@ -117,8 +117,7 @@ const s = StyleSheet.create({
   mastheadEnd: { flexDirection: "row", alignItems: "center", gap: SPACE.sm, flexShrink: 1 },
   mastheadRight: {
     color: CHROME.dust,
-    fontSize: 11,
-    letterSpacing: 1.6,
+    fontSize: 13,
     fontFamily: TYPE.uiSemi,
     flexShrink: 1,
     ...TABULAR,

@@ -1,6 +1,7 @@
 // You — who you are becoming, then the evidence.
 //
-// The top is the game layer: level, rank, streak and freezes, and the badges
+// The top is the game layer: level, rank, streak and freezes, your Arena
+// takes (moved here when the Arena stopped being a tab), and the badges
 // wall with the locked ones still visible, because a goal you can see is one
 // you start steering towards. Underneath, the Progress record unchanged — the
 // numbers the game layer is built on, so the XP never floats free of them.
@@ -23,6 +24,7 @@ import { RANKS } from "../progression/levels";
 import { snapshot, type Progress as Snapshot } from "../progression/progressionStore";
 import Progress from "../progress/ProgressScreen";
 import { gameFacts, type GameFacts } from "../../lib/db";
+import { TakeList } from "../arena/TakeList";
 
 function nextRank(level: number): { name: string; at: number } | null {
   const next = RANKS.find((r) => r.from > level);
@@ -61,14 +63,14 @@ function Header() {
   return (
     <View style={s.wrap}>
       <Masthead
-        right={p ? `${earned.size}/${BADGES.length} BADGES` : undefined}
+        right={p ? `${earned.size}/${BADGES.length} badges` : undefined}
         setup
       />
 
       <Rise index={0}>
         <Glass glow={AURORA.emerald} style={s.hero}>
           <ProgressRing progress={p?.level.progress ?? 0} size={128} stroke={10} colors={GRADIENT.xp}>
-            <Text style={s.lvlLabel}>LEVEL</Text>
+            <Text style={s.lvlLabel}>Level</Text>
             <Text style={s.lvl}>{p?.level.level ?? 1}</Text>
           </ProgressRing>
           <Text style={s.rank}>{p?.level.rank ?? " "}</Text>
@@ -132,7 +134,12 @@ function Header() {
         Focus span is your longest clean stretch in the Gauntlet. Liveliness is your best in Bring It to Life.
       </Text>
 
-      <Rise index={3} style={{ gap: 10 }}>
+      <Rise index={3} style={{ gap: 6 }}>
+        <Text style={s.title}>Your takes</Text>
+        <TakeList />
+      </Rise>
+
+      <Rise index={4} style={{ gap: 10 }}>
         <View style={s.head}>
           <Text style={s.title}>Badges</Text>
           <Text style={s.meta}>
@@ -194,7 +201,7 @@ function Header() {
         )}
       </Rise>
 
-      <Rise index={4} style={[s.head, { marginTop: SPACE.md }]}>
+      <Rise index={5} style={[s.head, { marginTop: SPACE.md }]}>
         <Text style={s.title}>The record</Text>
         <PressableScale onPress={() => router.push("/settings")} style={s.settings} accessibilityLabel="Settings">
           <Text style={s.settingsText}>Settings ›</Text>
@@ -211,7 +218,7 @@ export default function You() {
 const s = StyleSheet.create({
   wrap: { gap: SPACE.md },
   hero: { alignItems: "center", gap: 12, paddingVertical: 24 },
-  lvlLabel: { color: CHROME.dust, fontSize: 10, letterSpacing: 2, fontFamily: TYPE.uiBold },
+  lvlLabel: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiBold },
   lvl: { color: CHROME.chalk, fontSize: 44, lineHeight: 50, fontFamily: TYPE.monoMedium, ...TABULAR },
   rank: { color: CHROME.chalk, fontSize: 30, fontFamily: TYPE.display, letterSpacing: -0.6 },
   xpRow: { flexDirection: "row", justifyContent: "space-between" },

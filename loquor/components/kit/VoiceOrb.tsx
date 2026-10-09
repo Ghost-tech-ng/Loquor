@@ -1,4 +1,4 @@
-// The Speek orb: the logo, alive.
+// The PipeUp orb: the logo, alive.
 //
 // The bubble is static SVG; the face is laid over it as views positioned in the
 // logo's own 100-unit space, so the eyes can blink and the mouth bars can move

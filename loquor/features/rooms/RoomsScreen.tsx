@@ -30,8 +30,8 @@ const WINDOW_MS = 90 * 86_400_000;
 const WHEN = [
   { label: "IN 1H", ms: 3_600_000 },
   { label: "IN 3H", ms: 3 * 3_600_000 },
-  { label: "TOMORROW 10AM", ms: -1 },
-  { label: "IN 2 DAYS", ms: 2 * 86_400_000 },
+  { label: "Tomorrow 10am", ms: -1 },
+  { label: "In 2 days", ms: 2 * 86_400_000 },
 ] as const;
 
 function tomorrowTen(now = Date.now()): number {
@@ -102,7 +102,7 @@ export default function Rooms() {
 
   return (
     <Screen>
-      <Masthead right="ROOMS" setup />
+      <Masthead right="Rooms" setup />
 
       {pending.length > 0 ? (
         <Reveal index={0}>
@@ -121,7 +121,7 @@ export default function Rooms() {
         </Reveal>
       ) : null}
 
-      <Eyebrow>CONTRIBUTION — LAST 90 DAYS</Eyebrow>
+      <Eyebrow>Contribution — last 90 days</Eyebrow>
       <Display>{f.headline}</Display>
 
       {/* The funnel fills top down, which is the direction you fall out of it. */}
@@ -151,7 +151,7 @@ export default function Rooms() {
 
       {open ? (
         <Panel>
-          <Eyebrow>NEW ROOM</Eyebrow>
+          <Eyebrow>New room</Eyebrow>
           <TextInput
             style={s.input}
             value={title}
@@ -179,7 +179,7 @@ export default function Rooms() {
           </View>
 
           <Meta>
-            No audio, no attendees, no notes. Speek never records a real meeting — you tell it
+            No audio, no attendees, no notes. PipeUp never records a real meeting — you tell it
             what happened afterwards, and only what you said is kept.
           </Meta>
           <GlowButton label={saving ? "Saving…" : "Build my card"} onPress={create} disabled={!title.trim() || saving} />
@@ -191,7 +191,7 @@ export default function Rooms() {
 
       {rooms.length > 0 ? (
         <>
-          <Eyebrow>HISTORY</Eyebrow>
+          <Eyebrow>History</Eyebrow>
           <View style={{ gap: 0 }}>
             {rooms.map((r, i) => (
               <Reveal key={r.id} index={i}>
@@ -229,8 +229,8 @@ function describe(r: RoomRow): string {
 }
 
 function stateLabel(r: RoomRow): string {
-  if (r.debriefed_at !== null) return r.spoke ? "SPOKE" : "SILENT";
-  return r.at <= Date.now() ? "DEBRIEF" : "UPCOMING";
+  if (r.debriefed_at !== null) return r.spoke ? "Spoke" : "Silent";
+  return r.at <= Date.now() ? "Debrief" : "Upcoming";
 }
 
 function stateTint(r: RoomRow) {
@@ -269,7 +269,7 @@ const s = StyleSheet.create({
     borderRadius: RADIUS.pill,
   },
   chipOn: { borderColor: SEMANTIC.ember, backgroundColor: "rgba(34, 197, 94, 0.1)" },
-  chipText: { color: CHROME.dust, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
+  chipText: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiMedium },
   chipTextOn: { color: SEMANTIC.ember },
 
   row: {
@@ -282,5 +282,5 @@ const s = StyleSheet.create({
   },
   rowTitle: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.ui },
   rowMeta: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
-  rowState: { fontSize: 9, letterSpacing: 1.6, fontFamily: TYPE.uiSemi },
+  rowState: { fontSize: 11.5, fontFamily: TYPE.uiSemi },
 });

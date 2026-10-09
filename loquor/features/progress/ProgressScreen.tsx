@@ -151,7 +151,7 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
   if (!data) {
     return (
       <Screen>
-        {header ?? <Masthead right="PROGRESS" setup />}
+        {header ?? <Masthead right="Progress" setup />}
         <Meta>Reading the record…</Meta>
       </Screen>
     );
@@ -165,7 +165,7 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
 
   return (
     <Screen>
-      {header ?? <Masthead right="PROGRESS" setup />}
+      {header ?? <Masthead right="Progress" setup />}
 
       {data.baseline === null ? (
         <Reveal index={0}>
@@ -206,7 +206,7 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
       <Hair style={{ marginTop: SPACE.sm }} />
 
       {/* ── This week's leading indicators ──────────────────────────────── */}
-      <Eyebrow>THIS WEEK · WHAT YOU CONTROL</Eyebrow>
+      <Eyebrow>This week · what you control</Eyebrow>
       <View style={s.targets}>
         {w.targets.map((t, i) => (
           <Reveal key={t.key} index={i} style={s.target}>
@@ -227,10 +227,10 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
       <Hair style={{ marginTop: SPACE.sm }} />
 
       {/* ── Delivery ────────────────────────────────────────────────────── */}
-      <Eyebrow>DELIVERY · MEDIAN THIS WEEK</Eyebrow>
+      <Eyebrow>Delivery · median this week</Eyebrow>
       {w.fillerRate !== null ? (
         <Rail
-          label="FILLER RATE"
+          label="Filler rate"
           value={w.fillerRate.toFixed(1)}
           unit="/min"
           position={Math.min(1, w.fillerRate / (FILLER_TARGET_PER_MIN * 3))}
@@ -248,7 +248,7 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
 
       {w.wpm !== null ? (
         <Rail
-          label="PACE"
+          label="Pace"
           value={String(Math.round(w.wpm))}
           unit="wpm"
           position={bandPosition(w.wpm, PACE_BAND_WPM.low, PACE_BAND_WPM.high)}
@@ -258,7 +258,7 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
 
       {w.hedgeDensity !== null ? (
         <Rail
-          label="HEDGES"
+          label="Hedges"
           value={w.hedgeDensity.toFixed(1)}
           unit="% of words"
           position={Math.min(1, w.hedgeDensity / 8)}
@@ -284,9 +284,9 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
 
       {/* ── The weekly read ─────────────────────────────────────────────── */}
       <View style={s.head}>
-        <Eyebrow>THE WEEKLY READ</Eyebrow>
+        <Eyebrow>The weekly read</Eyebrow>
         <Text style={s.weekLabel}>
-          {provisional ? "WEEK IN PROGRESS" : weekLabel(target)}
+          {provisional ? "Week in progress" : weekLabel(target)}
         </Text>
       </View>
 
@@ -297,10 +297,10 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
         <Panel>
           <Body style={s.headline}>{report.headline}</Body>
           <Hair style={{ marginVertical: SPACE.xs }} />
-          <Line label="MOVED" text={report.worked} />
-          <Line label="DID NOT" text={report.stalled} />
+          <Line label="Moved" text={report.worked} />
+          <Line label="Did not" text={report.stalled} />
           <Hair style={{ marginVertical: SPACE.xs }} />
-          <Text style={s.nextLabel}>NEXT WEEK</Text>
+          <Text style={s.nextLabel}>Next week</Text>
           <Text style={s.next}>{report.next_week}</Text>
         </Panel>
         </Reveal>
@@ -322,7 +322,7 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
       />
 
       {/* The one figure on this screen the app cannot measure. */}
-      <Eyebrow style={{ marginTop: SPACE.xs }}>I SAID THE THING I WANTED TO SAY</Eyebrow>
+      <Eyebrow style={{ marginTop: SPACE.xs }}>I said the thing I wanted to say</Eyebrow>
       <View style={s.ratingRow}>
         {[1, 2, 3, 4, 5].map((n) => (
           <Tap
@@ -345,7 +345,7 @@ export default function Progress({ header }: { header?: ReactNode } = {}) {
       <Hair style={{ marginTop: SPACE.sm }} />
 
       {/* ── Ninety days ─────────────────────────────────────────────────── */}
-      <Eyebrow>NINETY DAYS</Eyebrow>
+      <Eyebrow>Ninety days</Eyebrow>
       <View style={s.lags}>
         {data.lagging.map((r, i) => (
           <Reveal key={r.key} index={i}>
@@ -453,9 +453,9 @@ const s = StyleSheet.create({
 
   headline: { fontSize: 17, lineHeight: 25, fontFamily: TYPE.display, color: CHROME.chalk },
   line: { gap: 3, paddingVertical: 4 },
-  lineLabel: { color: CHROME.dustDim, fontSize: 9, letterSpacing: 2, fontFamily: TYPE.uiMedium },
+  lineLabel: { color: CHROME.dustDim, fontSize: 11.5, fontFamily: TYPE.uiMedium },
   lineText: { color: "#C9C3B6", fontSize: 14, lineHeight: 21, fontFamily: TYPE.ui },
-  nextLabel: { color: SEMANTIC.ember, fontSize: 9, letterSpacing: 2, fontFamily: TYPE.uiSemi },
+  nextLabel: { color: SEMANTIC.ember, fontSize: 11.5, fontFamily: TYPE.uiSemi },
   next: { color: CHROME.chalk, fontSize: 15, lineHeight: 22, fontFamily: TYPE.displayItalic },
   failed: { color: SEMANTIC.flaw, fontSize: 12, fontFamily: TYPE.ui },
 

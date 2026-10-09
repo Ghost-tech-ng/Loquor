@@ -80,7 +80,7 @@ test("a fully clear user gets an offer, never an invented obligation", () => {
   const a = at({});
   assert.equal(a.id, "playbook");
   assert.equal(a.urgent, false);
-  assert.match(a.eyebrow, /NOTHING OUTSTANDING/);
+  assert.match(a.eyebrow, /Nothing outstanding/);
 });
 
 test("every branch returns a usable, non-empty action", () => {

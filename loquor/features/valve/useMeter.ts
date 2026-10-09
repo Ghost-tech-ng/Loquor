@@ -61,7 +61,7 @@ export function useMeter(): MeterState {
         await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
         setReady(true);
       } else {
-        setError("Speek needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
+        setError("PipeUp needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
       }
     })();
     return () => {

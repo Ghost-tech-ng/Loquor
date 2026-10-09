@@ -191,9 +191,9 @@ export default function GauntletScreen() {
                 : "The early rounds are the hardest to stay clean in. You are building the stretch."
           }
           stats={[
-            { label: "ROUNDS", value: `${cleared}/${ROUNDS_S.length}` },
-            { label: "FOCUS SPAN", value: fmt(focus), tint: SEMANTIC.xp },
-            { label: "HEARTS", value: String(hearts), tint: hearts > 0 ? AURORA.coral : undefined },
+            { label: "Rounds", value: `${cleared}/${ROUNDS_S.length}` },
+            { label: "Focus span", value: fmt(focus), tint: SEMANTIC.xp },
+            { label: "Hearts", value: String(hearts), tint: hearts > 0 ? AURORA.coral : undefined },
           ]}
           onAgain={begin}
           onDone={() => router.back()}
@@ -204,7 +204,7 @@ export default function GauntletScreen() {
 
   return (
     <Screen scroll={stage !== "talking"}>
-      <Masthead close onClose={quit} right={`ROUND ${round + 1}/${ROUNDS_S.length}`} />
+      <Masthead close onClose={quit} right={`Round ${round + 1}/${ROUNDS_S.length}`} />
       <View style={s.top}>
         <Hearts left={hearts} total={HEARTS} />
         <Text style={s.total}>{fmt(totalSurvived(results))} banked</Text>
@@ -218,7 +218,7 @@ export default function GauntletScreen() {
           </View>
           <Glass glow={TINT} style={{ gap: SPACE.sm }}>
             <View style={s.topicHead}>
-              <Text style={s.label}>TALK ABOUT</Text>
+              <Text style={s.label}>Talk about</Text>
               <Text style={s.shuffle} onPress={() => setTopic(randomTopic())} accessibilityRole="button">
                 Another one
               </Text>
@@ -296,9 +296,9 @@ const s = StyleSheet.create({
   top: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   total: { color: CHROME.dust, fontSize: 13, fontFamily: TYPE.mono, ...TABULAR },
   roundHead: { alignItems: "center", gap: 2, marginTop: SPACE.sm },
-  roundLabel: { color: TINT, fontSize: 12, letterSpacing: 2, fontFamily: TYPE.uiBold },
+  roundLabel: { color: TINT, fontSize: 12, fontFamily: TYPE.uiBold },
   roundLen: { color: CHROME.chalk, fontSize: 36, fontFamily: TYPE.display, letterSpacing: -1 },
-  label: { color: CHROME.dust, fontSize: 11, letterSpacing: 1.6, fontFamily: TYPE.uiBold },
+  label: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiBold },
   topicHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   shuffle: { color: TINT, fontSize: 13, fontFamily: TYPE.uiSemi },
   topic: { color: CHROME.chalk, fontSize: 19, lineHeight: 26, fontFamily: TYPE.displaySoft },

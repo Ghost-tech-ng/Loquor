@@ -1,4 +1,4 @@
-# Speek — PERSONAL copy
+# PipeUp (formerly Speek) — PERSONAL copy
 
 **This is Eghosa's own app, not the store app.** The store version lives in
 `Documents/personal/speek-production` (repo `Ghost-tech-ng/speek-production`).

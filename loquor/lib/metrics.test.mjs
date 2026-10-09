@@ -184,3 +184,27 @@ test("band position is clamped and centred", () => {
   const mid = bandPosition(147.5, 130, 165);
   assert.ok(Math.abs(mid - 0.5) < 0.01, "midpoint of the band sits at the middle");
 });
+
+test("soft fillers only count when the variety is switched on", async () => {
+  const { softFillerSet } = await import("./lexicon.ts");
+  const words = seq(["it", "is", "fine", "abi", "we", "go", "sha"]);
+  assert.equal(computeMetrics(words, 30).fillerCount, 0);
+  const m = computeMetrics(words, 30, softFillerSet("nigerian"));
+  assert.equal(m.fillerCount, 2);
+  assert.equal(m.wordCount, 5);
+});
+
+test("a soft filler switched off is scored as an ordinary word", async () => {
+  const { softFillerSet } = await import("./lexicon.ts");
+  const words = seq(["it", "is", "fine", "abi", "we", "go", "sha"]);
+  assert.equal(computeMetrics(words, 30, softFillerSet("nigerian", ["sha"])).fillerCount, 1);
+});
+
+test("an Indian-English soft filler stops counting as a hedge once it is a filler", async () => {
+  const { softFillerSet } = await import("./lexicon.ts");
+  const words = seq(["basically", "we", "ship", "it", "today"]);
+  assert.equal(computeMetrics(words, 30).hedgeCount, 1);
+  const m = computeMetrics(words, 30, softFillerSet("indian"));
+  assert.equal(m.fillerCount, 1);
+  assert.equal(m.hedgeCount, 0);
+});

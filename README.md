@@ -1,6 +1,6 @@
-# Speek
+# PipeUp
 
-*Formerly Loquor, Latin for "I speak."*
+*Formerly Speek, and Loquor before that (Latin for "I speak").*
 
 An iOS speech-training app for people who want to be a contributor rather than a
 listener — better questions, fewer fillers, a working vocabulary, and something

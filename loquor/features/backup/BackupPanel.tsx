@@ -52,7 +52,7 @@ export function Backup() {
     return (
       <>
         <Hair style={{ marginTop: SPACE.sm }} />
-        <Eyebrow>BACKUP</Eyebrow>
+        <Eyebrow>Backup</Eyebrow>
         <Meta>This build has no backup project configured.</Meta>
       </>
     );
@@ -73,7 +73,7 @@ export function Backup() {
   };
 
   const authenticate = (mode: "in" | "up") =>
-    run(mode === "in" ? "SIGNING IN" : "CREATING", async () => {
+    run(mode === "in" ? "Signing in" : "Creating", async () => {
       if (!email.trim() || !password) throw new Error("Email and password, both.");
       const s = mode === "in" ? await signIn(email, password) : await signUp(email, password);
       // Held only as long as the form is on screen. Neither value is stored;
@@ -97,7 +97,7 @@ export function Backup() {
   return (
     <>
       <Hair style={{ marginTop: SPACE.sm }} />
-      <Eyebrow>BACKUP</Eyebrow>
+      <Eyebrow>Backup</Eyebrow>
       <Meta>
         Every session, take, drill, word schedule and weekly report, copied to your own Firebase
         project so a lost phone is an inconvenience rather than the end of the record. Your API
@@ -114,15 +114,15 @@ export function Backup() {
 
           <Panel>
             <View style={s.statusRow}>
-              <Eyebrow>LAST BACKUP</Eyebrow>
+              <Eyebrow>Last backup</Eyebrow>
               <Text style={s.stamp}>{state.lastAt ? ago(state.lastAt) : "never"}</Text>
             </View>
             {state.lastError ? <Text style={s.error}>{state.lastError}</Text> : null}
             <GlowButton
-              label={busy === "BACKING UP" ? "Backing up…" : "Back up now"}
+              label={busy === "Backing up" ? "Backing up…" : "Back up now"}
               disabled={busy !== null}
               onPress={() =>
-                run("BACKING UP", async () => {
+                run("Backing up", async () => {
                   const r = await backupNow();
                   return r.uploaded === 0
                     ? "Already up to date — nothing had changed."
@@ -134,7 +134,7 @@ export function Backup() {
 
           <Toggle
             title="Back up automatically"
-            sub="On launch, and whenever you leave the app. Expo Go cannot run in the background, so nothing happens while Speek is closed — and nothing can happen, because you are not speaking into it."
+            sub="On launch, and whenever you leave the app. Expo Go cannot run in the background, so nothing happens while PipeUp is closed — and nothing can happen, because you are not speaking into it."
             on={prefs?.auto ?? true}
             onChange={(v) => setPref({ auto: v })}
           />
@@ -147,13 +147,13 @@ export function Backup() {
           />
 
           <Hair style={{ marginTop: SPACE.xs }} />
-          <Eyebrow>NEW PHONE</Eyebrow>
+          <Eyebrow>New phone</Eyebrow>
           <Meta>
             Pulls the backup down and merges it in. Nothing local is deleted — a row only changes
             if the backup holds the same one.
           </Meta>
           <GlowButton
-            label={busy === "RESTORING" ? "Restoring…" : "Restore from backup"}
+            label={busy === "Restoring" ? "Restoring…" : "Restore from backup"}
             tone="ghost"
             disabled={busy !== null}
             onPress={() =>
@@ -165,7 +165,7 @@ export function Backup() {
                   {
                     text: "Restore",
                     onPress: () =>
-                      void run("RESTORING", async () => {
+                      void run("Restoring", async () => {
                         const r = await restoreNow();
                         return `${r.rows} rows restored across ${r.tables} tables.`;
                       }),
@@ -189,7 +189,7 @@ export function Backup() {
                     text: "Sign out",
                     style: "destructive",
                     onPress: () =>
-                      void run("SIGNING OUT", async () => {
+                      void run("Signing out", async () => {
                         await signOut();
                         return "Signed out.";
                       }),
@@ -226,12 +226,12 @@ export function Backup() {
             secureTextEntry
           />
           <GlowButton
-            label={busy === "CREATING" ? "Creating…" : "Create account"}
+            label={busy === "Creating" ? "Creating…" : "Create account"}
             disabled={busy !== null}
             onPress={() => void authenticate("up")}
           />
           <GlowButton
-            label={busy === "SIGNING IN" ? "Signing in…" : "I already have one"}
+            label={busy === "Signing in" ? "Signing in…" : "I already have one"}
             tone="ghost"
             disabled={busy !== null}
             onPress={() => void authenticate("in")}
@@ -338,7 +338,7 @@ const s = StyleSheet.create({
   knobOn: { backgroundColor: SEMANTIC.ember, alignSelf: "flex-end" },
 
   busy: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: SPACE.xs },
-  busyLabel: { color: CHROME.dust, fontSize: 10, letterSpacing: 2, fontFamily: TYPE.uiSemi },
+  busyLabel: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiSemi },
   error: { color: SEMANTIC.flaw, fontSize: 12, lineHeight: 18, fontFamily: TYPE.ui },
   note: { color: CHROME.dust, fontSize: 12, lineHeight: 18, fontFamily: TYPE.ui },
 });

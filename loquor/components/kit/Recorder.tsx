@@ -49,7 +49,7 @@ export function Aperture({
           {String(Math.floor(seconds / 60)).padStart(2, "0")}:{String(seconds % 60).padStart(2, "0")}
         </Text>
       </PressableScale>
-      <Eyebrow>{over ? "OVER — LAND IT" : (hint ?? "TAP TO FINISH")}</Eyebrow>
+      <Eyebrow>{over ? "Over — land it" : (hint ?? "Tap to finish")}</Eyebrow>
     </View>
   );
 }
@@ -87,7 +87,7 @@ export function Failed({
           <View style={s.failIcon}>
             <Glyph name="x" size={16} color={SEMANTIC.flaw} strokeWidth={2.4} />
           </View>
-          <Eyebrow style={{ color: SEMANTIC.flaw }}>THAT DIDN&rsquo;T WORK</Eyebrow>
+          <Eyebrow style={{ color: SEMANTIC.flaw }}>That didn&rsquo;t work</Eyebrow>
         </View>
         <Display style={s.failText}>{error}</Display>
       </Glass>

@@ -34,7 +34,7 @@ import { computeMetrics } from "../../lib/metrics";
 import { transcribe } from "../../lib/stt";
 import { judge } from "./judge";
 import { countSessions, getSession, recentSessions, saveSession } from "../../lib/db";
-import { getKey, loadSettings, resolve } from "../../lib/settings";
+import { getKey, loadSettings, resolve, softFillers } from "../../lib/settings";
 import { liveliness } from "../games/prosody";
 
 const PRIMER_SECONDS = 90;
@@ -137,7 +137,7 @@ export default function Arena() {
       granted.current = perm.granted;
       if (perm.granted) await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
       else {
-        setError("Speek needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
+        setError("PipeUp needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
         setStage("error");
       }
     })();
@@ -221,7 +221,7 @@ export default function Arena() {
       const sttKey = (await getKey(stt)) ?? "";
       const t = await transcribe(uri, stt, sttKey);
 
-      const metrics = computeMetrics(t.words, t.durationS ?? seconds);
+      const metrics = computeMetrics(t.words, t.durationS ?? seconds, softFillers(settings));
       if (metrics.wordCount === 0) throw new Error("Nothing was picked up. Check the mic and try again.");
 
       current = "Judging";
@@ -273,7 +273,7 @@ export default function Arena() {
   if (stage === "working") {
     return (
       <Screen scroll={false}>
-        <Masthead right={isRewrite ? "REWRITE" : "ARENA"} />
+        <Masthead right={isRewrite ? "Rewrite" : "Arena"} />
         <View style={s.center}>
           <Ignition />
           <Eyebrow style={{ marginTop: SPACE.md }}>{step.toUpperCase()}</Eyebrow>
@@ -288,8 +288,8 @@ export default function Arena() {
   if (stage === "error") {
     return (
       <Screen>
-        <Masthead right="ARENA" />
-        <Eyebrow>THAT DIDN&rsquo;T WORK</Eyebrow>
+        <Masthead right="Arena" />
+        <Eyebrow>That didn&rsquo;t work</Eyebrow>
         <Display>{error}</Display>
         <GlowButton label="Try again" onPress={() => { setStage("primer"); setError(null); }} />
         <GlowButton label="Back home" tone="ghost" onPress={() => router.replace("/")} />
@@ -300,7 +300,7 @@ export default function Arena() {
   if (stage === "recording") {
     return (
       <Screen scroll={false}>
-        <Masthead right={isRewrite ? "REWRITE" : "ARENA"} />
+        <Masthead right={isRewrite ? "Rewrite" : "Arena"} />
         <Display style={s.liveTopic} numberOfLines={3}>
           {target ?? topic.title}
         </Display>
@@ -326,7 +326,7 @@ export default function Arena() {
           <Text style={[s.clock, over && { color: SEMANTIC.flaw }]}>
             {String(Math.floor(seconds / 60)).padStart(2, "0")}:{String(seconds % 60).padStart(2, "0")}
           </Text>
-          <Eyebrow>{over ? "PAST NINETY — LAND IT" : "TAP TO FINISH"}</Eyebrow>
+          <Eyebrow>{over ? "Past ninety — land it" : "Tap to finish"}</Eyebrow>
         </View>
 
         <Meta style={s.centerText}>Side → reason → example → land it</Meta>
@@ -348,7 +348,7 @@ export default function Arena() {
   const askPanel = plain ? (
     <Reveal index={2}>
       <Panel>
-        <Eyebrow>IN PLAIN WORDS</Eyebrow>
+        <Eyebrow>In plain words</Eyebrow>
         <Body>{plain.ask}</Body>
       </Panel>
     </Reveal>
@@ -356,7 +356,7 @@ export default function Arena() {
 
   const sidesBlock = plain ? (
     <Reveal index={3} style={s.block}>
-      <Eyebrow>PICK A SIDE</Eyebrow>
+      <Eyebrow>Pick a side</Eyebrow>
       {plain.sides.map((side, i) => (
         <View key={i} style={s.side}>
           <Text style={s.sideMark}>{i === 0 ? "A" : "B"}</Text>
@@ -370,7 +370,7 @@ export default function Arena() {
   // read as one block and retained as none of it.
   const primerBlock = (
     <>
-      <Eyebrow>WORTH KNOWING</Eyebrow>
+      <Eyebrow>Worth knowing</Eyebrow>
       <View style={s.bullets}>
         {topic.primer.map((b, i) => (
           <Reveal key={i} index={i + 4}>
@@ -386,12 +386,12 @@ export default function Arena() {
 
   return (
     <Screen>
-      <Masthead right={isRewrite ? "REWRITE" : "ARENA"} />
+      <Masthead right={isRewrite ? "Rewrite" : "Arena"} />
 
       <View style={s.headRow}>
-        <Eyebrow>{isRewrite ? "SAY IT BETTER" : "PRIMER"}</Eyebrow>
+        <Eyebrow>{isRewrite ? "Say it better" : "Primer"}</Eyebrow>
         <Text style={[s.countdown, left <= 10 && { color: SEMANTIC.ember }]}>
-          {left > 0 ? `${left}s` : "TIME"}
+          {left > 0 ? `${left}s` : "Time"}
         </Text>
       </View>
 
@@ -401,7 +401,7 @@ export default function Arena() {
 
       {target ? (
         <Panel>
-          <Eyebrow>THE MODEL ANSWER</Eyebrow>
+          <Eyebrow>The model answer</Eyebrow>
           <Body>{target}</Body>
           <Meta>Read it once, then close your eyes and say it in your own words.</Meta>
         </Panel>
@@ -441,7 +441,7 @@ export default function Arena() {
           )}
 
           <Hair />
-          <Eyebrow>WORDS TO USE</Eyebrow>
+          <Eyebrow>Words to use</Eyebrow>
           {scaffold === 2 && !hint && <Meta>Tap a word if you&rsquo;re not sure what it means.</Meta>}
           <Reveal index={topic.primer.length + 4} style={scaffold >= 2 ? s.termWrap : s.block}>
             {topic.loadedTerms.map((w) => {
@@ -464,7 +464,7 @@ export default function Arena() {
           </Reveal>
 
           <Hair />
-          <Eyebrow>HOW TO ANSWER</Eyebrow>
+          <Eyebrow>How to answer</Eyebrow>
           <Reveal index={topic.primer.length + 5} style={s.block}>
             {scaffold <= 1 ? (
               ANSWER_SHAPE.map((line, i) => (

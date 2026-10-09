@@ -8,6 +8,8 @@
 import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { softFillerSet, type English } from "./lexicon";
+
 export type Provider = "groq" | "anthropic" | "deepgram";
 export type Mode = "free" | "precision" | "custom";
 
@@ -26,6 +28,10 @@ export type Settings = {
   readingPrimer: "disfluency" | "passage";
   /** Game chimes. Haptics stay on regardless; they make no noise in a quiet room. */
   sfx: boolean;
+  /** "My English": which variety's soft fillers count. Standard counts none. */
+  english: English;
+  /** Soft fillers from that variety the person switched off, one by one. */
+  softOff: string[];
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -34,6 +40,8 @@ export const DEFAULT_SETTINGS: Settings = {
   judgeProvider: "groq",
   readingPrimer: "disfluency",
   sfx: true,
+  english: "general",
+  softOff: [],
 };
 
 const SETTINGS_KEY = "loquor.settings";
@@ -109,6 +117,11 @@ export async function seedKeysFromEnv(): Promise<void> {
 export function maskKey(key: string): string {
   if (key.length <= 12) return "•".repeat(key.length);
   return `${key.slice(0, 4)}${"•".repeat(8)}${key.slice(-4)}`;
+}
+
+/** The soft fillers this person's takes are scored with. */
+export function softFillers(s: Settings): ReadonlySet<string> {
+  return softFillerSet(s.english, s.softOff);
 }
 
 /** Resolves the mode into concrete providers for this run. */

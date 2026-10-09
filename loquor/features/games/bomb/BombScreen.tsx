@@ -231,8 +231,8 @@ export default function BombScreen() {
                 : "The ones that blew up are the ones to say out loud today."
           }
           stats={[
-            { label: "DEFUSED", value: String(defused), tint: SEMANTIC.solid },
-            { label: "BLEW UP", value: String(words.length - defused), tint: defused < words.length ? AURORA.coral : undefined },
+            { label: "Defused", value: String(defused), tint: SEMANTIC.solid },
+            { label: "Blew up", value: String(words.length - defused), tint: defused < words.length ? AURORA.coral : undefined },
           ]}
           onAgain={() => void start()}
           onDone={() => router.back()}
@@ -261,7 +261,7 @@ export default function BombScreen() {
 
   return (
     <Screen>
-      <Masthead close onClose={quit} right={`BOMB ${round + 1}/${words.length}`} />
+      <Masthead close onClose={quit} right={`Bomb ${round + 1}/${words.length}`} />
       {verdict?.defused ? <Confetti burst={burst} originX={width / 2} originY={220} count={50} /> : null}
 
       {stage === "armed" || stage === "checking" ? (
@@ -277,7 +277,7 @@ export default function BombScreen() {
           <Text style={s.say}>{word.say}</Text>
           <Text style={s.meaning}>{word.meaning}</Text>
           <View style={s.hint}>
-            <Text style={s.hintLabel}>TRY</Text>
+            <Text style={s.hintLabel}>Try</Text>
             <Text style={s.hintText}>“{word.collocations[0]}”</Text>
           </View>
         </Glass>
@@ -290,7 +290,7 @@ export default function BombScreen() {
           </Text>
           {verdict.heard ? (
             <Glass style={{ gap: 6 }}>
-              <Text style={s.hintLabel}>WHAT WE HEARD</Text>
+              <Text style={s.hintLabel}>What we heard</Text>
               <Heard text={verdict.heard} match={verdict.match} />
             </Glass>
           ) : null}
@@ -376,7 +376,7 @@ const s = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: alpha(CHROME.chalk, 0.15),
   },
-  hintLabel: { color: CHROME.dust, fontSize: 11, letterSpacing: 1.6, fontFamily: TYPE.uiBold },
+  hintLabel: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiBold },
   hintText: { flex: 1, color: AURORA.mint, fontSize: 15, fontFamily: TYPE.uiMedium },
   verdict: { fontSize: 24, fontFamily: TYPE.display, textAlign: "center" },
   heard: { color: CHROME.chalk, fontSize: 15, lineHeight: 22, fontFamily: TYPE.ui },

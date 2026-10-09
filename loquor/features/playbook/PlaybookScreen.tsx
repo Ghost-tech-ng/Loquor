@@ -126,12 +126,12 @@ export default function Playbook() {
     }
   };
 
-  if (stage === "working") return <Working right="PLAYBOOK" step="Weighing the question" />;
+  if (stage === "working") return <Working right="Playbook" step="Weighing the question" />;
 
   if (stage === "error") {
     return (
       <Failed
-        right="PLAYBOOK"
+        right="Playbook"
         error={failure ?? "Something went wrong."}
         onRetry={() => {
           setFailure(null);
@@ -146,8 +146,8 @@ export default function Playbook() {
   if (stage === "map") {
     return (
       <Screen>
-        <Masthead right="PLAYBOOK" />
-        <Eyebrow>THIRTY MOVES</Eyebrow>
+        <Masthead right="Playbook" />
+        <Eyebrow>Thirty moves</Eyebrow>
         <Display>
           {stats.filter((x) => x.mastery !== "untried").length} tried,{" "}
           {stats.filter((x) => x.mastery === "solid").length} solid.
@@ -194,7 +194,7 @@ export default function Playbook() {
   if (!assignment) {
     return (
       <Screen>
-        <Masthead right="PLAYBOOK" />
+        <Masthead right="Playbook" />
         <Display>Loading the deck.</Display>
       </Screen>
     );
@@ -205,7 +205,7 @@ export default function Playbook() {
   if (stage === "recording") {
     return (
       <Screen scroll={false}>
-        <Masthead right="PLAYBOOK" />
+        <Masthead right="Playbook" />
         <Display style={s.liveName} numberOfLines={2}>
           {a.name}
         </Display>
@@ -214,7 +214,7 @@ export default function Playbook() {
           seconds={take.seconds}
           ceilingS={CEILING_S}
           onStop={finish}
-          hint="ONE QUESTION — TAP WHEN DONE"
+          hint="One question — tap when done"
         />
         <Text style={s.liveForm}>{a.form}</Text>
       </Screen>
@@ -224,7 +224,7 @@ export default function Playbook() {
   if (stage === "verdict" && verdict) {
     return (
       <Screen>
-        <Masthead right="PLAYBOOK" />
+        <Masthead right="Playbook" />
         <Eyebrow>{a.name.toUpperCase()}</Eyebrow>
         <Display>{verdict.verdict}</Display>
 
@@ -239,14 +239,14 @@ export default function Playbook() {
         <Hair />
 
         <Panel>
-          <Eyebrow>WHAT YOU ASKED</Eyebrow>
+          <Eyebrow>What you asked</Eyebrow>
           <Body style={s.heard}>{verdict.heard}</Body>
-          <Eyebrow style={{ marginTop: SPACE.sm }}>WHAT THEY&rsquo;D SAY BACK</Eyebrow>
+          <Eyebrow style={{ marginTop: SPACE.sm }}>What they&rsquo;d say back</Eyebrow>
           <Body style={{ color: CHROME.dust }}>{verdict.likely_reply}</Body>
         </Panel>
 
         <Panel glow={SEMANTIC.ember}>
-          <Eyebrow style={{ color: SEMANTIC.ember }}>ASK IT LIKE THIS</Eyebrow>
+          <Eyebrow style={{ color: SEMANTIC.ember }}>Ask it like this</Eyebrow>
           <Body style={s.model}>{verdict.model_question}</Body>
         </Panel>
 
@@ -260,12 +260,12 @@ export default function Playbook() {
   // brief
   return (
     <Screen>
-      <Masthead right="PLAYBOOK" />
+      <Masthead right="Playbook" />
 
       <View style={s.headRow}>
         <Eyebrow>{FAMILY_LABELS[a.family].toUpperCase()}</Eyebrow>
         <Pressable onPress={() => setStage("map")}>
-          <Text style={s.mapLink}>THE MAP</Text>
+          <Text style={s.mapLink}>The map</Text>
         </Pressable>
       </View>
 
@@ -281,7 +281,7 @@ export default function Playbook() {
       </Panel>
 
       <Panel glow={SEMANTIC.flaw}>
-        <Eyebrow style={{ color: SEMANTIC.flaw }}>THE TRAP</Eyebrow>
+        <Eyebrow style={{ color: SEMANTIC.flaw }}>The trap</Eyebrow>
         <Body>{a.trap}</Body>
       </Panel>
 
@@ -306,7 +306,7 @@ function pip(m: Mastery, ewma?: number): string {
 
 const s = StyleSheet.create({
   headRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  mapLink: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 2, fontFamily: TYPE.uiMedium },
+  mapLink: { color: CHROME.dustDim, fontSize: 11.5, fontFamily: TYPE.uiMedium },
 
   form: { fontFamily: TYPE.displayItalic, fontSize: 17, lineHeight: 25, color: CHROME.chalk },
   transcript: { fontFamily: TYPE.displayItalic, color: "#C9C3B6" },

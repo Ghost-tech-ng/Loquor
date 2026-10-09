@@ -40,10 +40,10 @@ const cleanUnder = (limit: number) => (f: DayFacts) =>
   f.bestFiller !== null && f.bestFiller < limit ? 1 : 0;
 
 export const QUESTS: Quest[] = [
-  { id: "arena-1", family: "arena", title: "Do one Arena take", xp: 50, goal: 1, route: "/stage", value: (f) => f.arenaTakes },
-  { id: "arena-2", family: "arena", title: "Do two Arena takes", xp: 80, goal: 2, route: "/stage", value: (f) => f.arenaTakes },
-  { id: "clean-5", family: "arena", title: "Land a take under 5 fillers a minute", xp: 80, goal: 1, route: "/stage", value: cleanUnder(5) },
-  { id: "clean-3", family: "arena", title: "Land a take under 3 fillers a minute", xp: 100, goal: 1, route: "/stage", value: cleanUnder(3) },
+  { id: "arena-1", family: "arena", title: "Do one Arena take", xp: 50, goal: 1, route: "/arena", value: (f) => f.arenaTakes },
+  { id: "arena-2", family: "arena", title: "Do two Arena takes", xp: 80, goal: 2, route: "/arena", value: (f) => f.arenaTakes },
+  { id: "clean-5", family: "arena", title: "Land a take under 5 fillers a minute", xp: 80, goal: 1, route: "/arena", value: cleanUnder(5) },
+  { id: "clean-3", family: "arena", title: "Land a take under 3 fillers a minute", xp: 100, goal: 1, route: "/arena", value: cleanUnder(3) },
   { id: "read-1", family: "read", title: "Read a section aloud", xp: 50, goal: 1, route: "/play", value: (f) => f.readings },
   { id: "read-2", family: "read", title: "Read two sections aloud", xp: 80, goal: 2, route: "/play", value: (f) => f.readings },
   { id: "lex-5", family: "lexicon", title: "Review 5 Lexicon words", xp: 40, goal: 5, route: "/lexicon", value: (f) => f.lexiconReviews },

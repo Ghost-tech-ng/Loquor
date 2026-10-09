@@ -240,7 +240,7 @@ const v = StyleSheet.create({
 
   rail: { gap: 8 },
   railHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
-  railLabel: { color: CHROME.dust, fontSize: 10.5, letterSpacing: 1.8, fontFamily: TYPE.uiBold },
+  railLabel: { color: CHROME.dust, fontSize: 13, fontFamily: TYPE.uiSemi },
   railValue: { flexDirection: "row", alignItems: "baseline", gap: 4 },
   approx: { color: CHROME.dustDim, fontSize: 15, fontFamily: TYPE.ui },
   railNumber: { fontSize: 19, fontFamily: TYPE.monoMedium, ...TABULAR },

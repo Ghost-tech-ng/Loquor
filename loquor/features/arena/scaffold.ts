@@ -9,7 +9,7 @@
 
 export type Scaffold = 0 | 1 | 2 | 3;
 
-export const SCAFFOLD_NAMES = ["GUIDED", "BRIDGED", "STRETCHED", "FLUENT"] as const;
+export const SCAFFOLD_NAMES = ["Guided", "Bridged", "Stretched", "Fluent"] as const;
 
 /** Takes needed to reach each level. */
 export const SCAFFOLD_AT = [0, 5, 15, 30] as const;

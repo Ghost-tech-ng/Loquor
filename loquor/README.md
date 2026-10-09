@@ -1,21 +1,30 @@
-# Speek
+# PipeUp
 
 A speech trainer that runs inside Expo Go on iOS (SDK 57). It has no backend. The
 project was called Loquor until v1.0. The Expo slug, the database file and the
 SecureStore key names still say `loquor`: the slug is bound to the EAS project,
 and the other two keep your history and keys when you update.
 
-The tab bar is **Home · Arena · Play · Rooms · You**. Settings is the setup link in
+The tab bar is **Home · Play · Rooms · You**. Settings is the setup link in
 the masthead of every tab.
 
-- **Home**: the streak, your level, today's three quests, the one thing to do
-  next, and today's prompt.
+- **Home**: the orb, one line on where you stand, and one button: the one thing
+  to do next, usually an Arena take. Today's quests sit behind a single row, and
+  Voice note is one tap below.
 - **Arena**: record → transcribe → delivery metrics counted on the phone →
-  scorecard (now with Liveliness) → rewrite.
-- **Play**: five games and the five training drills.
+  scorecard → rewrite. The scorecard leads with one sentence; the rest is
+  behind "See details".
+- **Voice note**: record here, send there. See the filler count and pace,
+  re-record if you want, then send the audio through the share sheet.
+- **Play**: five games, the five training drills and a word of the day.
 - **Rooms**: a Prep Card before a real meeting, a spoken debrief after, and a
   contribution funnel.
-- **You**: rank, streak, focus span, liveliness, badges, and everything Progress used to show.
+- **You**: rank, streak, focus span, liveliness, badges, your Arena takes, and
+  everything Progress used to show.
+
+**My English** (in onboarding and Settings) picks which soft fillers count:
+"ehn", "abi", "sha" and "o" for Nigerian English, "basically", "actually" and
+"na" for Indian English, none for Standard. Each word can be switched off.
 
 ## Run it
 
@@ -77,13 +86,13 @@ labels, and Space Mono for anything that counts.
 
 | Route | What it is |
 |---|---|
-| `/` | Home: streak, level, quests, the next action, today's prompt |
-| `/stage` | The Arena tab: the prompt waiting for you, and every take with its scorecard |
+| `/` | Home: the orb, the next action, the quests row, the voice note shortcut |
 | `/play` | The Play tab: five games, then the training drills |
 | `/rooms` | The contribution funnel, pending debriefs, and the new-room form |
-| `/you` | Rank, streak, focus span and liveliness, badges, then the whole Progress screen |
+| `/you` | Rank, streak, focus span and liveliness, badges, your Arena takes, then the whole Progress screen |
 | `/arena?topicId=` | A 60-second primer, then the take. `&rewriteOf=<id>` re-records one sentence |
-| `/scorecard?id=` | Delivery above the rule, content below it |
+| `/scorecard?id=` | One sentence, then delivery and content behind "See details" |
+| `/voicenote` | Record a voice note, check it, send it through the share sheet |
 | `/play/blitz` | Lexicon Blitz |
 | `/play/bomb` | Word Bomb |
 | `/play/pause` | Pause, Don't Um |
@@ -237,7 +246,7 @@ matters.
 
 What Rooms stores about a meeting: a title, the decision on the table, a time,
 the card, and what *you* said afterwards. No attendees, no notes, no audio.
-Speek never records a real meeting, and the reminders are local notifications —
+PipeUp never records a real meeting, and the reminders are local notifications —
 remote push does not work in Expo Go on SDK 53+, and a push server would be
 infrastructure in exchange for nothing.
 
@@ -277,7 +286,7 @@ saw half of.
 
 The 1–5 self-rating is stored on the same row and survives regeneration:
 `saveReport` upserts the four report columns on conflict rather than replacing
-the row. It is the only figure in Speek the app cannot measure.
+the row. It is the only figure in PipeUp the app cannot measure.
 
 ## The baseline
 

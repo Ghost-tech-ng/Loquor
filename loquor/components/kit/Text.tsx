@@ -61,7 +61,7 @@ export function Figure({ value, unit, tint }: { value: string; unit?: string; ti
 }
 
 const s = StyleSheet.create({
-  eyebrow: { color: CHROME.dust, fontSize: 11, letterSpacing: 1.6, fontFamily: TYPE.uiBold },
+  eyebrow: { color: CHROME.dust, fontSize: 13, letterSpacing: 0.1, fontFamily: TYPE.uiSemi },
   display: { color: CHROME.chalk, fontSize: 30, lineHeight: 36, fontFamily: TYPE.display, letterSpacing: -0.6 },
   body: { color: "#E4DFD4", fontSize: 16, lineHeight: 25, fontFamily: TYPE.ui },
   meta: { color: CHROME.dust, fontSize: 13.5, lineHeight: 20, fontFamily: TYPE.ui },

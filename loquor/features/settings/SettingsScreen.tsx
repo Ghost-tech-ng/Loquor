@@ -17,6 +17,7 @@ import { Reveal } from "../../components/kit/motion";
 import { Backup } from "../backup/BackupPanel";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TYPE } from "../../theme";
 import { KEY_GUIDES, type KeyGuide } from "./keyGuides";
+import { MyEnglish } from "./MyEnglish";
 import {
   DEFAULT_SETTINGS,
   getKey,
@@ -121,9 +122,9 @@ export default function Settings() {
 
   return (
     <Screen>
-      <Masthead right="SETTINGS" close />
+      <Masthead right="Settings" close />
 
-      <Eyebrow>WHO DOES THE WORK</Eyebrow>
+      <Eyebrow>Who does the work</Eyebrow>
       <View style={s.modes}>
         {/* The controls on this screen stay Pressables. A radio that squeezes
             under the thumb reads as a button that did something; these only
@@ -149,7 +150,7 @@ export default function Settings() {
 
       {settings.mode === "custom" ? (
         <Panel>
-          <Eyebrow>TRANSCRIPTION</Eyebrow>
+          <Eyebrow>Transcription</Eyebrow>
           <Segment
             options={[
               { value: "groq", label: "Groq — free, approximate fillers" },
@@ -159,7 +160,7 @@ export default function Settings() {
             onChange={(v) => applyCustom({ sttProvider: v as SettingsShape["sttProvider"] })}
           />
           <Hair style={{ marginVertical: SPACE.xs }} />
-          <Eyebrow>JUDGING</Eyebrow>
+          <Eyebrow>Judging</Eyebrow>
           <Segment
             options={[
               { value: "groq", label: "Groq — free" },
@@ -173,7 +174,7 @@ export default function Settings() {
 
       {active.stt === "groq" ? (
         <Panel>
-          <Eyebrow>THE READING</Eyebrow>
+          <Eyebrow>The reading</Eyebrow>
           <Segment
             options={[
               { value: "disfluency", label: "Score what was heard" },
@@ -190,7 +191,7 @@ export default function Settings() {
       ) : null}
 
       <Hair style={{ marginTop: SPACE.sm }} />
-      <Eyebrow>API KEYS</Eyebrow>
+      <Eyebrow>API keys</Eyebrow>
       <Meta>
         Stored in this phone&rsquo;s secure enclave. Never uploaded, never logged, never attached to
         an error report.
@@ -237,10 +238,10 @@ export default function Settings() {
                   />
                   <View style={s.keyActions}>
                     <Pressable onPress={() => commitKey(g.provider)} hitSlop={8}>
-                      <Text style={s.action}>SAVE</Text>
+                      <Text style={s.action}>Save</Text>
                     </Pressable>
                     <Pressable onPress={() => { setEditing(null); setDraft(""); }} hitSlop={8}>
-                      <Text style={[s.action, { color: CHROME.dustDim }]}>CANCEL</Text>
+                      <Text style={[s.action, { color: CHROME.dustDim }]}>Cancel</Text>
                     </Pressable>
                   </View>
                 </>
@@ -255,7 +256,7 @@ export default function Settings() {
                   <Text style={[s.keyValue, !stored && { color: CHROME.dustDim }]}>
                     {stored ? maskKey(stored) : "Not set"}
                   </Text>
-                  <Text style={s.action}>{stored ? "REPLACE" : "ADD"}</Text>
+                  <Text style={s.action}>{stored ? "Replace" : "Add"}</Text>
                 </Pressable>
               )}
 
@@ -268,7 +269,19 @@ export default function Settings() {
       <Backup />
 
       <Hair style={{ marginTop: SPACE.sm }} />
-      <Eyebrow>SOUND</Eyebrow>
+      <Eyebrow>My English</Eyebrow>
+      <Meta>
+        Some Englishes have their own fillers. Pick yours and they count; your accent never does.
+        Only takes from now on are counted this way.
+      </Meta>
+      <MyEnglish
+        english={settings.english}
+        off={settings.softOff}
+        onChange={(patch) => void applyCustom(patch)}
+      />
+
+      <Hair style={{ marginTop: SPACE.sm }} />
+      <Eyebrow>Sound</Eyebrow>
       <Meta>Chimes in the games. Haptics stay on either way.</Meta>
       <Segment
         options={[
@@ -285,10 +298,10 @@ export default function Settings() {
       />
 
       <Hair style={{ marginTop: SPACE.sm }} />
-      <Eyebrow>REMINDERS</Eyebrow>
+      <Eyebrow>Reminders</Eyebrow>
       <Meta>
         Two at most, both off until you turn them on, and neither carries a number. Scheduled on
-        this phone — Speek has no server to send you anything from.
+        this phone — PipeUp has no server to send you anything from.
       </Meta>
 
       <Reminder
@@ -325,12 +338,12 @@ export default function Settings() {
 
       {denied ? (
         <Text style={s.denied}>
-          iOS refused notifications for Speek. Settings → Notifications → Expo Go, then try again.
+          iOS refused notifications for PipeUp. Settings → Notifications → Expo Go, then try again.
         </Text>
       ) : null}
 
       <Hair style={{ marginTop: SPACE.sm }} />
-      <Eyebrow>YOUR RECORDINGS</Eyebrow>
+      <Eyebrow>Your recordings</Eyebrow>
       <Meta>
         Audio is deleted the moment it has been transcribed, and is never uploaded anywhere.
         Transcripts and scores live in a database on this phone, and in your own Firebase project
@@ -388,7 +401,7 @@ function Reminder({
         <Text style={s.remTitle}>{title}</Text>
         <Pressable onPress={current ? onClear : () => onSet(...(times[0] as [number, number]))} hitSlop={8}>
           <Text style={[s.action, !current && { color: CHROME.dust }]}>
-            {current ? "OFF" : "ON"}
+            {current ? "Off" : "On"}
           </Text>
         </Pressable>
       </View>
@@ -551,7 +564,7 @@ const s = StyleSheet.create({
   denied: { color: SEMANTIC.flaw, fontSize: 12, lineHeight: 18, fontFamily: TYPE.ui },
 
   keyActions: { flexDirection: "row", gap: SPACE.lg },
-  action: { color: SEMANTIC.ember, fontSize: 10, letterSpacing: 2, fontFamily: TYPE.uiSemi },
+  action: { color: SEMANTIC.ember, fontSize: 11.5, fontFamily: TYPE.uiSemi },
 });
 
 const g = StyleSheet.create({

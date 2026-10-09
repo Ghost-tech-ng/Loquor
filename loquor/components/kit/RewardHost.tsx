@@ -77,7 +77,7 @@ export function RewardHost() {
           </View>
 
           <Text style={s.kicker}>
-            {reward.welcome ? "WELCOME TO SPEEK" : levelled ? "LEVEL UP" : "NICE WORK"}
+            {reward.welcome ? "Welcome to PipeUp" : levelled ? "Level up" : "Nice work"}
           </Text>
           <Text style={s.title}>
             {reward.welcome
@@ -156,9 +156,8 @@ const s = StyleSheet.create({
   // Straddles the rim: the sheet pads 52 + 18 above the content, the orb is 88 tall.
   orb: { position: "absolute", top: -114, alignSelf: "center" },
   kicker: {
-    fontFamily: TYPE.uiBold,
-    fontSize: 12,
-    letterSpacing: 2.4,
+    fontFamily: TYPE.uiSemi,
+    fontSize: 14,
     color: AURORA.cyan,
     textAlign: "center",
   },

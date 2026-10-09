@@ -61,7 +61,7 @@ export default function Room() {
   if (!room) {
     return (
       <Screen>
-        <Masthead right="ROOM" />
+        <Masthead right="Room" />
         <Display>That room no longer exists.</Display>
         <GlowButton label="Back" tone="ghost" onPress={() => router.replace("/rooms")} />
       </Screen>
@@ -119,12 +119,12 @@ export default function Room() {
     }
   };
 
-  if (stage === "working") return <Working right="DEBRIEF" step="Reading it back" />;
+  if (stage === "working") return <Working right="Debrief" step="Reading it back" />;
 
   if (stage === "error") {
     return (
       <Failed
-        right="DEBRIEF"
+        right="Debrief"
         error={failure ?? "Something went wrong."}
         onRetry={() => {
           setFailure(null);
@@ -139,7 +139,7 @@ export default function Room() {
   if (stage === "recording") {
     return (
       <Screen scroll={false}>
-        <Masthead right="DEBRIEF" />
+        <Masthead right="Debrief" />
         <Display style={s.liveTitle} numberOfLines={2}>
           {room.title}
         </Display>
@@ -148,7 +148,7 @@ export default function Room() {
           seconds={take.seconds}
           ceilingS={CEILING_S}
           onStop={finish}
-          hint="TAP TO FINISH"
+          hint="Tap to finish"
         />
         <View style={s.promptStack}>
           {DEBRIEF_PROMPTS.map((p) => (
@@ -165,7 +165,7 @@ export default function Room() {
     const suggested = archetype(debrief.suggested_archetype);
     return (
       <Screen>
-        <Masthead right="DEBRIEF" />
+        <Masthead right="Debrief" />
         <Eyebrow>{room.title.toUpperCase()}</Eyebrow>
         <Display>{debrief.headline}</Display>
 
@@ -178,12 +178,12 @@ export default function Room() {
 
         <Hair />
 
-        <Eyebrow>WHAT YOU DIDN&rsquo;T SAY</Eyebrow>
+        <Eyebrow>What you didn&rsquo;t say</Eyebrow>
         <Body style={s.gap}>{debrief.unsaid}</Body>
 
         {suggested ? (
           <Panel>
-            <Eyebrow>THE MOVE THAT WOULD HAVE OPENED IT</Eyebrow>
+            <Eyebrow>The move that would have opened it</Eyebrow>
             <Display style={s.smallDisplay}>{suggested.name}</Display>
             <Body>{suggested.form}</Body>
             <Meta>{suggested.cue}</Meta>
@@ -198,7 +198,7 @@ export default function Room() {
 
         {debrief.contributions.length > 0 ? (
           <>
-            <Eyebrow>WHAT YOU CONTRIBUTED</Eyebrow>
+            <Eyebrow>What you contributed</Eyebrow>
             <View style={{ gap: SPACE.sm }}>
               {debrief.contributions.map((c, i) => (
                 <Reveal key={i} index={i} style={s.bullet}>
@@ -211,7 +211,7 @@ export default function Room() {
         ) : null}
 
         <Hair />
-        <Eyebrow>THE CARD YOU WALKED IN WITH</Eyebrow>
+        <Eyebrow>The card you walked in with</Eyebrow>
         <Card prep={prep} muted />
 
         <GlowButton label="Back to rooms" tone="ghost" onPress={() => router.replace("/rooms")} />
@@ -223,7 +223,7 @@ export default function Room() {
   const happened = room.at <= Date.now();
   return (
     <Screen>
-      <Masthead right="PREP CARD" />
+      <Masthead right="Prep card" />
       <Eyebrow>{when(room.at)}</Eyebrow>
       <Display>{room.title}</Display>
       {room.decision ? <Body style={s.decision}>{room.decision}</Body> : null}
@@ -259,12 +259,12 @@ function Card({ prep, muted }: { prep: PrepCard; muted?: boolean }) {
   return (
     <View style={{ gap: SPACE.md, opacity: muted ? 0.6 : 1 }}>
       <View>
-        <Eyebrow>YOUR ONE INTENTION</Eyebrow>
+        <Eyebrow>Your one intention</Eyebrow>
         <Body style={{ marginTop: 4 }}>{prep.intent}</Body>
       </View>
 
       <View style={{ gap: SPACE.sm }}>
-        <Eyebrow>THREE QUESTIONS TO HAVE LOADED</Eyebrow>
+        <Eyebrow>Three questions to have loaded</Eyebrow>
         {/* Three questions, one at a time. You will only remember them if you
             read them as three things rather than as a paragraph. */}
         {prep.questions.map((q, i) => (
@@ -281,7 +281,7 @@ function Card({ prep, muted }: { prep: PrepCard; muted?: boolean }) {
 
       {prep.scaffold ? (
         <View>
-          <Eyebrow>IF YOU HAVE TO ARGUE</Eyebrow>
+          <Eyebrow>If you have to argue</Eyebrow>
           <Text style={s.scName}>{prep.scaffold.name}</Text>
           <Text style={s.scSteps}>{prep.scaffold.steps.join("  →  ")}</Text>
         </View>
@@ -327,7 +327,7 @@ const s = StyleSheet.create({
   tallies: { flexDirection: "row", gap: SPACE.lg, flexWrap: "wrap" },
   tally: { gap: 2 },
   tallyValue: { color: CHROME.chalk, fontSize: 20, letterSpacing: -0.8, fontFamily: TYPE.monoMedium, ...TABULAR },
-  tallyLabel: { color: CHROME.dustDim, fontSize: 10, letterSpacing: 1.4, fontFamily: TYPE.uiMedium },
+  tallyLabel: { color: CHROME.dustDim, fontSize: 11.5, fontFamily: TYPE.uiMedium },
 
   bullet: { flexDirection: "row", gap: 12 },
   bulletTick: { width: 1, alignSelf: "stretch", borderRadius: 1, backgroundColor: SURFACE.edgeLive },

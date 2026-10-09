@@ -22,7 +22,7 @@ import {
 
 import { feel } from "./kit/feel";
 import { transcribe } from "../lib/stt";
-import { getKey, loadSettings, resolve } from "../lib/settings";
+import { getKey, loadSettings, resolve, softFillers } from "../lib/settings";
 import type { Metrics, Word } from "../lib/metrics";
 import { computeMetrics } from "../lib/metrics";
 
@@ -109,7 +109,7 @@ export function useTake(opts: { prompt?: string; keepAudio?: boolean } = {}): Ta
           await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
           if (alive) setReady(true);
         } else {
-          setError("Speek needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
+          setError("PipeUp needs the microphone. Enable it in iOS Settings → Expo Go → Microphone.");
         }
       } catch (err) {
         if (alive) setError(`Could not open the microphone: ${message(err)}`);
@@ -161,7 +161,8 @@ export function useTake(opts: { prompt?: string; keepAudio?: boolean } = {}): Ta
       if ((new File(uri).size ?? 0) === 0)
         throw new Error("The recording came back empty. Try once more.");
 
-      const { stt } = resolve(await loadSettings());
+      const settings = await loadSettings();
+      const { stt } = resolve(settings);
       const key = (await getKey(stt)) ?? "";
       const t = await transcribe(uri, stt, key, { prompt: prompt.current });
 
@@ -170,7 +171,7 @@ export function useTake(opts: { prompt?: string; keepAudio?: boolean } = {}): Ta
       const kept = keepAudio.current ? uri : null;
       if (!kept) discardAudio(uri);
 
-      const metrics = computeMetrics(t.words, t.durationS ?? fallbackS);
+      const metrics = computeMetrics(t.words, t.durationS ?? fallbackS, softFillers(settings));
       if (metrics.wordCount === 0) {
         discardAudio(kept);
         throw new Error("Nothing was picked up. Check the mic and try again.");

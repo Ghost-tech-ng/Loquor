@@ -186,10 +186,10 @@ export default function PauseScreen() {
                 : "Stopping mid-thought is hard. It gets easier every run."
           }
           stats={[
-            { label: "CLEAN", value: `${gate.clean}/${gate.gates}`, tint: rate >= 70 ? SEMANTIC.solid : undefined },
-            { label: "BEST COMBO", value: String(gate.bestCombo) },
+            { label: "Clean", value: `${gate.clean}/${gate.gates}`, tint: rate >= 70 ? SEMANTIC.solid : undefined },
+            { label: "Best combo", value: String(gate.bestCombo) },
             {
-              label: "FILLERS",
+              label: "Fillers",
               value: bonus.fillers === null ? "—" : String(bonus.fillers),
               tint: bonus.fillers === 0 ? SEMANTIC.solid : undefined,
             },
@@ -217,7 +217,7 @@ export default function PauseScreen() {
 
   return (
     <Screen scroll={false}>
-      <Masthead close onClose={quit} right={stage === "scoring" ? "SCORING" : `${Math.max(0, Math.ceil((TOTAL_MS - elapsed) / 1000))}s`} />
+      <Masthead close onClose={quit} right={stage === "scoring" ? "Scoring" : `${Math.max(0, Math.ceil((TOTAL_MS - elapsed) / 1000))}s`} />
       <TimerBar progress={1 - elapsed / TOTAL_MS} tint={TINT} />
 
       <View style={s.hud}>
@@ -251,7 +251,7 @@ export default function PauseScreen() {
       </View>
 
       <Glass style={s.topicMini}>
-        <Text style={s.label}>TOPIC</Text>
+        <Text style={s.label}>Topic</Text>
         <Text style={s.topicMiniText} numberOfLines={2}>
           {topic.title}
         </Text>
@@ -267,7 +267,7 @@ function phaseCopy(g: GateState): { headline: string; sub: string; color: string
     case "talk":
       return { headline: "Keep going", sub: "A pause is coming. You won't know when.", color: CHROME.chalk };
     case "gate":
-      return { headline: "PAUSE", sub: "Go quiet now.", color: AURORA.coral };
+      return { headline: "Pause", sub: "Go quiet now.", color: AURORA.coral };
     case "hold":
       return { headline: "Hold it…", sub: "Stay silent. Let the thought land.", color: AURORA.coral };
     case "resume":
@@ -281,7 +281,7 @@ function TopicCard({ topic, onShuffle }: { topic: Topic; onShuffle: () => void }
   return (
     <Glass style={{ gap: SPACE.sm }}>
       <View style={s.topicHead}>
-        <Text style={s.label}>YOUR TOPIC</Text>
+        <Text style={s.label}>Your topic</Text>
         <Text style={s.shuffle} onPress={onShuffle} accessibilityRole="button">
           Another one
         </Text>
@@ -303,7 +303,7 @@ const s = StyleSheet.create({
   headline: { fontSize: 40, fontFamily: TYPE.display, letterSpacing: -1, marginTop: SPACE.sm },
   sub: { color: CHROME.dust, fontSize: 15, fontFamily: TYPE.ui, textAlign: "center" },
   event: { fontSize: 16, fontFamily: TYPE.uiSemi, ...TABULAR },
-  label: { color: CHROME.dust, fontSize: 11, letterSpacing: 1.6, fontFamily: TYPE.uiBold },
+  label: { color: CHROME.dust, fontSize: 11.5, fontFamily: TYPE.uiBold },
   topicMini: { gap: 4, marginBottom: SPACE.lg },
   topicMiniText: { color: CHROME.chalk, fontSize: 15, lineHeight: 21, fontFamily: TYPE.uiMedium },
   topicHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },

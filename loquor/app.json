@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Speek",
+    "name": "PipeUp",
     "slug": "loquor",
     "owner": "osemwegieeghosa",
     "version": "1.0.0",
@@ -8,14 +8,14 @@
       "ios"
     ],
     "orientation": "portrait",
-    "scheme": "speek",
+    "scheme": "pipeup",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#0B0F17",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.eghosa.loquor",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "Speek listens to your practice so it can score your pace, pauses, fillers and liveliness. Audio is deleted after it is analysed."
+        "NSMicrophoneUsageDescription": "PipeUp listens to your practice so it can score your pace, pauses, fillers and liveliness. Audio is deleted after it is analysed."
       }
     },
     "plugins": [
@@ -34,7 +34,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#0B0F17"
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "updates": {
       "url": "https://u.expo.dev/dace44de-b31f-4aab-99e0-0fe192e03b1c",

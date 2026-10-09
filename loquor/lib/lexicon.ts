@@ -43,10 +43,36 @@ export function normalise(text: string): string {
     .trim();
 }
 
+// Soft fillers: real words that some Englishes use as filler. They are opt-in
+// per variety and switchable one by one, because the app's promise is the
+// opposite of accent reduction — keep how you sound, lose the noise. A word
+// on this list is never wrong English; it only counts when you say it is a
+// tic of yours. Unlike "um", Whisper keeps these, so the count is exact.
+export type English = "general" | "nigerian" | "indian";
+
+export const SOFT_FILLERS: Record<English, readonly string[]> = {
+  general: [],
+  nigerian: ["ehn", "ehen", "abi", "sha", "o"],
+  indian: ["basically", "actually", "na"],
+};
+
+export const ENGLISH_LABEL: Record<English, string> = {
+  general: "Standard",
+  nigerian: "Nigerian",
+  indian: "Indian",
+};
+
+/** The soft fillers that count for this person: their variety's list minus the ones they switched off. */
+export function softFillerSet(english: English, off: readonly string[] = []): ReadonlySet<string> {
+  const skip = new Set(off);
+  return new Set(SOFT_FILLERS[english].filter((w) => !skip.has(w)));
+}
+
 const NON_LEXICAL_SET: ReadonlySet<string> = new Set(NON_LEXICAL);
 
-export function isFiller(token: string): boolean {
-  return NON_LEXICAL_SET.has(normalise(token));
+export function isFiller(token: string, soft?: ReadonlySet<string>): boolean {
+  const t = normalise(token);
+  return NON_LEXICAL_SET.has(t) || (soft !== undefined && soft.has(t));
 }
 
 const HEDGE_TOKENS: readonly (readonly string[])[] = [...HEDGES]

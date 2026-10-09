@@ -1,4 +1,4 @@
-// The mascot for Bring It to Life: a grey box robot that turns into the Speek
+// The mascot for Bring It to Life: a grey box robot that turns into the PipeUp
 // orb as your delivery comes alive. `morph` is 0 (robot) to 1 (orb).
 //
 // The robot rounds off and fades as the orb grows through it, so a middling

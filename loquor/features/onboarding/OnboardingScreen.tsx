@@ -32,7 +32,8 @@ import { Reveal } from "../../components/kit/motion";
 import { CHROME, RADIUS, SEMANTIC, SPACE, SURFACE, TABULAR, TYPE, heat } from "../../theme";
 import { useTake, type Take } from "../../components/useTake";
 import { getBaseline, saveBaseline, type BaselineRow } from "../../lib/db";
-import { fillerCountIsApproximate } from "../../lib/settings";
+import { fillerCountIsApproximate, loadSettings, saveSettings, type Settings } from "../../lib/settings";
+import { MyEnglish } from "../settings/MyEnglish";
 
 const PROMPT =
   "Something you changed your mind about, and what changed it.";
@@ -56,12 +57,16 @@ export default function Onboarding() {
   const [stage, setStage] = useState<Stage>("brief");
   const [result, setResult] = useState<Take | null>(null);
   const [rating, setRating] = useState<number | null>(null);
+  const [settings, setSettings] = useState<Settings | null>(null);
 
   useFocusEffect(
     useCallback(() => {
       let live = true;
       getBaseline().then((row) => {
         if (live) setExisting(row);
+      });
+      loadSettings().then((v) => {
+        if (live) setSettings(v);
       });
       return () => {
         live = false;
@@ -100,7 +105,7 @@ export default function Onboarding() {
   if (existing === undefined) {
     return (
       <Screen>
-        <Masthead right="BASELINE" />
+        <Masthead right="Baseline" />
         <Meta>Checking…</Meta>
       </Screen>
     );
@@ -113,7 +118,7 @@ export default function Onboarding() {
     );
     return (
       <Screen>
-        <Masthead right="BASELINE" />
+        <Masthead right="Baseline" />
         <Eyebrow>RECORDED {new Date(existing.at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }).toUpperCase()}</Eyebrow>
         <Display>This is what you sounded like before any of this.</Display>
 
@@ -139,10 +144,10 @@ export default function Onboarding() {
   if (stage === "working") {
     return (
       <Screen scroll={false}>
-        <Masthead right="BASELINE" />
+        <Masthead right="Baseline" />
         <View style={s.center}>
           <Ignition />
-          <Eyebrow style={{ marginTop: SPACE.md }}>TRANSCRIBING</Eyebrow>
+          <Eyebrow style={{ marginTop: SPACE.md }}>Transcribing</Eyebrow>
           <Meta style={s.centerText}>
             Delivery is counted here on the phone. Only the words go out, and the audio is deleted
             the moment they come back.
@@ -156,7 +161,7 @@ export default function Onboarding() {
     const over = take.seconds > SOFT_CEILING_S;
     return (
       <Screen scroll={false}>
-        <Masthead right="BASELINE" />
+        <Masthead right="Baseline" />
         <Display style={s.livePrompt} numberOfLines={3}>
           {PROMPT}
         </Display>
@@ -182,7 +187,7 @@ export default function Onboarding() {
             {String(Math.floor(take.seconds / 60)).padStart(2, "0")}:
             {String(take.seconds % 60).padStart(2, "0")}
           </Text>
-          <Eyebrow>{over ? "PAST NINETY — LAND IT" : "TAP TO FINISH"}</Eyebrow>
+          <Eyebrow>{over ? "Past ninety — land it" : "Tap to finish"}</Eyebrow>
         </View>
 
         <Meta style={s.centerText}>
@@ -196,11 +201,11 @@ export default function Onboarding() {
   if (stage === "rate" && result) {
     return (
       <Screen>
-        <Masthead right="BASELINE" />
-        <Eyebrow>ONE QUESTION, AND IT IS YOURS</Eyebrow>
+        <Masthead right="Baseline" />
+        <Eyebrow>One question, and it IS yours</Eyebrow>
         <Display>Did you say the thing you wanted to say?</Display>
         <Meta>
-          One is rarely, five is always. This is the only figure in Speek the app cannot measure,
+          One is rarely, five is always. This is the only figure in PipeUp the app cannot measure,
           and the one that decides whether the rest of them mattered.
         </Meta>
 
@@ -225,7 +230,7 @@ export default function Onboarding() {
         </View>
 
         <Hair style={{ marginTop: SPACE.sm }} />
-        <Eyebrow>WHAT WAS MEASURED</Eyebrow>
+        <Eyebrow>What was measured</Eyebrow>
         <Panel>
           <Row
             label="Filler rate"
@@ -243,7 +248,7 @@ export default function Onboarding() {
   if (stage === "done") {
     return (
       <Screen>
-        <Masthead right="BASELINE" />
+        <Masthead right="Baseline" />
         <Display>Filed. It will not be asked for again.</Display>
         <Meta>
           Ninety days from now the record on You reads against this take. Nothing else you do in
@@ -258,10 +263,10 @@ export default function Onboarding() {
   // brief
   return (
     <Screen>
-      <Masthead right="BASELINE" />
+      <Masthead right="Baseline" />
 
       <Reveal index={0}>
-        <Eyebrow>BEFORE ANYTHING ELSE</Eyebrow>
+        <Eyebrow>Before anything else</Eyebrow>
         <Display>{PROMPT}</Display>
       </Reveal>
 
@@ -277,7 +282,7 @@ export default function Onboarding() {
           it is three beats, so there is always a next thing to reach for. */}
       <Reveal index={2}>
         <Hair />
-        <Eyebrow>IF YOU FREEZE, TALK IN THIS SHAPE</Eyebrow>
+        <Eyebrow>If you freeze, talk in this shape</Eyebrow>
         <View style={s.shape}>
           {SHAPE.map((beat, i) => (
             <View key={i} style={s.beat}>
@@ -292,10 +297,29 @@ export default function Onboarding() {
         </Meta>
       </Reveal>
 
-      <Reveal index={3}>
+      {/* Before the baseline, not after: the baseline is counted with these, and a
+          number counted one way cannot be compared with one counted another. */}
+      {settings ? (
+        <Reveal index={3}>
+          <Hair />
+          <Eyebrow>Your English</Eyebrow>
+          <Meta>Pick yours and the app counts the fillers people really use in it.</Meta>
+          <MyEnglish
+            english={settings.english}
+            off={settings.softOff}
+            onChange={(patch) => {
+              const next = { ...settings, ...patch };
+              setSettings(next);
+              void saveSettings(next);
+            }}
+          />
+        </Reveal>
+      ) : null}
+
+      <Reveal index={4}>
         <Panel>
           <Meta>
-            Speak badly if you speak badly. Every claim Speek makes about your progress is measured
+            Speak badly if you speak badly. Every claim PipeUp makes about your progress is measured
             from this recording, so a baseline you performed carefully is a baseline that will make
             three months of real work look like nothing.
           </Meta>

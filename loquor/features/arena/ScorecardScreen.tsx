@@ -1,5 +1,9 @@
 // The Scorecard.
 //
+// It opens with one sentence (a filler count and how it compares with your
+// week) and the two buttons you need next. Everything below sits behind "See
+// details", for the take you want to pick apart.
+//
 // Two halves that never mix. Above the rule: delivery, computed by arithmetic on
 // this device, identical for identical audio forever. Below it: content, judged
 // by a model that will be a different model next year. Keeping them visually
@@ -15,7 +19,8 @@ import { Panel } from "../../components/kit/Glass";
 import { GlowButton } from "../../components/kit/GlowButton";
 import { Masthead, Screen } from "../../components/kit/Screen";
 import { Body, Display, Eyebrow, Hair, Meta } from "../../components/kit/Text";
-import { Reveal } from "../../components/kit/motion";
+import { Glyph } from "../../components/kit/Glyph";
+import { PressableScale, Reveal } from "../../components/kit/motion";
 import { CHROME, SEMANTIC, SPACE, TABULAR, TYPE } from "../../theme";
 import {
   DEAD_AIR_THRESHOLD_S,
@@ -26,10 +31,11 @@ import {
   type Metrics,
 } from "../../lib/metrics";
 import { RUBRIC_LABELS, type Judgement } from "./judge";
-import { getSession, type SessionRow } from "../../lib/db";
+import { getSession, recentSessions, type SessionRow } from "../../lib/db";
 import { fillerCountIsApproximate } from "../../lib/settings";
 import { celebrate } from "../progression/progressionStore";
 import { LIVELY_LINE, labelFor } from "../games/prosody";
+import { leadLine } from "./lead";
 
 export default function Scorecard() {
   const router = useRouter();
@@ -38,6 +44,8 @@ export default function Scorecard() {
   const [row, setRow] = useState<SessionRow | null>(null);
   const [parent, setParent] = useState<SessionRow | null>(null);
   const [missing, setMissing] = useState(false);
+  const [week, setWeek] = useState<SessionRow[]>([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -48,6 +56,7 @@ export default function Scorecard() {
       }
       setRow(r);
       if (r.parent_id) setParent(await getSession(r.parent_id));
+      setWeek(await recentSessions(40));
       // After the numbers are on screen, so the sheet rises over the result it
       // is rewarding. Reopening an old scorecard settles nothing new and shows
       // nothing.
@@ -68,7 +77,7 @@ export default function Scorecard() {
   if (!row) {
     return (
       <Screen scroll={false}>
-        <Masthead right="SCORECARD" />
+        <Masthead right="Scorecard" />
       </Screen>
     );
   }
@@ -78,13 +87,51 @@ export default function Scorecard() {
   const approx = fillerCountIsApproximate(row.provider as "groq" | "deepgram");
   const verdict = fillerVerdict(m.fillerRate);
 
+  const lead = leadLine({
+    take: row,
+    count: m.fillerCount,
+    others: week,
+    parentRate: parent ? parent.filler_rate : null,
+  });
+
   return (
     <Screen>
-      <Masthead right={row.is_rewrite ? "REWRITE" : "SCORECARD"} />
+      <Masthead right={row.is_rewrite ? "Rewrite" : "Scorecard"} />
 
       <Eyebrow>{new Date(row.started_at).toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</Eyebrow>
       <Body style={s.topic}>{row.topic_title}</Body>
 
+      <Reveal index={0}>
+        <Display style={s.lead}>{lead}</Display>
+      </Reveal>
+      <Meta style={s.leadMeta}>
+        {Math.round(m.durationS)}s · {m.wpm} wpm
+        {row.rubric_total !== null ? ` · ${row.rubric_total}/20 on content` : ""}
+      </Meta>
+
+      {j && !row.is_rewrite ? (
+        <GlowButton
+          label="Rewrite your weakest sentence"
+          onPress={() =>
+            router.push({ pathname: "/arena", params: { topicId: row.topic_id, rewriteOf: row.id } })
+          }
+        />
+      ) : null}
+      <GlowButton label="Done" tone="ghost" onPress={() => router.replace("/")} />
+
+      <PressableScale
+        onPress={() => setOpen((v) => !v)}
+        style={s.toggle}
+        accessibilityState={{ expanded: open }}
+      >
+        <Text style={s.toggleText}>{open ? "Hide details" : "See details"}</Text>
+        <View style={{ transform: [{ rotate: open ? "-90deg" : "90deg" }] }}>
+          <Glyph name="chevron" size={14} color={CHROME.dust} />
+        </View>
+      </PressableScale>
+
+      {open ? (
+        <>
       <Timeline fillerMarks={m.fillerMarks} deadAirSpans={m.deadAirSpans} />
       <Meta>
         {Math.round(m.durationS)}s · {m.wordCount} words · red flecks are fillers, breaks are
@@ -93,17 +140,17 @@ export default function Scorecard() {
 
       {parent ? (
         <Panel>
-          <Eyebrow>AGAINST THE FIRST TAKE</Eyebrow>
+          <Eyebrow>Against the first take</Eyebrow>
           <View style={s.compare}>
-            <Delta label="FILLER" before={parent.filler_rate} after={m.fillerRate} unit="/min" ideal={0} />
-            <Delta label="PACE" before={parent.wpm} after={m.wpm} unit="" ideal={PACE_MID} />
-            <Delta label="HEDGE" before={parent.hedge_density} after={m.hedgeDensity} unit="%" ideal={0} />
+            <Delta label="Filler" before={parent.filler_rate} after={m.fillerRate} unit="/min" ideal={0} />
+            <Delta label="Pace" before={parent.wpm} after={m.wpm} unit="" ideal={PACE_MID} />
+            <Delta label="Hedge" before={parent.hedge_density} after={m.hedgeDensity} unit="%" ideal={0} />
           </View>
         </Panel>
       ) : null}
 
       <Hair style={{ marginTop: SPACE.sm }} />
-      <Eyebrow>DELIVERY · MEASURED</Eyebrow>
+      <Eyebrow>Delivery · measured</Eyebrow>
 
       {/* The four rails land one after another rather than as a block. A
           scorecard that appears all at once is read as a verdict; one that
@@ -111,7 +158,7 @@ export default function Scorecard() {
       <View style={s.rails}>
         <Reveal index={0}>
         <Rail
-          label="FILLER RATE"
+          label="Filler rate"
           value={m.fillerRate.toFixed(1)}
           unit="/min"
           approximate={approx}
@@ -128,7 +175,7 @@ export default function Scorecard() {
         </Reveal>
         <Reveal index={1}>
         <Rail
-          label="PACE"
+          label="Pace"
           value={String(m.wpm)}
           unit="wpm"
           position={bandPosition(m.wpm, PACE_BAND_WPM.low, PACE_BAND_WPM.high)}
@@ -143,7 +190,7 @@ export default function Scorecard() {
         </Reveal>
         <Reveal index={2}>
         <Rail
-          label="DEAD AIR"
+          label="Dead air"
           value={m.deadAirTotalS.toFixed(1)}
           unit="s"
           position={bandPosition(m.deadAirTotalS, 0, 6)}
@@ -156,7 +203,7 @@ export default function Scorecard() {
         </Reveal>
         <Reveal index={3}>
         <Rail
-          label="HEDGING"
+          label="Hedging"
           value={m.hedgeDensity.toFixed(1)}
           unit="%"
           position={bandPosition(m.hedgeDensity, 0, 4)}
@@ -171,7 +218,7 @@ export default function Scorecard() {
         {lively !== null ? (
           <Reveal index={4}>
             <Rail
-              label="LIVELINESS"
+              label="Liveliness"
               value={String(lively)}
               unit={`/100 · ${labelFor(lively)}`}
               position={lively / 100}
@@ -185,7 +232,7 @@ export default function Scorecard() {
         <>
           <Hair style={{ marginTop: SPACE.sm }} />
           <View style={s.headRow}>
-            <Eyebrow>CONTENT · JUDGED</Eyebrow>
+            <Eyebrow>Content · judged</Eyebrow>
             <Text style={s.total}>{row.rubric_total}/20</Text>
           </View>
 
@@ -202,11 +249,11 @@ export default function Scorecard() {
           </View>
 
           <Panel style={{ marginTop: SPACE.xs }}>
-            <Eyebrow>WEAKEST SENTENCE</Eyebrow>
+            <Eyebrow>Weakest sentence</Eyebrow>
             <Body style={s.quote}>&ldquo;{j.weakest_sentence}&rdquo;</Body>
             <Meta>{j.weakest_reason}</Meta>
             <Hair style={{ marginVertical: SPACE.xs }} />
-            <Eyebrow>SAY THIS INSTEAD</Eyebrow>
+            <Eyebrow>Say this instead</Eyebrow>
             <Body>{j.suggested_rewrite}</Body>
           </Panel>
 
@@ -215,28 +262,20 @@ export default function Scorecard() {
             {j.strongest_moment}
           </Meta>
 
-          {!row.is_rewrite ? (
-            <GlowButton
-              label="Rewrite that sentence"
-              onPress={() =>
-                router.push({ pathname: "/arena", params: { topicId: row.topic_id, rewriteOf: row.id } })
-              }
-            />
-          ) : null}
         </>
       ) : (
         <Meta>No judgement was recorded for this take.</Meta>
       )}
 
-      <GlowButton label="Done" tone="ghost" onPress={() => router.replace("/")} />
-
       <Hair style={{ marginTop: SPACE.sm }} />
-      <Eyebrow>WHAT YOU ACTUALLY SAID</Eyebrow>
+      <Eyebrow>What you actually said</Eyebrow>
       <Body style={s.transcript}>{row.transcript}</Body>
       <Meta style={s.provenance}>
         Delivery counted on this device. Words transcribed by {row.provider}
         {approx ? " — Whisper cleans up disfluencies, so the filler count is a floor, not a total." : "."}
       </Meta>
+        </>
+      ) : null}
     </Screen>
   );
 }
@@ -284,6 +323,18 @@ function Delta({
 
 const s = StyleSheet.create({
   topic: { color: CHROME.chalk, fontFamily: TYPE.display, fontSize: 19, lineHeight: 25 },
+  lead: { fontSize: 30, lineHeight: 37, marginTop: SPACE.sm },
+  leadMeta: { color: CHROME.dust, fontFamily: TYPE.mono, ...TABULAR },
+  toggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginTop: SPACE.xs,
+  },
+  toggleText: { color: CHROME.dust, fontSize: 14, fontFamily: TYPE.uiSemi },
   rails: { gap: SPACE.lg, marginTop: SPACE.xs },
   headRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   total: { color: CHROME.chalk, fontSize: 15, fontFamily: TYPE.monoMedium, ...TABULAR },
@@ -297,7 +348,7 @@ const s = StyleSheet.create({
 
   compare: { flexDirection: "row", gap: SPACE.md },
   delta: { flex: 1, gap: 3 },
-  deltaLabel: { color: CHROME.dustDim, fontSize: 9, letterSpacing: 1.8, fontFamily: TYPE.uiMedium },
+  deltaLabel: { color: CHROME.dustDim, fontSize: 11.5, fontFamily: TYPE.uiMedium },
   deltaValue: { color: CHROME.chalk, fontSize: 16, fontFamily: TYPE.monoMedium, ...TABULAR },
   deltaDiff: { color: CHROME.dustDim, fontSize: 11, fontFamily: TYPE.mono, ...TABULAR },
 });
