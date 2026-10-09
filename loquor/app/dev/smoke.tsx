@@ -128,8 +128,7 @@ export default function SmokeTest() {
   const upload = async (uri: string) => {
     setBusy(true);
     const form = new FormData();
-    // React Native's FormData takes a file descriptor, not a Blob.
-    form.append("file", { uri, name: "take.m4a", type: "audio/m4a" } as unknown as Blob);
+    form.append("file", new File(uri), "take.m4a");
     form.append("model", "whisper-large-v3-turbo");
     form.append("response_format", "verbose_json");
     form.append("timestamp_granularities[]", "word");

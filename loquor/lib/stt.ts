@@ -9,6 +9,7 @@
 // `hedge_density` are computed from timings alone and are unaffected by the
 // filler question — losing timestamps would cost three metrics instead of one.
 
+import { File } from "expo-file-system";
 import type { Word } from "./metrics.ts";
 
 export type Transcript = {
@@ -57,8 +58,10 @@ export async function transcribe(
 
 async function viaGroq(uri: string, apiKey: string, opts: TranscribeOptions): Promise<Transcript> {
   const form = new FormData();
-  // React Native's FormData takes a file descriptor, not a Blob.
-  form.append("file", { uri, name: "take.m4a", type: "audio/m4a" } as unknown as Blob);
+  // Expo replaces global fetch with expo/fetch, which rejects React Native's
+  // { uri, name, type } descriptor. A File from expo-file-system is a Blob with
+  // bytes(), which it does encode.
+  form.append("file", new File(uri), "take.m4a");
   form.append("model", "whisper-large-v3-turbo");
   form.append("response_format", "verbose_json");
   form.append("timestamp_granularities[]", "word");
@@ -105,7 +108,7 @@ async function viaDeepgram(uri: string, apiKey: string): Promise<Transcript> {
     "https://api.deepgram.com/v1/listen" +
     "?model=nova-3&smart_format=true&filler_words=true&punctuate=true";
 
-  const body = await fetch(uri).then((r) => r.blob());
+  const body = await new File(uri).bytes();
 
   const t0 = Date.now();
   const res = await fetch(url, {
