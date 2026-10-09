@@ -36,6 +36,7 @@ import { judge } from "./judge";
 import { countSessions, getSession, recentSessions, saveSession } from "../../lib/db";
 import { getKey, loadSettings, resolve, softFillers } from "../../lib/settings";
 import { liveliness } from "../games/prosody";
+import { usePetAway } from "../pet/petPresence";
 
 const PRIMER_SECONDS = 90;
 const SOFT_CEILING_S = 120;
@@ -95,6 +96,7 @@ export default function Arena() {
 
   const recorder = useAudioRecorder({ ...RecordingPresets.HIGH_QUALITY, isMeteringEnabled: true });
   const state = useAudioRecorderState(recorder, 100);
+  usePetAway(state.isRecording);
 
   const [stage, setStage] = useState<Stage>("primer");
   const [left, setLeft] = useState(PRIMER_SECONDS);

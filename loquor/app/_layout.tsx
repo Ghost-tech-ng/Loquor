@@ -21,6 +21,7 @@ import { SpaceMono_700Bold } from "@expo-google-fonts/space-mono/700Bold";
 import { Boot } from "../components/kit/Boot";
 import { AuroraBackground } from "../components/kit/Aurora";
 import { RewardHost } from "../components/kit/RewardHost";
+import { PetHost } from "../components/kit/Pet";
 import { CHROME } from "../theme";
 import { seedKeysFromEnv } from "../lib/settings";
 import { autoBackup } from "../features/backup/backup";
@@ -105,6 +106,7 @@ export default function RootLayout() {
             }}
           />
           <RewardHost />
+          <PetHost />
         </ThemeProvider>
       ) : null}
       {bootMounted ? <Boot exiting={!booting} /> : null}

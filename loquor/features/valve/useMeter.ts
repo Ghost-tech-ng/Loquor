@@ -23,6 +23,7 @@ import {
 } from "expo-audio";
 
 import { FLOOR_DB, decayPeak, sustainedPeak } from "./valve";
+import { usePetAway } from "../pet/petPresence";
 
 /** Ten samples a second. Fast enough that a held syllable lands three or four
  *  ticks, which is what sustainedPeak needs to tell a voice from a door slam. */
@@ -48,6 +49,7 @@ export function useMeter(): MeterState {
 
   const [ready, setReady] = useState(false);
   const [running, setRunning] = useState(false);
+  usePetAway(running);
   const [error, setError] = useState<string | null>(null);
   const [peakDb, setPeakDb] = useState(FLOOR_DB);
   const samples = useRef<number[]>([]);

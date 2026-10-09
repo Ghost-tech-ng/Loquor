@@ -31,6 +31,7 @@ import {
   type Settings as SettingsShape,
 } from "../../lib/settings";
 import { play, setSfxEnabled } from "../../components/kit/sfx";
+import { setPetEnabled } from "../pet/petPresence";
 import { resetAll } from "../../lib/db";
 import {
   clearDaily,
@@ -294,6 +295,22 @@ export default function Settings() {
           setSfxEnabled(on);
           if (on) play("correct");
           void applyCustom({ sfx: on });
+        }}
+      />
+
+      <Hair style={{ marginTop: SPACE.sm }} />
+      <Eyebrow>Pip</Eyebrow>
+      <Meta>The parrot that grows as you level up. It steps aside whenever you record.</Meta>
+      <Segment
+        options={[
+          { value: "on", label: "Show Pip" },
+          { value: "off", label: "Hide Pip" },
+        ]}
+        value={settings.pet ? "on" : "off"}
+        onChange={(v) => {
+          const on = v === "on";
+          setPetEnabled(on);
+          void applyCustom({ pet: on });
         }}
       />
 

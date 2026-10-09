@@ -43,6 +43,7 @@ import {
 import { GATE_LABELS, judgeUse, type WordVerdict } from "./lexiconJudge";
 import { transcribe } from "../../lib/stt";
 import { getKey, loadSettings, resolve } from "../../lib/settings";
+import { usePetAway } from "../pet/petPresence";
 
 type Stage =
   | "loading"
@@ -59,6 +60,7 @@ export default function Lexicon() {
 
   const recorder = useAudioRecorder({ ...RecordingPresets.HIGH_QUALITY, isMeteringEnabled: true });
   const state = useAudioRecorderState(recorder, 100);
+  usePetAway(state.isRecording);
 
   const [stage, setStage] = useState<Stage>("loading");
   const [queue, setQueue] = useState<QueueItem[]>([]);

@@ -31,6 +31,7 @@ import {
 } from "../blitz";
 import { bestOf, finishGame, type RunResult } from "../runs";
 import { GameIntro, GameResult, PopNumber, TimerBar, useShake } from "../GameKit";
+import { usePetAway } from "../../pet/petPresence";
 
 const TINT = AURORA.emerald;
 const ENTRIES = ALL_WORDS.map((w) => ({ word: w, meaning: GLOSSARY.get(w)!.meaning }));
@@ -41,6 +42,7 @@ type Pick = { option: string; correct: boolean } | null;
 export default function BlitzScreen() {
   const router = useRouter();
   const [stage, setStage] = useState<Stage>("intro");
+  usePetAway(stage === "play");
   const [best, setBest] = useState<number | null>(null);
   const [q, setQ] = useState<BlitzQuestion | null>(null);
   const [pick, setPick] = useState<Pick>(null);

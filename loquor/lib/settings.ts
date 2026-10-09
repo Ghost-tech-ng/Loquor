@@ -28,6 +28,8 @@ export type Settings = {
   readingPrimer: "disfluency" | "passage";
   /** Game chimes. Haptics stay on regardless; they make no noise in a quiet room. */
   sfx: boolean;
+  /** Pip, the parrot that wanders the screens. */
+  pet: boolean;
   /** "My English": which variety's soft fillers count. Standard counts none. */
   english: English;
   /** Soft fillers from that variety the person switched off, one by one. */
@@ -40,6 +42,7 @@ export const DEFAULT_SETTINGS: Settings = {
   judgeProvider: "groq",
   readingPrimer: "disfluency",
   sfx: true,
+  pet: true,
   english: "general",
   softOff: [],
 };

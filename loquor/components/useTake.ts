@@ -25,6 +25,7 @@ import { transcribe } from "../lib/stt";
 import { getKey, loadSettings, resolve, softFillers } from "../lib/settings";
 import type { Metrics, Word } from "../lib/metrics";
 import { computeMetrics } from "../lib/metrics";
+import { usePetAway } from "../features/pet/petPresence";
 
 /** Seconds between meter readings, which is also the spacing of `levels`. */
 export const LEVEL_STEP_S = 0.1;
@@ -86,6 +87,7 @@ export function useTake(opts: { prompt?: string; keepAudio?: boolean } = {}): Ta
 
   const [ready, setReady] = useState(false);
   const [recording, setRecording] = useState(false);
+  usePetAway(recording);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const prompt = useRef(opts.prompt);

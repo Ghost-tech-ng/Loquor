@@ -57,6 +57,7 @@ import { saveTake, sectionBests } from "../../lib/db";
 import { gradeRecognition } from "../lexicon/lexiconStore";
 import { getKey, loadSettings, resolve } from "../../lib/settings";
 import { LIVELY_LINE, liveliness, type Liveliness } from "../games/prosody";
+import { usePetAway } from "../pet/petPresence";
 
 type Stage = "contents" | "study" | "reading" | "working" | "result" | "error";
 
@@ -67,6 +68,7 @@ export default function Read() {
 
   const recorder = useAudioRecorder({ ...RecordingPresets.HIGH_QUALITY, isMeteringEnabled: true });
   const state = useAudioRecorderState(recorder, 100);
+  usePetAway(state.isRecording);
 
   const [stage, setStage] = useState<Stage>("contents");
   const [sectionN, setSectionN] = useState(Number(params.section ?? 1) || 1);
