@@ -56,7 +56,7 @@ export function totalXp(l: Ledger): number {
   return xp;
 }
 
-export type GameId = "blitz" | "bomb" | "pause" | "gauntlet" | "alive";
+export type GameId = "blitz" | "bomb" | "pause" | "gauntlet" | "alive" | "span" | "nback" | "chain";
 
 // Each game's score lives on its own scale (points, defuses, seconds), so XP
 // maps each to roughly what a good run of the equivalent drill is worth. The
@@ -74,5 +74,12 @@ export function gameXp(game: GameId, score: number): number {
       return Math.min(80, Math.round(s / 4));
     case "alive":
       return Math.min(70, 20 + Math.round(s / 2));
+    // Memory Gym scores are the level cleared, 0 for a miss. A miss still pays
+    // a little: showing up is the habit being built, and the level it failed
+    // at is where the training happens.
+    case "span":
+    case "nback":
+    case "chain":
+      return s > 0 ? Math.min(70, 20 + Math.round(s) * 5) : 10;
   }
 }

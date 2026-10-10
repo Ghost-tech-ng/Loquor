@@ -20,6 +20,12 @@ export type DayFacts = {
   gauntletCleared: number;
   focusBest: number;
   aliveBest: number;
+  spanBest: number;
+  nbackBest: number;
+  chainBest: number;
+  memoryDone: number;
+  memoryCleared: number;
+  memoryFullDays: number;
 };
 
 export type Quest = {
@@ -59,6 +65,9 @@ export const QUESTS: Quest[] = [
   { id: "focus-45", family: "focus", title: "Talk 45 seconds clean in the Gauntlet", xp: 90, goal: 45, route: "/play/gauntlet", value: (f) => f.focusBest, needs: "games" },
   { id: "alive-70", family: "alive", title: "Score 70+ in Bring It to Life", xp: 80, goal: 1, route: "/play/alive", value: (f) => (f.aliveBest >= 70 ? 1 : 0), needs: "games" },
   { id: "game-3", family: "games", title: "Play three games", xp: 70, goal: 3, route: "/play", value: (f) => f.gameRuns, needs: "games" },
+  { id: "mem-1", family: "memory", title: "Play a Memory Gym game", xp: 40, goal: 1, route: "/play/memory", value: (f) => f.memoryDone, needs: "games" },
+  { id: "mem-3", family: "memory", title: "Finish the Memory Gym workout", xp: 80, goal: 3, route: "/play/memory", value: (f) => f.memoryDone, needs: "games" },
+  { id: "mem-level", family: "memory", title: "Clear a level in the Memory Gym", xp: 60, goal: 1, route: "/play/memory", value: (f) => f.memoryCleared, needs: "games" },
 ];
 
 export const QUESTS_BY_ID = new Map(QUESTS.map((q) => [q.id, q]));

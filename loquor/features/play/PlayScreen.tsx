@@ -21,6 +21,8 @@ import { Glyph, type GlyphName } from "../../components/kit/Glyph";
 import { AURORA, CHROME, RADIUS, SPACE, SURFACE, TABULAR, TYPE, alpha } from "../../theme";
 import { READINGS_BY_ID, pickReading, readingMinutes, type Reading } from "../reading/readings";
 import { bestOf } from "../games/runs";
+import { memorySnapshot } from "../games/memory/shared";
+import type { MemorySummary } from "../games/memory";
 import type { GameId } from "../progression/xp";
 import { coverage } from "../../lib/skillStore";
 import { ALL_WORDS, gloss } from "../lexicon/glossary";
@@ -115,6 +117,7 @@ export default function Play() {
   const [cover, setCover] = useState<{ tried: number; solid: number; total: number } | null>(null);
   const [valveThreshold, setValveThreshold] = useState<number | null>(null);
   const [bests, setBests] = useState<Partial<Record<GameId, number>>>({});
+  const [memory, setMemory] = useState<MemorySummary | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -124,6 +127,9 @@ export default function Play() {
         const next: Partial<Record<GameId, number>> = {};
         for (const [k, v] of pairs) if (v !== null) next[k] = v;
         setBests(next);
+      });
+      void memorySnapshot().then((m) => {
+        if (live) setMemory(m);
       });
       (async () => {
         const [readUsed, takes, stats, cov, valve] = await Promise.all([
@@ -236,11 +242,61 @@ export default function Play() {
 
       <Rise index={1} style={s.sectionHead}>
         <Text style={s.sectionTitle}>Games</Text>
-        <Text style={s.soon}>Five games</Text>
+        <Text style={s.soon}>Eight games</Text>
+      </Rise>
+
+      {/* The Memory Gym leads: it is the one with a daily workout, so it is the
+          card most worth seeing first on any given day. */}
+      <Rise index={2}>
+        <PressableScale
+          onPress={() => {
+            feel.tap();
+            router.push("/play/memory");
+          }}
+          scaleTo={0.97}
+          accessibilityLabel="Memory Gym"
+        >
+          <View style={s.game}>
+            <LinearGradient
+              colors={[alpha(AURORA.cyan, 0.42), alpha(AURORA.plum, 0.2)]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[StyleSheet.absoluteFill, { borderRadius: RADIUS.panel }]}
+            />
+            <View style={[s.gameIconWrap, { borderColor: alpha(AURORA.cyan, 0.45) }]}>
+              <Glyph name="brain" size={26} strokeWidth={1.7} color={AURORA.cyan} />
+            </View>
+            <View style={{ flex: 1, gap: 4 }}>
+              <View style={s.gameHead}>
+                <Text style={s.gameName}>Memory Gym</Text>
+                <View style={[s.tag, { borderColor: alpha(AURORA.cyan, 0.7) }]}>
+                  <Text style={[s.tagText, { color: AURORA.cyan }]}>Memory</Text>
+                </View>
+              </View>
+              <Text style={s.gameHook}>
+                Three games with levels: Pip Says, Echo and Word Chain. Hold your point and land it in order.
+              </Text>
+              {memory ? (
+                <View style={s.bestRow}>
+                  <Glyph
+                    name={memory.workout.complete ? "check" : "brain"}
+                    size={12}
+                    color={AURORA.cyan}
+                    strokeWidth={2}
+                  />
+                  <Text style={s.bestText}>
+                    {memory.workout.complete ? "Workout done" : `Today ${memory.workout.count}/3`}
+                    {memory.streak.current > 0 ? ` · ${memory.streak.current}-day streak` : ""}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          </View>
+        </PressableScale>
       </Rise>
 
       {GAMES.map((g, i) => (
-        <Rise key={g.key} index={i + 2}>
+        <Rise key={g.key} index={i + 3}>
           <PressableScale
             onPress={() => {
               feel.tap();
@@ -279,13 +335,13 @@ export default function Play() {
         </Rise>
       ))}
 
-      <Rise index={8} style={[s.sectionHead, { marginTop: SPACE.md }]}>
+      <Rise index={9} style={[s.sectionHead, { marginTop: SPACE.md }]}>
         <Text style={s.sectionTitle}>Training</Text>
         <Text style={s.soon}>The slow gains</Text>
       </Rise>
 
       {drills.map((d, i) => (
-        <Rise key={d.key} index={i + 9}>
+        <Rise key={d.key} index={i + 10}>
           <PressableScale onPress={d.go} scaleTo={0.97} accessibilityLabel={d.name}>
             <Glass style={s.drill} radius={RADIUS.soft + 6}>
               <View style={s.drillIcon}>
@@ -306,7 +362,7 @@ export default function Play() {
       {/* One word a day from the glossary, and a way into the Lexicon. It moved
           here from Home, which now holds only the one thing to do next. */}
       {word ? (
-        <Rise index={9 + drills.length} style={{ marginTop: SPACE.md }}>
+        <Rise index={10 + drills.length} style={{ marginTop: SPACE.md }}>
           <PressableScale onPress={() => router.push("/lexicon")} scaleTo={0.98} accessibilityLabel="Word of the day">
             <Glass glow={AURORA.mint} style={s.word}>
               <Text style={s.wordKicker}>Word of the day</Text>

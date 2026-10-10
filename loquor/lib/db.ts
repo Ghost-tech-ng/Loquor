@@ -1076,6 +1076,15 @@ export type GameFacts = {
   /** Longest stretch, in seconds, with no filler and no dead air. */
   focusBest: number;
   aliveBest: number;
+  /** Highest level cleared in each Memory Gym game. */
+  spanBest: number;
+  nbackBest: number;
+  chainBest: number;
+  /** Distinct Memory Gym games played: 3 is the full workout. */
+  memoryDone: number;
+  memoryCleared: number;
+  /** Days on which all three Memory Gym games were played. */
+  memoryFullDays: number;
 };
 
 /** Bests across game runs, for one window [a, b) or for all time. */
@@ -1089,8 +1098,20 @@ export async function gameFacts(a = 0, b = Number.MAX_SAFE_INTEGER): Promise<Gam
        MAX(CASE WHEN game = 'pause' THEN json_extract(meta_json, '$.clean') END) AS pauseClean,
        MAX(CASE WHEN game = 'gauntlet' THEN json_extract(meta_json, '$.cleared') END) AS gauntletCleared,
        MAX(CASE WHEN game = 'gauntlet' THEN json_extract(meta_json, '$.focus') END) AS focusBest,
-       MAX(CASE WHEN game = 'alive' THEN score END) AS aliveBest
+       MAX(CASE WHEN game = 'alive' THEN score END) AS aliveBest,
+       MAX(CASE WHEN game = 'span' THEN score END) AS spanBest,
+       MAX(CASE WHEN game = 'nback' THEN score END) AS nbackBest,
+       MAX(CASE WHEN game = 'chain' THEN score END) AS chainBest,
+       COUNT(DISTINCT CASE WHEN game IN ('span', 'nback', 'chain') THEN game END) AS memoryDone,
+       SUM(CASE WHEN game IN ('span', 'nback', 'chain') AND score > 0 THEN 1 ELSE 0 END) AS memoryCleared,
+       (SELECT COUNT(*) FROM (
+          SELECT date(at / 1000, 'unixepoch', 'localtime') AS day FROM game_scores
+          WHERE game IN ('span', 'nback', 'chain') AND at >= ? AND at < ?
+          GROUP BY day HAVING COUNT(DISTINCT game) = 3
+       )) AS memoryFullDays
      FROM game_scores WHERE at >= ? AND at < ?`,
+    a,
+    b,
     a,
     b
   );
@@ -1102,7 +1123,25 @@ export async function gameFacts(a = 0, b = Number.MAX_SAFE_INTEGER): Promise<Gam
     gauntletCleared: row?.gauntletCleared ?? 0,
     focusBest: row?.focusBest ?? 0,
     aliveBest: row?.aliveBest ?? 0,
+    spanBest: row?.spanBest ?? 0,
+    nbackBest: row?.nbackBest ?? 0,
+    chainBest: row?.chainBest ?? 0,
+    memoryDone: row?.memoryDone ?? 0,
+    memoryCleared: row?.memoryCleared ?? 0,
+    memoryFullDays: row?.memoryFullDays ?? 0,
   };
+}
+
+export type MemoryRun = { game: string; at: number; score: number };
+
+/** Every Memory Gym run, oldest first: the hub derives levels, today's workout
+ *  and the memory streak from these. A run is a few bytes and a year of daily
+ *  workouts is about a thousand rows. */
+export async function memoryRuns(): Promise<MemoryRun[]> {
+  const d = await db();
+  return d.getAllAsync<MemoryRun>(
+    `SELECT game, at, score FROM game_scores WHERE game IN ('span', 'nback', 'chain') ORDER BY at ASC`
+  );
 }
 
 export type QuestClaimRow = { day: number; quest_id: string; at: number; xp: number };

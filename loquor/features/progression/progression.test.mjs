@@ -143,6 +143,12 @@ const noGames = {
   gauntletCleared: 0,
   focusBest: 0,
   aliveBest: 0,
+  spanBest: 0,
+  nbackBest: 0,
+  chainBest: 0,
+  memoryDone: 0,
+  memoryCleared: 0,
+  memoryFullDays: 0,
 };
 
 test("game quests read the day's bests", () => {
@@ -231,6 +237,42 @@ test("game badges unlock at their lines", () => {
   assert.ok(ids({ gameRuns: 1, aliveBest: 90 }).includes("human"));
   assert.ok(!ids({ gameRuns: 1, aliveBest: 89 }).includes("human"));
   assert.ok(ids({ gameRuns: 1, blitzCorrect: 20, pauseClean: 10 }).includes("golden-silence"));
+});
+
+test("memory badges unlock at their lines", () => {
+  const ids = (f) => newlyEarned({ ...blank, gameRuns: 1, ...f }, new Set()).map((b) => b.id);
+  assert.ok(ids({ spanBest: 7 }).includes("pattern-keeper"));
+  assert.ok(!ids({ spanBest: 6 }).includes("pattern-keeper"));
+  assert.ok(ids({ nbackBest: 5 }).includes("echo-chamber"));
+  assert.ok(!ids({ nbackBest: 4 }).includes("echo-chamber"));
+  assert.ok(ids({ chainBest: 8 }).includes("total-recall"));
+  assert.ok(ids({ memoryFullDays: 7 }).includes("mind-gym"));
+  assert.ok(!ids({ memoryFullDays: 6 }).includes("mind-gym"));
+});
+
+test("memory quests count distinct games and cleared levels", () => {
+  const facts = {
+    arenaTakes: 0,
+    bestFiller: null,
+    readings: 0,
+    lexiconReviews: 0,
+    drills: 0,
+    valveRuns: 0,
+    debriefs: 0,
+    ...noGames,
+    gameRuns: 4,
+    memoryDone: 2,
+    memoryCleared: 1,
+  };
+  const states = questStates(["mem-1", "mem-3", "mem-level"], facts, new Set());
+  assert.deepEqual(
+    states.map((s) => [s.quest.id, s.value, s.done]),
+    [
+      ["mem-1", 1, true],
+      ["mem-3", 2, false],
+      ["mem-level", 1, true],
+    ]
+  );
 });
 
 test("a new user has no badges", () => {
