@@ -245,9 +245,47 @@ export default function Play() {
         <Text style={s.soon}>Eight games</Text>
       </Rise>
 
-      {/* The Memory Gym leads: it is the one with a daily workout, so it is the
-          card most worth seeing first on any given day. */}
-      <Rise index={2}>
+      {GAMES.map((g, i) => (
+        <Rise key={g.key} index={i + 2}>
+          <PressableScale
+            onPress={() => {
+              feel.tap();
+              router.push(`/play/${g.key}`);
+            }}
+            scaleTo={0.97}
+            accessibilityLabel={g.name}
+          >
+            <View style={s.game}>
+              <LinearGradient
+                colors={[alpha(g.tint[0], 0.42), alpha(g.tint[1], 0.16)]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[StyleSheet.absoluteFill, { borderRadius: RADIUS.panel }]}
+              />
+              <View style={[s.gameIconWrap, { borderColor: alpha(g.tint[0], 0.45) }]}>
+                <Glyph name={g.icon} size={26} strokeWidth={1.7} color={g.tint[0]} />
+              </View>
+              <View style={{ flex: 1, gap: 4 }}>
+                <View style={s.gameHead}>
+                  <Text style={s.gameName}>{g.name}</Text>
+                  <View style={[s.tag, { borderColor: alpha(g.tint[0], 0.7) }]}>
+                    <Text style={[s.tagText, { color: g.tint[0] }]}>{g.tag}</Text>
+                  </View>
+                </View>
+                <Text style={s.gameHook}>{g.hook}</Text>
+                {bests[g.key] !== undefined ? (
+                  <View style={s.bestRow}>
+                    <Glyph name="trophy" size={12} color={AURORA.cyan} strokeWidth={2} />
+                    <Text style={s.bestText}>{g.unit(bests[g.key]!)}</Text>
+                  </View>
+                ) : null}
+              </View>
+            </View>
+          </PressableScale>
+        </Rise>
+      ))}
+
+      <Rise index={GAMES.length + 2}>
         <PressableScale
           onPress={() => {
             feel.tap();
@@ -294,46 +332,6 @@ export default function Play() {
           </View>
         </PressableScale>
       </Rise>
-
-      {GAMES.map((g, i) => (
-        <Rise key={g.key} index={i + 3}>
-          <PressableScale
-            onPress={() => {
-              feel.tap();
-              router.push(`/play/${g.key}`);
-            }}
-            scaleTo={0.97}
-            accessibilityLabel={g.name}
-          >
-            <View style={s.game}>
-              <LinearGradient
-                colors={[alpha(g.tint[0], 0.42), alpha(g.tint[1], 0.16)]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[StyleSheet.absoluteFill, { borderRadius: RADIUS.panel }]}
-              />
-              <View style={[s.gameIconWrap, { borderColor: alpha(g.tint[0], 0.45) }]}>
-                <Glyph name={g.icon} size={26} strokeWidth={1.7} color={g.tint[0]} />
-              </View>
-              <View style={{ flex: 1, gap: 4 }}>
-                <View style={s.gameHead}>
-                  <Text style={s.gameName}>{g.name}</Text>
-                  <View style={[s.tag, { borderColor: alpha(g.tint[0], 0.7) }]}>
-                    <Text style={[s.tagText, { color: g.tint[0] }]}>{g.tag}</Text>
-                  </View>
-                </View>
-                <Text style={s.gameHook}>{g.hook}</Text>
-                {bests[g.key] !== undefined ? (
-                  <View style={s.bestRow}>
-                    <Glyph name="trophy" size={12} color={AURORA.cyan} strokeWidth={2} />
-                    <Text style={s.bestText}>{g.unit(bests[g.key]!)}</Text>
-                  </View>
-                ) : null}
-              </View>
-            </View>
-          </PressableScale>
-        </Rise>
-      ))}
 
       <Rise index={9} style={[s.sectionHead, { marginTop: SPACE.md }]}>
         <Text style={s.sectionTitle}>Training</Text>
